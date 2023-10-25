@@ -8,13 +8,13 @@
       <h6 class="sidebar-heading px-3 mt-4 mb-2">
         My Allocation
       </h6>
-      <a href="#" class="list-group-item list-group-item-action py-2 ripple">
+      <a href="{% url 'alloc:allocations' %}" class="list-group-item list-group-item-action py-2 ripple {% if request.resolver_match.url_name == 'allocations' %}active{% endif %}">
         <i class="fas fa-star fa-fw me-3"></i><span>SU Allocations</span>
       </a>
-      <a href="#" class="list-group-item list-group-item-action py-2 ripple active"><i
+      <a href="{% url 'alloc:proposals' %}" class="list-group-item list-group-item-action py-2 ripple {% if request.resolver_match.url_name == 'proposals' %}active{% endif %}"><i
           class="fas fa-circle-plus fa-fw me-3"></i><span>Proposals</span>
       </a>
-      <a href="#" class="list-group-item list-group-item-action py-2 ripple"><i
+      <a href="{% url 'alloc:publications' %}" class="list-group-item list-group-item-action py-2 ripple {% if request.resolver_match.url_name == 'publications' %}active{% endif %}"><i
           class="fas fa-file-lines fa-fw me-3"></i><span>Publications</span>
       </a>
     </div>

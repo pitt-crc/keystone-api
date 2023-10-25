@@ -16,5 +16,6 @@ crc-service-portal = "crc_service_portal.manage:main"
 [tool.poetry.dependencies]
 python = "^3.10"
 django = "4.2.5"
+djangorestframework = "^3.14.0"
 psycopg2-binary = "^2.9.7"
 python-dotenv = "1.0.0"
