@@ -12,5 +12,5 @@ api_router.register(r'publications', views.PublicationViewSet)
 
 urlpatterns = [
     path('api/', include(api_router.urls)),
-    path('', views.AllocationView.as_view(), name='create_allocation'),
+    path('allocations', views.AllocationView.as_view(), name='allocations'),
 ]

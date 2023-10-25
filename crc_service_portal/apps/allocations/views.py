@@ -28,8 +28,7 @@ class PublicationViewSet(viewsets.ModelViewSet):
     serializer_class = PublicationSerializer
 
 
-class AllocationView(View):
+class AllocationView(TemplateView):
     """View for creating new allocation records"""
 
-    template_name = 'allocation/allocations.html'
-    form_class = AllocationForm
+    template_name = 'allocations/allocations.html'
