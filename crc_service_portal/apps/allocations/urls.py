@@ -12,5 +12,7 @@ api_router.register(r'publications', views.PublicationViewSet)
 
 urlpatterns = [
     path('api/', include(api_router.urls)),
-    path('allocations', views.AllocationView.as_view(), name='allocations'),
+    path('allocations', views.AllocationsView.as_view(), name='allocations'),
+    path('proposals', views.ProposalsView.as_view(), name='proposals'),
+    path('publications', views.PublicationsView.as_view(), name='publications'),
 ]

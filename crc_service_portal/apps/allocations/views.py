@@ -1,8 +1,6 @@
-from django.views import View
 from django.views.generic import TemplateView
 from rest_framework import viewsets
 
-from .forms import AllocationForm
 from .models import Allocation, Publication, ProjectProposal
 from .serializers import AllocationSerializer, PublicationSerializer, ProjectProposalSerializer
 
@@ -28,7 +26,19 @@ class PublicationViewSet(viewsets.ModelViewSet):
     serializer_class = PublicationSerializer
 
 
-class AllocationView(TemplateView):
+class AllocationsView(TemplateView):
     """View for creating new allocation records"""
 
     template_name = 'allocations/allocations.html'
+
+
+class ProposalsView(TemplateView):
+    """View for creating new allocation records"""
+
+    template_name = 'allocations/proposals.html'
+
+
+class PublicationsView(TemplateView):
+    """View for creating new allocation records"""
+
+    template_name = 'allocations/publications.html'
