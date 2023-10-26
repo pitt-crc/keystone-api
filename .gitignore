@@ -55,3 +55,4 @@ docs/build/
 
 # Webdriver stuff
 geckodriver.log
+.sass-cache

@@ -5,59 +5,54 @@
 * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
 */
 
-/*! Theme created with Shuffle (https://shuffle.dev) */
+// Configuration
+@import '../../vendored/bootstrap/scss/functions';
+@import '../../vendored/bootstrap/scss/mixins';
 
-// Required
-@import '../../node_modules/bootstrap/scss/functions';
-@import '../../node_modules/bootstrap/scss/mixins';
-// Your variables
+// Theme styling
 @import 'custom-variables';
-@import 'artemis-extension/shuffle-extension';
-// Required Bootstrap variables
-@import '../../node_modules/bootstrap/scss/variables';
-// Utilities
-@import '../../node_modules/bootstrap/scss/utilities';
+
+// Required Bootstrap variables and utilities
+@import '../../vendored/bootstrap/scss/variables';
+@import '../../vendored/bootstrap/scss/utilities';
 
 // Layout & components
-@import '../../node_modules/bootstrap/scss/root';
-@import '../../node_modules/bootstrap/scss/reboot';
-@import '../../node_modules/bootstrap/scss/type';
-@import '../../node_modules/bootstrap/scss/images';
-@import '../../node_modules/bootstrap/scss/containers';
-@import '../../node_modules/bootstrap/scss/grid';
-@import '../../node_modules/bootstrap/scss/tables';
-@import '../../node_modules/bootstrap/scss/forms';
-@import '../../node_modules/bootstrap/scss/buttons';
-@import '../../node_modules/bootstrap/scss/transitions';
-@import '../../node_modules/bootstrap/scss/dropdown';
-@import '../../node_modules/bootstrap/scss/button-group';
-@import '../../node_modules/bootstrap/scss/nav';
-@import '../../node_modules/bootstrap/scss/navbar';
-@import '../../node_modules/bootstrap/scss/card';
-@import '../../node_modules/bootstrap/scss/accordion';
-@import '../../node_modules/bootstrap/scss/breadcrumb';
-@import '../../node_modules/bootstrap/scss/pagination';
-@import '../../node_modules/bootstrap/scss/badge';
-@import '../../node_modules/bootstrap/scss/alert';
-@import '../../node_modules/bootstrap/scss/progress';
-@import '../../node_modules/bootstrap/scss/list-group';
-@import '../../node_modules/bootstrap/scss/close';
-@import '../../node_modules/bootstrap/scss/toasts';
-@import '../../node_modules/bootstrap/scss/modal';
-@import '../../node_modules/bootstrap/scss/tooltip';
-@import '../../node_modules/bootstrap/scss/popover';
-@import '../../node_modules/bootstrap/scss/carousel';
-@import '../../node_modules/bootstrap/scss/spinners';
-@import '../../node_modules/bootstrap/scss/offcanvas';
+@import '../../vendored/bootstrap/scss/root';
+@import '../../vendored/bootstrap/scss/reboot';
+@import '../../vendored/bootstrap/scss/type';
+@import '../../vendored/bootstrap/scss/images';
+@import '../../vendored/bootstrap/scss/containers';
+@import '../../vendored/bootstrap/scss/grid';
+@import '../../vendored/bootstrap/scss/tables';
+@import '../../vendored/bootstrap/scss/forms';
+@import '../../vendored/bootstrap/scss/buttons';
+@import '../../vendored/bootstrap/scss/transitions';
+@import '../../vendored/bootstrap/scss/dropdown';
+@import '../../vendored/bootstrap/scss/button-group';
+@import '../../vendored/bootstrap/scss/nav';
+@import '../../vendored/bootstrap/scss/navbar';
+@import '../../vendored/bootstrap/scss/card';
+@import '../../vendored/bootstrap/scss/accordion';
+@import '../../vendored/bootstrap/scss/breadcrumb';
+@import '../../vendored/bootstrap/scss/pagination';
+@import '../../vendored/bootstrap/scss/badge';
+@import '../../vendored/bootstrap/scss/alert';
+@import '../../vendored/bootstrap/scss/progress';
+@import '../../vendored/bootstrap/scss/list-group';
+@import '../../vendored/bootstrap/scss/close';
+@import '../../vendored/bootstrap/scss/toasts';
+@import '../../vendored/bootstrap/scss/modal';
+@import '../../vendored/bootstrap/scss/tooltip';
+@import '../../vendored/bootstrap/scss/popover';
+@import '../../vendored/bootstrap/scss/carousel';
+@import '../../vendored/bootstrap/scss/spinners';
+@import '../../vendored/bootstrap/scss/offcanvas';
 
 // Helpers
-@import '../../node_modules/bootstrap/scss/helpers';
+@import '../../vendored/bootstrap/scss/helpers';
 
 // Utilities
-@import '../../node_modules/bootstrap/scss/utilities/api';
+@import '../../vendored/bootstrap/scss/utilities/api';
 
 // Extensions
-@import "maxmaxmax/extension-max-width";
-
-// Your styles
-@import 'custom-styles';
+@import "max-width";
