@@ -73,6 +73,14 @@ class Publication(models.Model):
         return self.get_truncated_title(50)
 
 
+class ProposalReview(models.Model):
+    """Review feedback for a project proposal"""
+
+    reviewer = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    approve = models.BooleanField()
+    comments = models.CharField(max_length=500)
+
+
 class ProjectProposal(models.Model):
     """Project proposal requesting service unit allocations on one or more clusters"""
 
@@ -81,3 +89,4 @@ class ProjectProposal(models.Model):
     description = models.TextField(max_length=1600)
     submitted = models.DateField('Submission Date')
     approved = models.DateField('Approval Date', null=True, blank=True)
+    reviews = models.ForeignKey(ProposalReview, on_delete=models.CASCADE)

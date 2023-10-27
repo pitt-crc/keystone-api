@@ -68,6 +68,12 @@ class PublicationAdmin(admin.ModelAdmin):
 
 @admin.register(ProjectProposal)
 class ProjectProposalAdmin(admin.ModelAdmin):
+    """Admin interface for the `ProjectProposal` model"""
+
     list_display = ['user', 'title', 'submitted', 'approved']
     search_fields = ['user', 'title']
     ordering = ['submitted']
+    list_filter = [
+        ('submitted', admin.DateFieldListFilter),
+        ('approved', admin.DateFieldListFilter),
+    ]
