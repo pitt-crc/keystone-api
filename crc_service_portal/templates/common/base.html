@@ -1,36 +1,32 @@
 {% load static %}
 
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
-  <meta http-equiv="x-ua-compatible" content="ie=edge"/>
+  <title>Page title</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>{% block page_title %}CRC Self Service Portal{% endblock %}</title>
 
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.2/css/all.css"/>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"/>
-  <link rel="stylesheet" href="{% static 'vendored/mdb-6.4.2/css/mdb.min.css' %}"/>
-  <link rel="stylesheet" href="{% static 'theme/css/admin.css' %}"/>
-
-  {% block extra_css %}{% endblock %}
+  <link rel="stylesheet" href="{% static 'theme/css/bootstrap-theme.css' %}">
 </head>
 
 <body>
-  <header>
-    {% include 'common/components/topbar.html' %}
-    {% include 'common/components/sidebar.html' %}
-  </header>
+<header>
+  {% include 'common/components/topbar.html' %}
+  {% include 'common/components/sidebar.html' %}
+</header>
 
-  <main style="margin-top: 58px">
-    <div class="container pt-4">
-      {% block main_content %}{% endblock %}
-    </div>
-  </main>
+<main>
+  <div class="mx-auto ms-lg-80">
+    {% block main_content %}{% endblock %}
+  </div>
+</main>
 
-  <script type="text/javascript" src="{% static 'vendored/mdb-6.4.2/js/mdb.min.js' %}"></script>
-  <script type="text/javascript" src="{% static 'theme/js/admin.js' %}"></script>
-  {% block extra_js %}{% endblock %}
+<script src="{% static 'vendored/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'theme/js/main.js' %}"></script>
+{% block extra_js %}{% endblock %}
 
-  </body>
+</body>
 </html>
