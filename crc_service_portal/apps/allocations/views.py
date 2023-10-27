@@ -1,26 +1,32 @@
 from django.views.generic import TemplateView
 from rest_framework import viewsets
 
-from .models import Allocation, Publication, ProjectProposal
-from .serializers import AllocationSerializer, PublicationSerializer, ProjectProposalSerializer
+from .serializers import *
+
+
+class ClusterViewSet(viewsets.ReadOnlyModelViewSet):
+    """Read-only JSON ViewSet for querying cluster database records"""
+
+    queryset = Cluster.objects
+    serializer_class = ClusterSerializer
 
 
 class AllocationViewSet(viewsets.ModelViewSet):
-    """A read-only JSON view for querying allocation database records"""
+    """JSON ViewSet for querying allocation database records"""
 
     queryset = Allocation.objects
     serializer_class = AllocationSerializer
 
 
 class ProjectProposalViewSet(viewsets.ModelViewSet):
-    """A read-only JSON view for querying project proposal database records"""
+    """JSON ViewSet for querying project proposal database records"""
 
     queryset = ProjectProposal.objects
     serializer_class = ProjectProposalSerializer
 
 
 class PublicationViewSet(viewsets.ModelViewSet):
-    """A read-only JSON view for querying publication database records"""
+    """JSON ViewSet for querying publication database records"""
 
     queryset = Publication.objects
     serializer_class = PublicationSerializer
