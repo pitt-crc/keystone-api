@@ -16,7 +16,7 @@ class PublicationAdmin(admin.ModelAdmin):
     @staticmethod
     @admin.display
     def title(obj: Publication) -> str:
-        """Return an allocation's service units formatted as a human friendly string"""
+        """Return a publication's title as a human/table friendly string"""
 
         return str(obj)
 

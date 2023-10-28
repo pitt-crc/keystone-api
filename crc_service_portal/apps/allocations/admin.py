@@ -53,7 +53,14 @@ class AllocationInline(admin.TabularInline):
 class ProposalAdmin(admin.ModelAdmin):
     """Admin interface for the `Proposal` model"""
 
-    list_display = ['user', 'title', 'submitted', 'approved']
+    @staticmethod
+    @admin.display
+    def title(obj: Proposal) -> str:
+        """Return a proposal's title as a human/table friendly string"""
+
+        return str(obj)
+
+    list_display = ['user', title, 'submitted', 'approved']
     search_fields = ['title', 'description', 'user__first_name', 'user__last_name', 'user__username']
     ordering = ['submitted']
     list_filter = [
