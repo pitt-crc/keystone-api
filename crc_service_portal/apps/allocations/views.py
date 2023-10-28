@@ -1,3 +1,9 @@
+"""Application logic for rendering HTML templates and handling HTTP requests.
+
+View objects handle the processing of incoming HTTP requests and return the
+appropriately rendered HTML template or other HTTP response.
+"""
+
 from django.views.generic import TemplateView
 from rest_framework import viewsets
 
@@ -25,26 +31,7 @@ class ProposalViewSet(viewsets.ModelViewSet):
     serializer_class = ProposalSerializer
 
 
-class PublicationViewSet(viewsets.ModelViewSet):
-    """JSON ViewSet for querying publication database records"""
-
-    queryset = Publication.objects
-    serializer_class = PublicationSerializer
-
-
 class AllocationsView(TemplateView):
     """View for creating new allocation records"""
 
     template_name = 'allocations/allocations.html'
-
-
-class ProposalsView(TemplateView):
-    """View for creating new allocation records"""
-
-    template_name = 'allocations/proposals.html'
-
-
-class PublicationsView(TemplateView):
-    """View for creating new allocation records"""
-
-    template_name = 'allocations/publications.html'
