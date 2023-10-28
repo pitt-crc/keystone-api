@@ -55,7 +55,7 @@ class Allocation(models.Model):
 
 
 class Publication(models.Model):
-    """User submitted information for academic publication"""
+    """Metadata for an academic publication"""
 
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     title = models.CharField(max_length=250)
@@ -90,7 +90,7 @@ class Publication(models.Model):
 
 
 class Grant(models.Model):
-    """Funding information for a PI grant"""
+    """Metadata for a funding grant"""
 
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     fiscal_year = models.IntegerField()

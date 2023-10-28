@@ -7,16 +7,14 @@ from .models import *
 class ClusterAdmin(admin.ModelAdmin):
     """Admin interface for the `Cluster` model"""
 
-    @staticmethod
     @admin.action
-    def enable_selected_clusters(modeladmin, request, queryset) -> None:
+    def enable_selected_clusters(self, request, queryset) -> None:
         """Mark selected clusters as enabled"""
 
         queryset.update(enabled=True)
 
-    @staticmethod
     @admin.action
-    def disable_selected_clusters(modeladmin, request, queryset) -> None:
+    def disable_selected_clusters(self, request, queryset) -> None:
         """Mark selected clusters as disabled"""
 
         queryset.update(enabled=False)
@@ -38,7 +36,7 @@ class ProposalReviewInline(admin.StackedInline):
 
 
 class AllocationInline(admin.TabularInline):
-    """Inline admin interface for SU allocations"""
+    """Inline admin interface for the `Allocation` model"""
 
     model = Allocation
     show_change_link = True
