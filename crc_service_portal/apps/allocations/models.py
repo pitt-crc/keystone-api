@@ -93,6 +93,12 @@ class Grant(models.Model):
     """Funding information for a PI grant"""
 
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    fiscal_year = models.IntegerField()
+    start_date = models.DateField()
+    end_date = models.DateField()
+    amount = models.DecimalField(decimal_places=2, max_digits=19)
+    agency = models.CharField(max_length=100)
+    title = models.CharField(max_length=250)
 
 
 class ProposalReview(models.Model):

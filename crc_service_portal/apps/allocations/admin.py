@@ -33,7 +33,7 @@ class ProposalReviewInline(admin.StackedInline):
 
     model = ProposalReview
     show_change_link = True
-    readonly_fields = ('date_modified', )
+    readonly_fields = ('date_modified',)
     extra = 0
 
 
@@ -101,4 +101,17 @@ class PublicationAdmin(admin.ModelAdmin):
     search_fields = ['user', 'title']
     list_filter = [
         ('date', admin.DateFieldListFilter),
+    ]
+
+
+@admin.register(Grant)
+class GrantAdmin(admin.ModelAdmin):
+    """Admin interface for the `Grant` class"""
+
+    list_display = ['user', 'fiscal_year', 'amount', 'agency', 'start_date', 'end_date']
+    ordering = ['user', '-fiscal_year']
+    search_fields = ['user', 'fiscal_year', 'agency', 'title']
+    list_filter = [
+        ('start_date', admin.DateFieldListFilter),
+        ('end_date', admin.DateFieldListFilter),
     ]
