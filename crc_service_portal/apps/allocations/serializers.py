@@ -1,21 +1,21 @@
 from rest_framework import serializers
 
-from . import models
+from .models import *
 
 
-class AllocationSerializer(serializers.ModelSerializer):
-    """Object JSON serializer for the `` class"""
+class ClusterSerializer(serializers.ModelSerializer):
+    """Object JSON serializer for the `Cluster` class"""
 
     class Meta:
-        model = models.Allocation
+        model = Cluster
         fields = '__all__'
 
 
-class ProjectProposalSerializer(serializers.ModelSerializer):
-    """Object JSON serializer for the `ProjectProposal` class"""
+class AllocationSerializer(serializers.ModelSerializer):
+    """Object JSON serializer for the `Allocation` class"""
 
     class Meta:
-        model = models.ProjectProposal
+        model = Allocation
         fields = '__all__'
 
 
@@ -23,5 +23,13 @@ class PublicationSerializer(serializers.ModelSerializer):
     """Object JSON serializer for the `Publication` class"""
 
     class Meta:
-        model = models.Publication
+        model = Publication
+        fields = '__all__'
+
+
+class ProposalSerializer(serializers.ModelSerializer):
+    """Object JSON serializer for the `Proposal` class"""
+
+    class Meta:
+        model = Proposal
         fields = '__all__'
