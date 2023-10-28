@@ -48,7 +48,7 @@ class ProposalAdmin(admin.ModelAdmin):
     """Admin interface for the `Proposal` model"""
 
     list_display = ['user', 'title', 'submitted', 'approved']
-    search_fields = ['user', 'title']
+    search_fields = ['title', 'description', 'user__first_name', 'user__last_name', 'user__username']
     ordering = ['submitted']
     list_filter = [
         ('submitted', admin.DateFieldListFilter),
@@ -77,7 +77,7 @@ class AllocationAdmin(admin.ModelAdmin):
 
     list_display = ['user', 'cluster', 'expire', 'start', service_units, proposal_approved]
     ordering = ['user', 'cluster', '-expire']
-    search_fields = ['user', 'cluster']
+    search_fields = ['cluster__name', 'user__first_name', 'user__last_name', 'user__username']
     list_filter = [
         ('start', admin.DateFieldListFilter),
         ('expire', admin.DateFieldListFilter),
@@ -96,7 +96,7 @@ class PublicationAdmin(admin.ModelAdmin):
         return obj.get_truncated_title(100)
 
     list_display = ['user', title, 'date']
-    search_fields = ['user', 'title']
+    search_fields = ['title', 'user__first_name', 'user__last_name', 'user__username']
     list_filter = [
         ('date', admin.DateFieldListFilter),
     ]
@@ -108,7 +108,7 @@ class GrantAdmin(admin.ModelAdmin):
 
     list_display = ['user', 'fiscal_year', 'amount', 'agency', 'start_date', 'end_date']
     ordering = ['user', '-fiscal_year']
-    search_fields = ['user', 'fiscal_year', 'agency', 'title']
+    search_fields = ['user__first_name', 'user__last_name', 'user__username', 'fiscal_year', 'agency', 'title']
     list_filter = [
         ('start_date', admin.DateFieldListFilter),
         ('end_date', admin.DateFieldListFilter),
