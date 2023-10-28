@@ -2,6 +2,7 @@ from typing import cast
 
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.template.defaultfilters import truncatechars
 
 
 class Cluster(models.Model):
@@ -29,7 +30,7 @@ class Proposal(models.Model):
     def __str__(self) -> str:
         """Return the proposal title as a string"""
 
-        return cast(str, self.title)
+        return truncatechars(self.title, 100)
 
 
 class Allocation(models.Model):
@@ -64,29 +65,10 @@ class Publication(models.Model):
     journal = models.CharField(max_length=100, null=True, blank=True)
     doi = models.CharField(max_length=50, unique=True, null=True, blank=True)
 
-    def get_truncated_title(self, max_length) -> str:
-        """Return the publication title truncated to the given length and appended with ellipses
-
-        Args:
-            max_length: Maximum length of the returned string
-
-        Return:
-            The truncated publication title
-        """
-
-        ellipses = ' ...'
-        title = str(self.title)
-
-        # Truncate the title at the right most whitespace before the length limit
-        if len(title) > max_length:
-            title = title[:max_length - len(ellipses)].rsplit(' ', 1)[0] + ellipses
-
-        return title
-
     def __str__(self) -> str:
         """Return the publication title truncated to 50 characters"""
 
-        return self.get_truncated_title(50)
+        return truncatechars(self.title, 100)
 
 
 class Grant(models.Model):
@@ -99,6 +81,11 @@ class Grant(models.Model):
     amount = models.DecimalField(decimal_places=2, max_digits=19)
     agency = models.CharField(max_length=100)
     title = models.CharField(max_length=250)
+
+    def __str__(self) -> str:
+        """Return the grant title truncated to 50 characters"""
+
+        return truncatechars(self.title, 100)
 
 
 class ProposalReview(models.Model):

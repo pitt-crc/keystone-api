@@ -93,7 +93,7 @@ class PublicationAdmin(admin.ModelAdmin):
     def title(obj: Publication) -> str:
         """Return an allocation's service units formatted as a human friendly string"""
 
-        return obj.get_truncated_title(100)
+        return str(obj)
 
     list_display = ['user', title, 'date']
     search_fields = ['title', 'user__first_name', 'user__last_name', 'user__username']
