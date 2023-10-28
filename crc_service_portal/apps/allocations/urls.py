@@ -8,7 +8,7 @@ app_name = 'allocations'
 api_router = DefaultRouter()
 api_router.register(r'clusters', ClusterViewSet)
 api_router.register(r'allocations', AllocationViewSet)
-api_router.register(r'proposals', ProjectProposalViewSet)
+api_router.register(r'proposals', ProposalViewSet)
 api_router.register(r'publications', PublicationViewSet)
 
 urlpatterns = [

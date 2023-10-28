@@ -27,9 +27,9 @@ class PublicationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ProjectProposalSerializer(serializers.ModelSerializer):
-    """Object JSON serializer for the `ProjectProposal` class"""
+class ProposalSerializer(serializers.ModelSerializer):
+    """Object JSON serializer for the `Proposal` class"""
 
     class Meta:
-        model = ProjectProposal
+        model = Proposal
         fields = '__all__'

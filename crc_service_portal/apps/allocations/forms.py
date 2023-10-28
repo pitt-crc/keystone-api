@@ -20,8 +20,8 @@ class PublicationForm(forms.ModelForm):
 
 
 class ProjectProposalForm(forms.ModelForm):
-    """Form for creating or updating a user project proposal"""
+    """Form for creating or updating a user proposal"""
 
     class Meta:
-        model = ProjectProposal
+        model = Proposal
         fields = "__all__"

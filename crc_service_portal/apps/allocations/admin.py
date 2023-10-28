@@ -24,8 +24,39 @@ class ClusterAdmin(admin.ModelAdmin):
     list_display = ['enabled', 'name', 'description']
     ordering = ['name']
     list_filter = ['enabled']
-    search_fields = ['name']
+    search_fields = ['name', 'description']
     actions = [enable_selected_clusters, disable_selected_clusters]
+
+
+class ProposalReviewInline(admin.StackedInline):
+    """Inline admin interface for the `ProposalReview` model"""
+
+    model = ProposalReview
+    show_change_link = True
+    readonly_fields = ('date_modified', )
+    extra = 0
+
+
+class AllocationInline(admin.TabularInline):
+    """Inline admin interface for SU allocations"""
+
+    model = Allocation
+    show_change_link = True
+    extra = 0
+
+
+@admin.register(Proposal)
+class ProposalAdmin(admin.ModelAdmin):
+    """Admin interface for the `Proposal` model"""
+
+    list_display = ['user', 'title', 'submitted', 'approved']
+    search_fields = ['user', 'title']
+    ordering = ['submitted']
+    list_filter = [
+        ('submitted', admin.DateFieldListFilter),
+        ('approved', admin.DateFieldListFilter),
+    ]
+    inlines = [AllocationInline, ProposalReviewInline]
 
 
 @admin.register(Allocation)
@@ -39,7 +70,14 @@ class AllocationAdmin(admin.ModelAdmin):
 
         return f'{obj.sus:,}'
 
-    list_display = ['user', 'cluster', 'expire', 'start', service_units]
+    @staticmethod
+    @admin.display
+    def proposal_approved(obj: Allocation) -> bool:
+        """Return whether the allocation proposal has been marked as approved"""
+
+        return obj.proposal.approved is not None
+
+    list_display = ['user', 'cluster', 'expire', 'start', service_units, proposal_approved]
     ordering = ['user', 'cluster', '-expire']
     search_fields = ['user', 'cluster']
     list_filter = [
@@ -63,17 +101,4 @@ class PublicationAdmin(admin.ModelAdmin):
     search_fields = ['user', 'title']
     list_filter = [
         ('date', admin.DateFieldListFilter),
-    ]
-
-
-@admin.register(ProjectProposal)
-class ProjectProposalAdmin(admin.ModelAdmin):
-    """Admin interface for the `ProjectProposal` model"""
-
-    list_display = ['user', 'title', 'submitted', 'approved']
-    search_fields = ['user', 'title']
-    ordering = ['submitted']
-    list_filter = [
-        ('submitted', admin.DateFieldListFilter),
-        ('approved', admin.DateFieldListFilter),
     ]

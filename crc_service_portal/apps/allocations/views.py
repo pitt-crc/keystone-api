@@ -18,11 +18,11 @@ class AllocationViewSet(viewsets.ModelViewSet):
     serializer_class = AllocationSerializer
 
 
-class ProjectProposalViewSet(viewsets.ModelViewSet):
-    """JSON ViewSet for querying project proposal database records"""
+class ProposalViewSet(viewsets.ModelViewSet):
+    """JSON ViewSet for querying proposal database records"""
 
-    queryset = ProjectProposal.objects
-    serializer_class = ProjectProposalSerializer
+    queryset = Proposal.objects
+    serializer_class = ProposalSerializer
 
 
 class PublicationViewSet(viewsets.ModelViewSet):
