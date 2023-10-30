@@ -76,6 +76,67 @@
     </div>
   </div>
 </section>
+
+<section class="m-10">
+  <div class="container">
+    <div class="bg-white rounded shadow">
+      <div class="px-6 pt-6 border-bottom border-secondary-light">
+        <div class="d-flex align-items-center justify-content-between">
+          <h4>Cluster Allocations</h4>
+          <button class="btn btn-sm btn-primary align-items-center" href="#">
+            <i class="fas fa-upload text-primary-light"></i>
+            <span class="ms-2">Export</span>
+          </button>
+        </div>
+        <p class="text-secondary w-75">Allocations are awarded on a per-cluster basis. Additional compute resources can be requested by submitting a new <a href="#">allocation request</a>.</p>
+        <ul class="nav nav-tabs mt-8" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="active-allocations-tab" data-bs-toggle="tab" data-bs-target="#activeTab" type="button" role="tab" aria-controls="activeTab" aria-selected="true">Active</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="expired-allocations-tab" data-bs-toggle="tab" data-bs-target="#expiredTab" type="button" role="tab" aria-controls="expiredTab" aria-selected="false">Expired</button>
+          </li>
+        </ul>
+      </div>
+      <div class="tab-content">
+        <div class="tab-pane active" id="activeTab" role="tabpanel" aria-labelledby="active-allocations-tab">
+          <div class="pt-4 table-responsive">
+            <table id="example" class="table small w-100">
+            <thead class="table-light">
+            <tr class="text-secondary">
+              <th class="py-3 px-6">Cluster</th>
+              <th class="py-3 px-6">Award Date</th>
+              <th class="py-3 px-6">Expiration Date</th>
+              <th class="py-3 px-6">Used</th>
+              <th class="py-3 px-6">Awarded</th>
+              <th class="py-3 px-6">Progress</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="tab-pane" id="expiredTab" role="tabpanel" aria-labelledby="expired-allocations-tab">
+          <div class="pt-4 table-responsive">
+            <table id="expiredAllocationsTable" class="table small w-100">
+            <thead class="table-light">
+            <tr class="text-secondary">
+              <th class="py-3 px-6">Cluster</th>
+              <th class="py-3 px-6">Award Date</th>
+              <th class="py-3 px-6">Expiration Date</th>
+              <th class="py-3 px-6">Used</th>
+              <th class="py-3 px-6">Awarded</th>
+              <th class="py-3 px-6">Progress</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 {% endblock %}
 
 {% block javascript %}
@@ -122,9 +183,36 @@
                 return s + a.sus;
             }, 0);
 
-            updateTotalUsage(totalServiceUnits, 1000)
-        });
+            updateTotalUsage(totalServiceUnits, 10000);
+            $('#example').DataTable({
+                'dom': 't',
+                "data": data,
+                'columns': [
+                    {
+                        'data': 'cluster'
+                    }, {
+                        'data': 'start',
+                        'defaultContent': '--'
+                    }, {
+                        'data': 'expire',
+                        'defaultContent': '--'
+                    }, {
+                        'defaultContent': '--'
+                    }, {
+                        'data': 'sus',
+                    }, {
+                        'defaultContent':
+                            '<span class="d-block mb-1 text-primary">65%</span>' +
+                            '  <div class="d-inline-flex align-items-center">' +
+                            '  <div class="position-relative pt-1 me-12 bg-secondary-light rounded" style="min-width: 200px;">' +
+                            '    <div class="position-absolute top-0 start-0 h-100 col-4 bg-primary rounded">' +
+                            '  </div>' +
+                            '</div>'
+                    }
+                ],
+            });
 
+        });
     });
 </script>
 {% endblock %}
