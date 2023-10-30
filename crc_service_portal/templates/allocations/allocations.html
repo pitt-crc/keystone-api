@@ -7,14 +7,14 @@
 
 {% block main_content %}
 
-<section>
+<section class="m-10">
   <div class="container">
-    <div class="p-6 mb-10 bg-white rounded shadow">
+    <div class="p-6 bg-white rounded shadow">
       <h4 class="mb-6">Total Allocation Usage</h4>
       <div class="d-flex align-items-center justify-content-between">
         <div>
-          <p id="usedServiceUnits" class="h2 d-inline"></p>
-          <p class="h5 d-inline text-muted">/ <span id="totalServiceUnits"></span> SUs</p>
+          <span id="usedServiceUnits" class="h2"></span>
+          <span id="totalServiceUnits" class="h5 text-muted"></span>
         </div>
         <span id="percentUsageBadge" class="badge"></span>
       </div>
@@ -26,7 +26,7 @@
   </div>
 </section>
 
-<section class="my-5">
+<section class="m-10">
   <div class="container">
     <div class="bg-white rounded shadow">
       <div class="px-6 pt-6 border-bottom border-secondary-light">
@@ -94,8 +94,8 @@
         const usagePercentageClamped = Math.min(usagePercentage, 100);
 
         // Update the total service units display
-        $totalServiceUnits.text(totalServiceUnits.toLocaleString());
         $usedServiceUnits.text(usedServiceUnits.toLocaleString());
+        $totalServiceUnits.text(`/ ${totalServiceUnits.toLocaleString()} SUs`);
 
         // Update progress bar
         $usageProgressBar.width(`${usagePercentageClamped}%`);
