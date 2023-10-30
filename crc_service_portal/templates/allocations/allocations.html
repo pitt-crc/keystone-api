@@ -30,57 +30,6 @@
   <div class="container">
     <div class="bg-white rounded shadow">
       <div class="px-6 pt-6 border-bottom border-secondary-light">
-        <div class="d-flex mb-6 align-items-center justify-content-between">
-          <h4>Cluster Allocations</h4>
-          <button class="btn btn-sm btn-primary align-items-center" href="#">
-            <i class="fas fa-upload text-primary-light"></i>
-            <span class="ms-2">Export</span>
-          </button>
-        </div>
-        <div>
-          <a class="link-primary small px-3 pb-2 text-decoration-none border-bottom border-2 border-primary" href="#">Active</a>
-          <a class="link-primary small px-3 pb-2 text-decoration-none d-inline-block text-secondary" href="#">Expired</a>
-        </div>
-      </div>
-      <div class="pt-4 table-responsive">
-        <table class="table mb-0 bg-white border-light small">
-          <thead class="table-light">
-          <tr class="text-secondary">
-            <th class="py-3 px-6">Cluster</th>
-            <th class="py-3 px-6">Award Date</th>
-            <th class="py-3 px-6">Expiration Date</th>
-            <th class="py-3 px-6">Used</th>
-            <th class="py-3 px-6">Awarded</th>
-            <th class="py-3 px-6">Progress</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr>
-            <td class="py-4 px-6">SMP</td>
-            <td class="py-4 px-6">start</td>
-            <td class="py-4 px-6">End</td>
-            <td class="py-4 px-6">xxx</td>
-            <td class="py-4 px-6">yyy</td>
-            <td class="py-4 px-6">
-              <span class="d-block mb-1 text-primary">65%</span>
-              <div class="d-inline-flex align-items-center">
-                <div class="position-relative pt-1 me-12 bg-secondary-light rounded" style="min-width: 200px;">
-                  <div class="position-absolute top-0 start-0 h-100 col-4 bg-primary rounded"></div>
-                </div>
-              </div>
-            </td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="m-10">
-  <div class="container">
-    <div class="bg-white rounded shadow">
-      <div class="px-6 pt-6 border-bottom border-secondary-light">
         <div class="d-flex align-items-center justify-content-between">
           <h4>Cluster Allocations</h4>
           <button class="btn btn-sm btn-primary align-items-center" href="#">
@@ -100,8 +49,8 @@
       </div>
       <div class="tab-content">
         <div class="tab-pane active" id="activeTab" role="tabpanel" aria-labelledby="active-allocations-tab">
-          <div class="pt-4 table-responsive">
-            <table id="example" class="table small w-100">
+          <div class="table-responsive">
+            <table id="activeAllocationsTable" class="table small w-100">
             <thead class="table-light">
             <tr class="text-secondary">
               <th class="py-3 px-6">Cluster</th>
@@ -109,7 +58,7 @@
               <th class="py-3 px-6">Expiration Date</th>
               <th class="py-3 px-6">Used</th>
               <th class="py-3 px-6">Awarded</th>
-              <th class="py-3 px-6">Progress</th>
+              <th class="py-3 px-6">Total Usage</th>
             </tr>
             </thead>
             <tbody></tbody>
@@ -117,7 +66,7 @@
           </div>
         </div>
         <div class="tab-pane" id="expiredTab" role="tabpanel" aria-labelledby="expired-allocations-tab">
-          <div class="pt-4 table-responsive">
+          <div class="table-responsive">
             <table id="expiredAllocationsTable" class="table small w-100">
             <thead class="table-light">
             <tr class="text-secondary">
@@ -126,7 +75,7 @@
               <th class="py-3 px-6">Expiration Date</th>
               <th class="py-3 px-6">Used</th>
               <th class="py-3 px-6">Awarded</th>
-              <th class="py-3 px-6">Progress</th>
+              <th class="py-3 px-6">Total Usage</th>
             </tr>
             </thead>
             <tbody></tbody>
@@ -184,8 +133,11 @@
             }, 0);
 
             updateTotalUsage(totalServiceUnits, 10000);
-            $('#example').DataTable({
+            $('#activeAllocationsTable').DataTable({
                 'dom': 't',
+                "language": {
+                    "emptyTable": "No allocations were found for your account."
+                },
                 "data": data,
                 'columns': [
                     {
@@ -211,8 +163,14 @@
                     }
                 ],
             });
-
         });
+
+        $('#expiredAllocationsTable').DataTable({
+            'dom': 't',
+            "language": {
+                "emptyTable": "No allocations were found for your account."
+            }
+        })
     });
 </script>
 {% endblock %}
