@@ -44,7 +44,6 @@ class Proposal(models.Model):
 class Allocation(models.Model):
     """User service unit allocation"""
 
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     cluster = models.ForeignKey(Cluster, on_delete=models.CASCADE)
     start = models.DateField('Start Date')
     expire = models.DateField('Expiration Date', null=True, blank=True)
@@ -60,7 +59,7 @@ class Allocation(models.Model):
         else:
             date_range = f'from {self.start} to {self.expire}'
 
-        return f'{self.cluster} allocation for {self.user} ({self.sus} SUs {date_range})'
+        return f'{self.cluster} allocation for {self.sus} SUs {date_range}'
 
 
 class ProposalReview(models.Model):

@@ -76,10 +76,10 @@ class AllocationAdmin(admin.ModelAdmin):
 
     @staticmethod
     @admin.display
-    def service_units(obj: Allocation) -> str:
-        """Return an allocation's service units formatted as a human friendly string"""
+    def user(obj: Allocation) -> str:
+        """Return the username of the PI for the associated proposal"""
 
-        return f'{obj.sus:,}'
+        return obj.proposal.user.username
 
     @staticmethod
     @admin.display
@@ -88,9 +88,16 @@ class AllocationAdmin(admin.ModelAdmin):
 
         return obj.proposal.approved is not None
 
-    list_display = ['user', 'cluster', 'expire', 'start', service_units, proposal_approved]
-    ordering = ['user', 'cluster', '-expire']
-    search_fields = ['cluster__name', 'user__first_name', 'user__last_name', 'user__username']
+    @staticmethod
+    @admin.display
+    def service_units(obj: Allocation) -> str:
+        """Return an allocation's service units formatted as a human friendly string"""
+
+        return f'{obj.sus:,}'
+
+    list_display = [user, 'proposal', 'cluster', 'expire', 'start', service_units, proposal_approved]
+    ordering = ['proposal__user__username', '-expire', 'cluster']
+    search_fields = ['proposal__user__username', 'proposal__title', 'cluster__name']
     list_filter = [
         ('start', admin.DateFieldListFilter),
         ('expire', admin.DateFieldListFilter),

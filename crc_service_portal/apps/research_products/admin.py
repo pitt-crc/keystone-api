@@ -21,7 +21,7 @@ class PublicationAdmin(admin.ModelAdmin):
         return str(obj)
 
     list_display = ['user', title, 'date']
-    search_fields = ['title', 'user__first_name', 'user__last_name', 'user__username']
+    search_fields = ['title', 'user__username']
     list_filter = [
         ('date', admin.DateFieldListFilter),
     ]
@@ -33,7 +33,7 @@ class GrantAdmin(admin.ModelAdmin):
 
     list_display = ['user', 'fiscal_year', 'amount', 'agency', 'start_date', 'end_date']
     ordering = ['user', '-fiscal_year']
-    search_fields = ['user__first_name', 'user__last_name', 'user__username', 'fiscal_year', 'agency', 'title']
+    search_fields = ['title', 'agency', 'fiscal_year', 'user__username']
     list_filter = [
         ('start_date', admin.DateFieldListFilter),
         ('end_date', admin.DateFieldListFilter),
