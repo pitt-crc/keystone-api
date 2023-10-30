@@ -71,3 +71,9 @@ class ProposalReview(models.Model):
     public_comments = models.CharField(max_length=500, null=True, blank=True)
     proposal = models.ForeignKey(Proposal, on_delete=models.CASCADE)
     date_modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        """Return a human-readable identifier for the proposal"""
+
+        proposal = cast(Proposal, self.proposal)
+        return f'{self.reviewer} review for \"{proposal.title}\"'
