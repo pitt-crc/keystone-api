@@ -1,78 +1,186 @@
 {% extends 'common/base.html' %}
 {% load static %}
 
+{% block page_title %}SU Allocation{% endblock %}
 {% block header_title %}Service Unit Allocations{% endblock %}
 {% block header_description %}Total service units allocated to your team across all clusters.{% endblock %}
 
 {% block main_content %}
 
-  <section class="pb-2">
-    <div class="container mx-auto">
-      <div class="p-6 mb-6 bg-white rounded shadow">
-        <div class="d-flex mb-4 align-items-center justify-content-between">
-          <h3 class="h6 mb-0 text-secondary">Total Active Allocation</h3>
+<section class="m-10">
+  <div class="container">
+    <div class="p-6 bg-white rounded shadow">
+      <h4 class="mb-6">Total Allocation Usage</h4>
+      <div class="d-flex align-items-center justify-content-between">
+        <div>
+          <span id="usedServiceUnits" class="h2"></span>
+          <span id="totalServiceUnits" class="h5 text-muted"></span>
         </div>
-        <div class="d-flex mb-3 align-items-center">
-          <h2 class="me-2 mb-0">124,563</h2>
-          <span class="badge bg-success">45%</span>
-        </div>
-        <div class="position-relative pt-1 mb-2 bg-light-light rounded">
-          <div class="position-absolute top-0 h-100 start-0 col-5 bg-primary rounded"></div>
-        </div>
-        <p class="mb-0 text-secondary small">Total usage calculated for active allocations only.</p>
+        <span id="percentUsageBadge" class="badge"></span>
       </div>
+      <div class="mt-2 progress bg-light-light rounded">
+        <div id="usageProgressBar" class="progress-bar rounded"></div>
+      </div>
+      <p class="mt-3 mb-0 text-secondary small">Total allocation usage is calculated for all active allocations.</p>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section class="pb-2">
-    <div class="container">
-      <div class="bg-white rounded shadow">
-        <div class="px-6 pt-6 border-bottom border-secondary-light">
-          <div class="d-flex mb-6 align-items-center justify-content-between">
-            <h4 class="mb-0">Cluster Allocations</h4>
-            <a class="btn btn-sm btn-primary d-inline-flex align-items-center" href="#">
-                <span class="text-primary-light me-2">
-                  <svg width="14" height="14" viewbox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 8.33337C12.6 8.33337 12.3333 8.60004 12.3333 9.00004V11.6667C12.3333 12.0667 12.0666 12.3334 11.6666 12.3334H2.33331C1.93331 12.3334 1.66665 12.0667 1.66665 11.6667V9.00004C1.66665 8.60004 1.39998 8.33337 0.99998 8.33337C0.59998 8.33337 0.333313 8.60004 0.333313 9.00004V11.6667C0.333313 12.8 1.19998 13.6667 2.33331 13.6667H11.6666C12.8 13.6667 13.6666 12.8 13.6666 11.6667V9.00004C13.6666 8.60004 13.4 8.33337 13 8.33337ZM4.79998 4.13337L6.33331 2.60004V9.00004C6.33331 9.40004 6.59998 9.66671 6.99998 9.66671C7.39998 9.66671 7.66665 9.40004 7.66665 9.00004V2.60004L9.19998 4.13337C9.46665 4.40004 9.86665 4.40004 10.1333 4.13337C10.4 3.86671 10.4 3.46671 10.1333 3.20004L7.46665 0.533374C7.19998 0.266707 6.79998 0.266707 6.53331 0.533374L3.86665 3.20004C3.59998 3.46671 3.59998 3.86671 3.86665 4.13337C4.13331 4.40004 4.53331 4.40004 4.79998 4.13337Z"
-                                                                                                                       fill="currentColor"></path></svg></span>
-              <span>Export</span>
-            </a>
-          </div>
-          <div>
-            <a class="link-primary small px-3 pb-2 text-decoration-none border-bottom border-2 border-primary" href="#">Active</a><a class="link-primary small px-3 pb-2 text-decoration-none d-inline-block text-secondary" href="#">Expired</a>
-          </div>
+<section class="m-10">
+  <div class="container">
+    <div class="bg-white rounded shadow">
+      <div class="px-6 pt-6 border-bottom border-secondary-light">
+        <div class="d-flex align-items-center justify-content-between">
+          <h4>Allocation Summary</h4>
+          <button class="btn btn-sm btn-primary align-items-center" href="#">
+            <i class="fas fa-plus-circle text-primary-light"></i>
+            <span class="ms-2">Request Additional SUs</span>
+          </button>
         </div>
-        <div class="pt-4 table-responsive">
-          <table class="table mb-0 bg-white border-light small">
+        <p class="text-secondary w-75">Allocations are awarded on a per-cluster basis and required to run compute jobs.</p>
+        <ul class="nav nav-tabs mt-8" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="active-allocations-tab" data-bs-toggle="tab" data-bs-target="#activeTab" type="button" role="tab" aria-controls="activeTab" aria-selected="true">Active</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="expired-allocations-tab" data-bs-toggle="tab" data-bs-target="#expiredTab" type="button" role="tab" aria-controls="expiredTab" aria-selected="false">Expired</button>
+          </li>
+        </ul>
+      </div>
+      <div class="tab-content">
+        <div class="tab-pane active" id="activeTab" role="tabpanel" aria-labelledby="active-allocations-tab">
+          <div class="table-responsive">
+            <table id="activeAllocationsTable" class="table small w-100">
             <thead class="table-light">
             <tr class="text-secondary">
               <th class="py-3 px-6">Cluster</th>
               <th class="py-3 px-6">Award Date</th>
               <th class="py-3 px-6">Expiration Date</th>
-              <th class="py-3 px-6">Progress</th>
+              <th class="py-3 px-6">Used</th>
+              <th class="py-3 px-6">Awarded</th>
+              <th class="py-3 px-6">Total Usage</th>
             </tr>
             </thead>
-            <tbody>
-            <tr>
-              <td class="py-4 px-6">SMP</td>
-              <td class="py-4 px-6">start</td>
-              <td class="py-4 px-6">End</td>
-              <td class="py-4 px-6">
-                <span class="d-block mb-1 text-primary">65%</span>
-                <div class="d-inline-flex align-items-center">
-                  <div class="position-relative pt-1 me-12 bg-secondary-light rounded" style="min-width: 200px;">
-                    <div class="position-absolute top-0 start-0 h-100 col-4 bg-primary rounded"></div>
-                  </div>
-                </div>
-              </td>
-            </tr>
-            </tbody>
+            <tbody></tbody>
           </table>
+          </div>
+        </div>
+        <div class="tab-pane" id="expiredTab" role="tabpanel" aria-labelledby="expired-allocations-tab">
+          <div class="table-responsive">
+            <table id="expiredAllocationsTable" class="table small w-100">
+            <thead class="table-light">
+            <tr class="text-secondary">
+              <th class="py-3 px-6">Cluster</th>
+              <th class="py-3 px-6">Award Date</th>
+              <th class="py-3 px-6">Expiration Date</th>
+              <th class="py-3 px-6">Used</th>
+              <th class="py-3 px-6">Awarded</th>
+              <th class="py-3 px-6">Total Usage</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
+
+
+<section class="m-10">
+  <div class="container">
+    <div class="p-6 bg-white rounded shadow">
+      <h4>Usage Breakdown</h4>
+      <p class="text-secondary pt-2">A detailed breakdown of service unit usage across individual team members.</p>
+    </div>
+  </div>
+</section>
 {% endblock %}
 
 {% block javascript %}
+<script>
 
+    function updateTotalUsage(totalServiceUnits, usedServiceUnits) {
+        const $totalServiceUnits = $('#totalServiceUnits');
+        const $usedServiceUnits = $('#usedServiceUnits');
+        const $usageProgressBar = $('#usageProgressBar');
+        const $percentUsageBadge = $("#percentUsageBadge");
+        const usagePercentage = Math.round((usedServiceUnits / totalServiceUnits) * 100);
+        const usagePercentageClamped = Math.min(usagePercentage, 100);
+
+        // Update the total service units display
+        $usedServiceUnits.text(usedServiceUnits.toLocaleString());
+        $totalServiceUnits.text(`/ ${totalServiceUnits.toLocaleString()} SUs`);
+
+        // Update progress bar
+        $usageProgressBar.width(`${usagePercentageClamped}%`);
+
+        // Update the usage badge and apply appropriate styling
+        $percentUsageBadge.text(`${usagePercentage}%`);
+        if (usagePercentage < 75) {
+            $percentUsageBadge.addClass('bg-primary');
+            $usageProgressBar.addClass('bg-primary');
+        } else if (usagePercentage < 90) {
+            $percentUsageBadge.addClass('bg-warning');
+            $usageProgressBar.addClass('bg-warning');
+            $usedServiceUnits.addClass('text-warning');
+        } else {
+            $percentUsageBadge.addClass('bg-danger');
+            $usageProgressBar.addClass('bg-danger');
+            $usedServiceUnits.addClass('text-danger');
+        }
+    }
+
+    $(document).ready(function () {
+        $.ajax({
+            url: "/alloc/api/allocations/",
+        }).done(function (data) {
+
+            // Calculate the total allocated service units
+            let totalServiceUnits = data.reduce(function (s, a) {
+                return s + a.sus;
+            }, 0);
+
+            updateTotalUsage(totalServiceUnits, 10000);
+            $('#activeAllocationsTable').DataTable({
+                'dom': 't',
+                "language": {
+                    "emptyTable": "No allocations were found for your account."
+                },
+                "data": data,
+                'columns': [
+                    {
+                        'data': 'cluster'
+                    }, {
+                        'data': 'start',
+                        'defaultContent': '--'
+                    }, {
+                        'data': 'expire',
+                        'defaultContent': '--'
+                    }, {
+                        'defaultContent': '--'
+                    }, {
+                        'data': 'sus',
+                    }, {
+                        'defaultContent':
+                            '<span class="d-block mb-1 text-primary">65%</span>' +
+                            '  <div class="d-inline-flex align-items-center">' +
+                            '  <div class="position-relative pt-1 me-12 bg-secondary-light rounded" style="min-width: 200px;">' +
+                            '    <div class="position-absolute top-0 start-0 h-100 col-4 bg-primary rounded">' +
+                            '  </div>' +
+                            '</div>'
+                    }
+                ],
+            });
+        });
+
+        $('#expiredAllocationsTable').DataTable({
+            'dom': 't',
+            "language": {
+                "emptyTable": "No allocations were found for your account."
+            }
+        })
+    });
+</script>
 {% endblock %}
