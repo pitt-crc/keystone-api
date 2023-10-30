@@ -21,6 +21,7 @@ class PublicationAdmin(admin.ModelAdmin):
         return str(obj)
 
     list_display = ['user', title, 'date']
+    list_display_links = list_display
     search_fields = ['title', 'user__username']
     list_filter = [
         ('date', admin.DateFieldListFilter),
@@ -32,6 +33,7 @@ class GrantAdmin(admin.ModelAdmin):
     """Admin interface for the `Grant` class"""
 
     list_display = ['user', 'fiscal_year', 'amount', 'agency', 'start_date', 'end_date']
+    list_display_links = list_display
     ordering = ['user', '-fiscal_year']
     search_fields = ['title', 'agency', 'fiscal_year', 'user__username']
     list_filter = [

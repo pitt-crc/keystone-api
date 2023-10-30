@@ -26,6 +26,7 @@ class ClusterAdmin(admin.ModelAdmin):
         queryset.update(enabled=False)
 
     list_display = ['enabled', 'name', 'description']
+    list_display_links = list_display
     ordering = ['name']
     list_filter = ['enabled']
     search_fields = ['name', 'description']
@@ -61,6 +62,7 @@ class ProposalAdmin(admin.ModelAdmin):
         return str(obj)
 
     list_display = ['user', title, 'submitted', 'approved']
+    list_display_links = list_display
     search_fields = ['title', 'description', 'user__first_name', 'user__last_name', 'user__username']
     ordering = ['submitted']
     list_filter = [
@@ -96,6 +98,7 @@ class AllocationAdmin(admin.ModelAdmin):
         return f'{obj.sus:,}'
 
     list_display = [user, 'proposal', 'cluster', 'expire', 'start', service_units, proposal_approved]
+    list_display_links = list_display
     ordering = ['proposal__user__username', '-expire', 'cluster']
     search_fields = ['proposal__user__username', 'proposal__title', 'cluster__name']
     list_filter = [
