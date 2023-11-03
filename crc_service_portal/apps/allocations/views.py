@@ -13,21 +13,21 @@ from .serializers import *
 class ClusterViewSet(viewsets.ReadOnlyModelViewSet):
     """Read-only JSON ViewSet for querying cluster database records"""
 
-    queryset = Cluster.objects
+    queryset = Cluster.objects.all()
     serializer_class = ClusterSerializer
 
 
 class AllocationViewSet(viewsets.ModelViewSet):
     """JSON ViewSet for querying allocation database records"""
 
-    queryset = Allocation.objects
+    queryset = Allocation.objects.all()
     serializer_class = AllocationSerializer
 
 
 class ProposalViewSet(viewsets.ModelViewSet):
     """JSON ViewSet for querying proposal database records"""
 
-    queryset = Proposal.objects
+    queryset = Proposal.objects.all()
     serializer_class = ProposalSerializer
 
 

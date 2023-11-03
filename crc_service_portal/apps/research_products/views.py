@@ -12,12 +12,12 @@ from .serializers import *
 class PublicationViewSet(viewsets.ReadOnlyModelViewSet):
     """ViewSet for querying cluster publication records"""
 
-    queryset = Publication.objects
+    queryset = Publication.objects.all()
     serializer_class = PublicationSerializer
 
 
 class GrantViewSet(viewsets.ReadOnlyModelViewSet):
     """ViewSet for querying grant database records"""
 
-    queryset = Grant.objects
+    queryset = Grant.objects.all()
     serializer_class = GrantSerializer
