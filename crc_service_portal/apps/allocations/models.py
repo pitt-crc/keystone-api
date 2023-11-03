@@ -47,7 +47,7 @@ class Allocation(models.Model):
     cluster = models.ForeignKey(Cluster, on_delete=models.CASCADE)
     start = models.DateField('Start Date')
     expire = models.DateField('Expiration Date', null=True, blank=True)
-    sus = models.IntegerField('Service Units')
+    sus = models.PositiveIntegerField('Service Units')
     proposal = models.ForeignKey(Proposal, on_delete=models.CASCADE)
 
     def __str__(self) -> str:

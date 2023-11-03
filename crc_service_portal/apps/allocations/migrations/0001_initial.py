@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('start', models.DateField(verbose_name='Start Date')),
                 ('expire', models.DateField(blank=True, null=True, verbose_name='Expiration Date')),
-                ('sus', models.IntegerField(verbose_name='Service Units')),
+                ('sus', models.PositiveIntegerField(verbose_name='Service Units')),
                 ('cluster', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='allocations.cluster')),
                 ('proposal', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='allocations.proposal')),
             ],

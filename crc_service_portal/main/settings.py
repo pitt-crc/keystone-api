@@ -69,6 +69,14 @@ TEMPLATES = [
     },
 ]
 
+# Base styling for the Admin UI
+
+JAZZMIN_SETTINGS = {
+    "site_title": "CRC Self Service",
+    "site_header": "CRC Self Service",
+    "site_brand": "CRC Self Service",
+}
+
 # REST API
 
 REST_FRAMEWORK = {
