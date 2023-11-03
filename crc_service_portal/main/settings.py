@@ -69,6 +69,14 @@ TEMPLATES = [
     },
 ]
 
+# REST API
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    )
+}
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
