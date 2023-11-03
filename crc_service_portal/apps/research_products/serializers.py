@@ -11,25 +11,17 @@ from rest_framework import serializers
 from .models import *
 
 
-class ClusterSerializer(serializers.ModelSerializer):
-    """Object serializer for the `Cluster` class"""
+class PublicationSerializer(serializers.ModelSerializer):
+    """Object serializer for the `Publication` class"""
 
     class Meta:
-        model = Cluster
+        model = Publication
         fields = '__all__'
 
 
-class AllocationSerializer(serializers.ModelSerializer):
-    """Object serializer for the `Allocation` class"""
+class GrantSerializer(serializers.ModelSerializer):
+    """Object serializer for the `Grant` class"""
 
     class Meta:
-        model = Allocation
-        fields = '__all__'
-
-
-class ProposalSerializer(serializers.ModelSerializer):
-    """Object serializer for the `Proposal` class"""
-
-    class Meta:
-        model = Proposal
+        model = Grant
         fields = '__all__'
