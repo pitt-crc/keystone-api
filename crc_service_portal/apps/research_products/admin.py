@@ -4,9 +4,15 @@ Extends and customizes the site-wide administration utility with
 interfaces for managing application database constructs.
 """
 
+from django.conf import settings
 from django.contrib import admin
 
 from .models import *
+
+settings.JAZZMIN_SETTINGS['icons'].update({
+    'research_products.Grant': 'fas fa-dollar',
+    'research_products.Publication': 'fas fa-feather-pointed',
+})
 
 
 @admin.register(Publication)

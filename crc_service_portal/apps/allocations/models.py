@@ -6,8 +6,6 @@ Each model reflects a different database and defines low-level defaults for how
 the associated table/fields/records are presented by parent interfaces.
 """
 
-from typing import cast
-
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.template.defaultfilters import truncatechars
@@ -23,7 +21,7 @@ class Cluster(models.Model):
     def __str__(self) -> str:
         """Return the cluster name as a string"""
 
-        return cast(str, self.name)
+        return str(self.name)
 
 
 class Proposal(models.Model):
@@ -53,13 +51,7 @@ class Allocation(models.Model):
     def __str__(self) -> str:
         """Return a human-readable summary of the allocation"""
 
-        if self.expire:
-            date_range = f'starting {self.start}'
-
-        else:
-            date_range = f'from {self.start} to {self.expire}'
-
-        return f'{self.cluster} allocation for {self.sus} SUs {date_range}'
+        return f'{self.cluster} allocation for {self.proposal.user} starting {self.start}'
 
 
 class ProposalReview(models.Model):
@@ -75,5 +67,4 @@ class ProposalReview(models.Model):
     def __str__(self) -> str:
         """Return a human-readable identifier for the proposal"""
 
-        proposal = cast(Proposal, self.proposal)
-        return f'{self.reviewer} review for \"{proposal.title}\"'
+        return f'{self.reviewer} review for \"{self.proposal.title}\"'
