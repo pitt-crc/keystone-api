@@ -4,9 +4,20 @@ Extends and customizes the site-wide administration utility with
 interfaces for managing application database constructs.
 """
 
+from django.conf import settings
 from django.contrib import admin
 
 from .models import *
+
+settings.JAZZMIN_SETTINGS['icons'].update({
+    'allocations.Cluster': 'fa fa-server',
+    'allocations.Allocation': 'fas fa-coins',
+    'allocations.Proposal': 'fa fa-file-alt',
+})
+
+settings.JAZZMIN_SETTINGS['order_with_respect_to'].extend([
+    'allocations.Cluster', 'allocations.Proposal', 'allocations.allocation'
+])
 
 
 @admin.register(Cluster)
