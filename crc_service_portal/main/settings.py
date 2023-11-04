@@ -75,12 +75,21 @@ JAZZMIN_SETTINGS = {
     "site_title": "CRC Self Service",
     "site_header": "CRC Self Service",
     "site_brand": "CRC Self Service",
+    "related_modal_active": True,
+    "hide_apps": ["sites"],
+    "order_with_respect_to": [
+        "auth",
+        "allocations",
+        "research_products",
+        "sites"
+    ],
     "icons": {
         "auth": "fa fa-users-cog",
         "auth.user": "fa fa-user",
         "auth.Group": "fa fa-users",
-        "sites.Site": 'fa fa-globe'
     },
+    "site_logo": "theme/img/logo/Shield_White.png",
+    "login_logo": "theme/img/logo/Pitt_Primary_3Color.png",
 }
 
 # REST API

@@ -15,6 +15,10 @@ settings.JAZZMIN_SETTINGS['icons'].update({
     'allocations.Proposal': 'fa fa-file-alt',
 })
 
+settings.JAZZMIN_SETTINGS['order_with_respect_to'].extend([
+    'allocations.Cluster', 'allocations.Proposal', 'allocations.allocation'
+])
+
 
 @admin.register(Cluster)
 class ClusterAdmin(admin.ModelAdmin):
