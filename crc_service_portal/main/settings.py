@@ -76,9 +76,10 @@ JAZZMIN_SETTINGS = {
     "site_header": "CRC Self Service",
     "site_brand": "CRC Self Service",
     "icons": {
-        "auth": "fas fa-users-cog",
-        "auth.user": "fas fa-user",
-        "auth.Group": "fas fa-users",
+        "auth": "fa fa-users-cog",
+        "auth.user": "fa fa-user",
+        "auth.Group": "fa fa-users",
+        "sites.Site": 'fa fa-globe'
     },
 }
 

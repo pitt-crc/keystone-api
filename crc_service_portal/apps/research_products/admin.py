@@ -10,8 +10,8 @@ from django.contrib import admin
 from .models import *
 
 settings.JAZZMIN_SETTINGS['icons'].update({
-    'research_products.Grant': 'fas fa-dollar',
-    'research_products.Publication': 'fas fa-feather-pointed',
+    'research_products.Grant': 'fa fa-piggy-bank',
+    'research_products.Publication': 'fas fa-book-open',
 })
 
 

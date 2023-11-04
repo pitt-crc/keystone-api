@@ -10,9 +10,9 @@ from django.contrib import admin
 from .models import *
 
 settings.JAZZMIN_SETTINGS['icons'].update({
-    'allocations.Cluster': 'fas fa-play',
-    'allocations.Allocation': 'fas fa-play',
-    'allocations.Proposal': 'fas fa-file-lines',
+    'allocations.Cluster': 'fa fa-server',
+    'allocations.Allocation': 'fas fa-coins',
+    'allocations.Proposal': 'fa fa-file-alt',
 })
 
 
