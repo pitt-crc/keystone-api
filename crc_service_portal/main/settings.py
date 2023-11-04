@@ -89,7 +89,7 @@ JAZZMIN_SETTINGS = {
         "auth.Group": "fa fa-users",
     },
     "site_logo": "theme/img/logo/Shield_White.png",
-    "login_logo": "theme/img/logo/Pitt_Primary_3Color.png",
+    "login_logo": "theme/img/logo/Pitt_Primary_3Color_small.png",
 }
 
 # REST API
