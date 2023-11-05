@@ -4,6 +4,8 @@ import os
 import sys
 from pathlib import Path
 
+import ldap
+from django_auth_ldap.config import LDAPSearch
 from django.core.management.utils import get_random_secret_key
 from dotenv import load_dotenv
 
@@ -17,6 +19,16 @@ load_dotenv()
 DEBUG = os.environ.get('DEBUG', default='0') != '0'
 SECRET_KEY = os.environ.get('SECRET_KEY', get_random_secret_key())
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", default="localhost 127.0.0.1").split(" ")
+
+AUTHENTICATION_BACKENDS = ["django_auth_ldap.backend.LDAPBackend"]
+AUTH_LDAP_SERVER_URI = os.environ["AUTH_LDAP_SERVER_URI"]
+AUTH_LDAP_BIND_DN = os.environ.get("AUTH_LDAP_BIND_DN", "")
+AUTH_LDAP_BIND_PASSWORD = os.environ.get("AUTH_LDAP_BIND_PASSWORD", "")
+AUTH_LDAP_USER_SEARCH = LDAPSearch(
+    os.environ.get("AUTH_LDAP_USER_SEARCH", "ou=users,dc=example,dc=com"),
+    ldap.SCOPE_SUBTREE,
+    "(uid=%(user)s)"
+)
 
 # If running in debug mode, save emails to disk instead of sending them
 if DEBUG:
