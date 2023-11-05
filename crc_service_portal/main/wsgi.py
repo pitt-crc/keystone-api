@@ -1,5 +1,5 @@
 """
-WSGI config for crc_serve project.
+WSGI configuration.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'crc_serve.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'crc_service_portal.main.settings')
 
 application = get_wsgi_application()
