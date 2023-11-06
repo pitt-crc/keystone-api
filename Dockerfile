@@ -10,7 +10,10 @@ COPY crc_service_portal crc_service_portal
 COPY pyproject.toml pyproject.toml
 COPY README.md README.md
 
-# Install the application and its dependencies
+# Install system dependencies
+RUN apt-get update && apt-get install -y build-essential libsasl2-dev libldap2-dev
+
+# Install the application
 ENV PIP_ROOT_USER_ACTION=ignore
 RUN pip3 install uvicorn["standard"] && pip3 install -e .
 
