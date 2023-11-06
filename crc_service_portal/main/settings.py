@@ -5,8 +5,8 @@ import sys
 from pathlib import Path
 
 import ldap
-from django_auth_ldap.config import LDAPSearch
 from django.core.management.utils import get_random_secret_key
+from django_auth_ldap.config import LDAPSearch
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,14 +25,21 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
-AUTH_LDAP_SERVER_URI = os.environ.get("AUTH_LDAP_SERVER_URI", "")
-AUTH_LDAP_BIND_DN = os.environ.get("AUTH_LDAP_BIND_DN", "")
-AUTH_LDAP_BIND_PASSWORD = os.environ.get("AUTH_LDAP_BIND_PASSWORD", "")
-AUTH_LDAP_USER_SEARCH = LDAPSearch(
-    os.environ.get("AUTH_LDAP_USER_SEARCH", "ou=users,dc=example,dc=com"),
-    ldap.SCOPE_SUBTREE,
-    "(uid=%(user)s)"
-)
+AUTH_LDAP_START_TLS = True
+AUTH_LDAP_SERVER_URI = "ldap://sam-ldap-prod-01.cssd.pitt.edu"
+# AUTH_LDAP_BIND_DN = "dc=frank,dc=sam,dc=pitt,dc=edu"
+# AUTH_LDAP_BIND_PASSWORD = os.environ.get("AUTH_LDAP_BIND_PASSWORD", "")
+AUTH_LDAP_USER_SEARCH = LDAPSearch("dc=frank,dc=sam,dc=pitt,dc=edu", ldap.SCOPE_SUBTREE, "(uid=%(user)s)")
+AUTH_LDAP_GLOBAL_OPTIONS = {
+    ldap.OPT_X_TLS_REQUIRE_CERT: ldap.OPT_X_TLS_NEVER
+}
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {"console": {"class": "logging.StreamHandler"}},
+    "loggers": {"django_auth_ldap": {"level": "DEBUG", "handlers": ["console"]}},
+}
 
 # If running in debug mode, save emails to disk instead of sending them
 if DEBUG:
