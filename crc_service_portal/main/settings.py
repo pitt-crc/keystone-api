@@ -13,9 +13,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR))
 load_dotenv()
 
+# Debugging features/settings
+
+if DEBUG := (os.environ.get('DEBUG', default='0') != '0'):
+    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+    EMAIL_FILE_PATH = Path(os.environ.get('EMAIL_FILE_PATH', BASE_DIR.parent / 'email'))
+
 # Security settings
 
-DEBUG = os.environ.get('DEBUG', default='0') != '0'
 SECRET_KEY = os.environ.get('SECRET_KEY', get_random_secret_key())
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", default="localhost 127.0.0.1").split(" ")
 
@@ -26,8 +31,8 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
+AUTH_LDAP_START_TLS = os.environ.get("AUTH_LDAP_START_TLS", "1") != '0'
 AUTH_LDAP_SERVER_URI = os.environ.get("AUTH_LDAP_SERVER_URI", "")
-AUTH_LDAP_START_TLS = os.environ.get("AUTH_LDAP_START_TLS", "0") != '0'
 AUTH_LDAP_BIND_DN = os.environ.get("AUTH_LDAP_BIND_DN", "")
 AUTH_LDAP_BIND_PASSWORD = os.environ.get("AUTH_LDAP_BIND_PASSWORD", "")
 AUTH_LDAP_USER_SEARCH = LDAPSearch(
@@ -36,13 +41,8 @@ AUTH_LDAP_USER_SEARCH = LDAPSearch(
     "(uid=%(user)s)"
 )
 
-if DEBUG:
-    # Don't require ldap tls certification
+if os.environ.get('OPT_X_TLS_REQUIRE_CERT', "0") == "1":
     AUTH_LDAP_GLOBAL_OPTIONS = {ldap.OPT_X_TLS_REQUIRE_CERT: ldap.OPT_X_TLS_NEVER}
-
-    # Save emails to disk instead of sending them
-    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-    EMAIL_FILE_PATH = Path(os.environ.get('EMAIL_FILE_PATH', BASE_DIR.parent / 'email'))
 
 # Application Configuration
 
@@ -153,8 +153,3 @@ AUTH_PASSWORD_VALIDATORS = [
 STATIC_URL = os.environ.get('STATIC_URL', 'static/')
 STATIC_ROOT = Path(os.environ.get('STATIC_ROOT', Path.cwd() / 'static_root'))
 STATICFILES_DIRS = [BASE_DIR / 'static']
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
