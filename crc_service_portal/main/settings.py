@@ -20,8 +20,12 @@ DEBUG = os.environ.get('DEBUG', default='0') != '0'
 SECRET_KEY = os.environ.get('SECRET_KEY', get_random_secret_key())
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", default="localhost 127.0.0.1").split(" ")
 
-AUTHENTICATION_BACKENDS = ["django_auth_ldap.backend.LDAPBackend"]
-AUTH_LDAP_SERVER_URI = os.environ["AUTH_LDAP_SERVER_URI"]
+AUTHENTICATION_BACKENDS = [
+    "django_auth_ldap.backend.LDAPBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+
+AUTH_LDAP_SERVER_URI = os.environ.get("AUTH_LDAP_SERVER_URI", "")
 AUTH_LDAP_BIND_DN = os.environ.get("AUTH_LDAP_BIND_DN", "")
 AUTH_LDAP_BIND_PASSWORD = os.environ.get("AUTH_LDAP_BIND_PASSWORD", "")
 AUTH_LDAP_USER_SEARCH = LDAPSearch(
