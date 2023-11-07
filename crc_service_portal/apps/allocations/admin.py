@@ -72,7 +72,21 @@ class ProposalAdmin(admin.ModelAdmin):
 
         return str(obj)
 
-    list_display = ['user', title, 'submitted', 'approved']
+    @staticmethod
+    @admin.display
+    def reviews(obj: Proposal) -> int:
+        """Return the total number of proposal reviews"""
+
+        return sum(1 for review in obj.proposalreview_set.all())
+
+    @staticmethod
+    @admin.display
+    def approvals(obj: Proposal) -> int:
+        """Return the number of approving proposal reviews"""
+
+        return sum(1 for review in obj.proposalreview_set.all() if review.approve)
+
+    list_display = ['user', title, 'submitted', 'approved', 'reviews', 'approvals']
     list_display_links = list_display
     search_fields = ['title', 'description', 'user__first_name', 'user__last_name', 'user__username']
     ordering = ['submitted']
