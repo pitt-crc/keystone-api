@@ -38,11 +38,13 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 
-# Django stuff
+# Django / static stuff
 *.env
 *.sqlite3
 *.sqlite3-journal
-email/
+crc_service_portal/email/
+crc_service_portal/static_root/
+.sass-cache
 
 # Sphinx documentation
 docs/build/
@@ -55,4 +57,3 @@ docs/build/
 
 # Webdriver stuff
 geckodriver.log
-.sass-cache
