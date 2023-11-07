@@ -41,7 +41,7 @@ AUTH_LDAP_USER_SEARCH = LDAPSearch(
     "(uid=%(user)s)"
 )
 
-if os.environ.get('OPT_X_TLS_REQUIRE_CERT', "0") == "1":
+if os.environ.get('OPT_X_TLS_REQUIRE_CERT', "1") == "0":
     AUTH_LDAP_GLOBAL_OPTIONS = {ldap.OPT_X_TLS_REQUIRE_CERT: ldap.OPT_X_TLS_NEVER}
 
 # Application Configuration
