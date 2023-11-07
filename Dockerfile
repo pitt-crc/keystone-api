@@ -15,6 +15,6 @@ RUN apt-get update && apt-get install -y build-essential libsasl2-dev libldap2-d
 
 # Install the application
 ENV PIP_ROOT_USER_ACTION=ignore
-RUN pip3 install uvicorn["standard"] && pip3 install -e .
+RUN pip3 install gunicorn && pip3 install -e .
 
 EXPOSE 8000
