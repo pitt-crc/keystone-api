@@ -31,6 +31,8 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
+AUTH_LDAP_MIRROR_GROUPS = True
+AUTH_LDAP_ALWAYS_UPDATE_USER = True
 AUTH_LDAP_START_TLS = os.environ.get("AUTH_LDAP_START_TLS", "1") != '0'
 AUTH_LDAP_SERVER_URI = os.environ.get("AUTH_LDAP_SERVER_URI", "")
 AUTH_LDAP_BIND_DN = os.environ.get("AUTH_LDAP_BIND_DN", "")
