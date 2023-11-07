@@ -154,3 +154,8 @@ AUTH_PASSWORD_VALIDATORS = [
 STATIC_URL = os.environ.get('STATIC_URL', 'static/')
 STATIC_ROOT = Path(os.environ.get('STATIC_ROOT', BASE_DIR / 'static_root'))
 STATICFILES_DIRS = [BASE_DIR / 'static']
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
