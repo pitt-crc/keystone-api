@@ -98,7 +98,6 @@ JAZZMIN_SETTINGS = {
     "site_title": "CRC Self Service",
     "site_header": "CRC Self Service",
     "site_brand": "CRC Self Service",
-    "related_modal_active": True,
     "hide_apps": ["sites"],
     "order_with_respect_to": [
         "users",

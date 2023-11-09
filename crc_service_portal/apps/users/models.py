@@ -17,8 +17,19 @@ class User(auth_model.User):
         proxy = True
 
 
-class ResearchGroup(models.Model):
+class Group(auth_model.Group):
+    """Group model for the builtin django `Group` model"""
+
+    class Meta:
+        proxy = True
+
+
+class Delegate(models.Model):
     """User membership in research groups"""
 
-    pi = models.ForeignKey(User, on_delete=models.CASCADE, related_name='researchgroup_pi')
-    delegates = models.ManyToManyField(User, related_name='researchgroup_delegates')
+    pi = models.ForeignKey(User, on_delete=models.CASCADE, related_name='delegate_pi')
+    delegates = models.ManyToManyField(User, related_name='delegate_delegates')
+
+    def __str__(self) -> str:
+        self.pi: User
+        return f'Delegates for {self.pi.username}'

@@ -4,20 +4,21 @@ Extends and customizes the site-wide administration utility with
 interfaces for managing application database constructs.
 """
 
-from django.conf import settings
-from django.contrib import admin, auth
 import django.contrib.auth.admin
 import django.contrib.auth.models
+from django.conf import settings
+from django.contrib import admin, auth
 
 from .models import *
 
 settings.JAZZMIN_SETTINGS['icons'].update({
     'users.User': 'fa fa-user',
-    'users.ResearchGroup': 'fa fa-users',
+    'users.Group': 'fa fa-user-shield',
+    'users.Delegate': 'fa fa-users',
 })
 
 settings.JAZZMIN_SETTINGS['order_with_respect_to'].extend([
-    'users.User', 'users.Delegate'
+    'users.User', 'users.Group', 'users.Delegate'
 ])
 
 # Remove the original authentication admin
@@ -30,6 +31,14 @@ class UserAdmin(auth.admin.UserAdmin):
     """Admin interface for managing user accounts"""
 
 
-@admin.register(ResearchGroup)
+@admin.register(Group)
+class GroupAdmin(auth.admin.GroupAdmin):
+    """Admin interface for managing user groups"""
+
+
+@admin.register(Delegate)
 class ResearchGroupAdmin(admin.ModelAdmin):
     """Admin interface for managing research group delegates"""
+
+    list_display = ['pi']
+    filter_horizontal = ('delegates',)
