@@ -28,6 +28,7 @@ python manage.py deploy_tasks --migrate --static
 
 from argparse import ArgumentParser
 
+import uvicorn
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
@@ -87,7 +88,7 @@ class Command(BaseCommand):
 
         elif options['uvicorn']:
             self.stdout.write(self.style.SUCCESS('Starting Uvicorn server...'))
-            self.run_gunicorn()
+            self.run_uvicorn()
 
     def run_gunicorn(self, host: str = '0.0.0.0', port: int = 8000):
         """Start a Gunicorn server.
@@ -107,4 +108,4 @@ class Command(BaseCommand):
           port: The port to bind to
         """
 
-        raise NotImplementedError('Uvicorn support is still being implemented')
+        uvicorn.run("crc_service_portal.main.asgi:application", host=host, port=port)

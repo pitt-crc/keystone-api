@@ -21,4 +21,4 @@ RUN pip install poetry && pip install -e .
 
 # Setup and launch the application
 ENTRYPOINT ["crc-service-portal"]
-CMD ["rundev", "--static", "--migrate", "--serve"]
+CMD ["rundev", "--static", "--migrate", "--uvicorn"]
