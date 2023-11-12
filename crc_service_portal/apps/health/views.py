@@ -6,7 +6,10 @@ appropriately rendered HTML template or other HTTP response.
 
 from django.core.handlers.wsgi import HttpRequest
 from django.http import JsonResponse
+from health_check.backends import BaseHealthCheckBackend
 from health_check.views import MainView
+
+__all__ = ['HealthCheckView']
 
 
 class HealthCheckView(MainView):
@@ -22,7 +25,7 @@ class HealthCheckView(MainView):
         status_code = 500 if self.errors else 200
         return self.render_to_response_json(self.plugins, status_code)
 
-    def render_to_response_json(self, plugins: list, status: int) -> JsonResponse:
+    def render_to_response_json(self, plugins: list[BaseHealthCheckBackend], status: int) -> JsonResponse:
         """Render a JSON response summarizing the status for a list of plugins
 
         Args:
