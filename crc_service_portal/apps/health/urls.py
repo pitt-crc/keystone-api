@@ -4,9 +4,8 @@ from django.urls import path
 
 from .views import *
 
-app_name = 'docs'
+app_name = 'health'
 
 urlpatterns = [
-    path('openapi', SchemaView, name='openapi-schema'),
-    path('', RedocView, name='redoc'),
+    path('', HealthCheckView.as_view(), name='health_check_custom'),
 ]

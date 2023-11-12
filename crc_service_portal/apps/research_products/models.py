@@ -10,6 +10,8 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.template.defaultfilters import truncatechars
 
+__all__ = ['Grant', 'Publication']
+
 
 class Publication(models.Model):
     """Metadata for an academic publication"""

@@ -9,23 +9,25 @@ the associated table/fields/records are presented by parent interfaces.
 from django.contrib.auth import models as auth_model
 from django.db import models
 
+__all__ = ['Delegate', 'Group', 'User']
+
 
 class User(auth_model.User):
-    """Proxy model for the builtin django `User` model"""
+    """Proxy model for the built-in django `User` model"""
 
     class Meta:
         proxy = True
 
 
 class Group(auth_model.Group):
-    """Group model for the builtin django `Group` model"""
+    """Proxy model for the built-in django `Group` model"""
 
     class Meta:
         proxy = True
 
 
 class Delegate(models.Model):
-    """User membership in research groups"""
+    """Delegated user permissions where PI's allow other users to work in their stead"""
 
     pi = models.ForeignKey(User, on_delete=models.CASCADE, related_name='delegate_pi')
     delegates = models.ManyToManyField(User, related_name='delegate_delegates')

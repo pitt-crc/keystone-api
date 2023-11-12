@@ -6,7 +6,10 @@ appropriately rendered HTML template or other HTTP response.
 
 from rest_framework import viewsets
 
+from .models import *
 from .serializers import *
+
+__all__ = ['GrantViewSet', 'PublicationViewSet']
 
 
 class PublicationViewSet(viewsets.ReadOnlyModelViewSet):
