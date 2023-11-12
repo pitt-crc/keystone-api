@@ -10,6 +10,8 @@ from rest_framework import serializers
 
 from .models import *
 
+__all__ = ['PublicationSerializer', 'GrantSerializer']
+
 
 class PublicationSerializer(serializers.ModelSerializer):
     """Object serializer for the `Publication` class"""

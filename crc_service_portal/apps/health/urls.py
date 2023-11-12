@@ -7,5 +7,5 @@ from .views import *
 app_name = 'health'
 
 urlpatterns = [
-    path('', HealthCheckView, name='health_check_custom'),
+    path('', HealthCheckView.as_view(), name='health_check_custom'),
 ]
