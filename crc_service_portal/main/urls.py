@@ -12,7 +12,7 @@ urlpatterns = [
     path('', TemplateView.as_view(template_name='index.html'), name='home'),
     path('health/', HealthCheckView.as_view(), name='health_check_custom'),
     path('docs/', include('apps.docs.urls', namespace='docs')),
-    path('alloc/', include('apps.allocations.urls', namespace='alloc')),
     path('auth/', include('apps.jwt.urls', namespace='jwt')),
-    path('prod/', include('apps.research_products.urls', namespace='research_products')),
+    path('allocations/', include('apps.allocations.urls', namespace='alloc')),
+    path('products/', include('apps.research_products.urls', namespace='research_products')),
 ]
