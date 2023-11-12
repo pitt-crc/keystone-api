@@ -10,7 +10,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.template.defaultfilters import truncatechars
 
-__all__ = ['Publication', 'Grant']
+__all__ = ['Grant', 'Publication']
 
 
 class Publication(models.Model):

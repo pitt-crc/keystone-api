@@ -9,7 +9,7 @@ from rest_framework import viewsets
 from .models import *
 from .serializers import *
 
-__all__ = ['PublicationViewSet', 'GrantViewSet']
+__all__ = ['GrantViewSet', 'PublicationViewSet']
 
 
 class PublicationViewSet(viewsets.ReadOnlyModelViewSet):

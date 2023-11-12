@@ -8,7 +8,7 @@ from django.conf import settings
 from django.views.generic import TemplateView
 from rest_framework.schemas import get_schema_view
 
-__all__ = ['SchemaView', 'RedocView']
+__all__ = ['RedocView', 'SchemaView']
 
 SchemaView = get_schema_view(
     title="CRC Self Service API",

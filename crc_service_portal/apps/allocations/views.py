@@ -10,7 +10,7 @@ from rest_framework import viewsets
 from .models import *
 from .serializers import *
 
-__all__ = ['ClusterViewSet', 'AllocationViewSet', 'ProposalViewSet', 'AllocationsView']
+__all__ = ['AllocationViewSet', 'AllocationsView', 'ClusterViewSet', 'ProposalViewSet']
 
 
 class ClusterViewSet(viewsets.ReadOnlyModelViewSet):

@@ -9,7 +9,7 @@ the associated table/fields/records are presented by parent interfaces.
 from django.contrib.auth import models as auth_model
 from django.db import models
 
-__all__ = ['User', 'Group', 'Delegate']
+__all__ = ['Delegate', 'Group', 'User']
 
 
 class User(auth_model.User):
