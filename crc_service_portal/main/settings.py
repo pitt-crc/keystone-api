@@ -125,6 +125,10 @@ REST_FRAMEWORK = {
     ],
 }
 
+# Disable the api GUI if not in debug mode
+if DEBUG:
+    REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'].append('rest_framework.renderers.BrowsableAPIRenderer')
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 

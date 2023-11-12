@@ -8,9 +8,9 @@ from .views import *
 app_name = 'research_products'
 
 api_router = DefaultRouter()
-api_router.register(r'clusters', PublicationViewSet)
-api_router.register(r'allocations', GrantViewSet)
+api_router.register(r'publications', PublicationViewSet)
+api_router.register(r'grants', GrantViewSet)
 
 urlpatterns = [
-    path('api/', include(api_router.urls)),
+    path('', include(api_router.urls)),
 ]

@@ -13,6 +13,6 @@ api_router.register(r'allocations', AllocationViewSet)
 api_router.register(r'proposals', ProposalViewSet)
 
 urlpatterns = [
-    path('api/', include(api_router.urls)),
-    path('allocations', AllocationsView.as_view(), name='allocations'),
+    path('', include(api_router.urls)),
+    path('allocations_demo', AllocationsView.as_view(), name='allocations'),
 ]
