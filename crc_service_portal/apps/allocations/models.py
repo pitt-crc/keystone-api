@@ -10,6 +10,8 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.template.defaultfilters import truncatechars
 
+__all__ = ['Allocation', 'Cluster', 'Proposal', 'ProposalReview']
+
 
 class Cluster(models.Model):
     """A slurm cluster"""
