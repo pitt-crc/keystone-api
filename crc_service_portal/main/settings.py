@@ -62,10 +62,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'health_check',
+    'health_check.db',
+    'health_check.storage',
+    'health_check.contrib.migrations',
     'rest_framework',
     'apps.allocations',
     'apps.research_products',
     'apps.users',
+    'apps.health',
 ]
 
 MIDDLEWARE = [
