@@ -53,6 +53,7 @@ class Allocation(models.Model):
     def __str__(self) -> str:
         """Return a human-readable summary of the allocation"""
 
+        self.proposal: Proposal
         return f'{self.cluster} allocation for {self.proposal.user} starting {self.start}'
 
 
@@ -69,4 +70,5 @@ class ProposalReview(models.Model):
     def __str__(self) -> str:
         """Return a human-readable identifier for the proposal"""
 
+        self.proposal: Proposal
         return f'{self.reviewer} review for \"{self.proposal.title}\"'
