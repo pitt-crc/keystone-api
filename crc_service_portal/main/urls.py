@@ -8,4 +8,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', TemplateView.as_view(template_name='index.html'), name='home'),
     path('alloc/', include('apps.allocations.urls', namespace='alloc')),
+    path('auth/', include('apps.jwt.urls', namespace='jwt')),
 ]

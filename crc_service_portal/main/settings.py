@@ -31,6 +31,7 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
+# These settings enable LDAP to mirror group permissions between ldap and djangp
 AUTH_LDAP_MIRROR_GROUPS = True
 AUTH_LDAP_ALWAYS_UPDATE_USER = True
 AUTH_LDAP_START_TLS = os.environ.get("AUTH_LDAP_START_TLS", "1") != '0'
@@ -116,9 +117,12 @@ JAZZMIN_SETTINGS = {
 # REST API
 
 REST_FRAMEWORK = {
-    'DEFAULT_RENDERER_CLASSES': (
+    'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
-    )
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
 }
 
 # Database
