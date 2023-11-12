@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 import ldap
+from celery.schedules import crontab
 from django.core.management.utils import get_random_secret_key
 from django_auth_ldap.config import LDAPSearch
 from dotenv import load_dotenv
@@ -21,24 +22,19 @@ sys.path.insert(0, str(BASE_DIR))
 load_dotenv()
 
 # Debugging features/settings
-
 if DEBUG := (os.environ.get('DEBUG', default='0') != '0'):
     EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
     EMAIL_FILE_PATH = Path(os.environ.get('EMAIL_FILE_PATH', BASE_DIR / 'email'))
 
 # Security settings
-
 SECRET_KEY = os.environ.get('SECRET_KEY', get_random_secret_key())
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", default="localhost 127.0.0.1").split(" ")
-
-# LDAP authentication
-
 AUTHENTICATION_BACKENDS = [
     "django_auth_ldap.backend.LDAPBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
 
-# These settings enable LDAP to mirror group permissions between ldap and djangp
+# LDAP Settings
 AUTH_LDAP_MIRROR_GROUPS = True
 AUTH_LDAP_ALWAYS_UPDATE_USER = True
 AUTH_LDAP_START_TLS = os.environ.get("AUTH_LDAP_START_TLS", "1") != '0'
@@ -74,6 +70,7 @@ INSTALLED_APPS = [
     'health_check.storage',
     'health_check.contrib.migrations',
     'rest_framework',
+    'django_celery_beat',
     'apps.allocations',
     'apps.docs',
     'apps.health',
@@ -109,7 +106,6 @@ TEMPLATES = [
 ]
 
 # Base styling for the Admin UI
-
 JAZZMIN_SETTINGS = {
     "site_title": "CRC Self Service",
     "site_header": "CRC Self Service",
@@ -127,7 +123,7 @@ JAZZMIN_SETTINGS = {
     "login_logo": "theme/img/logo/Pitt_Primary_3Color_small.png",
 }
 
-# REST API
+# REST API settings
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
@@ -138,9 +134,18 @@ REST_FRAMEWORK = {
     ],
 }
 
-# Disable the api GUI if not in debug mode
-if DEBUG:
+if DEBUG:  # Disable the api GUI if not in debug mode
     REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'].append('rest_framework.renderers.BrowsableAPIRenderer')
+
+# Celery scheduler
+CELERY_BROKER_URL = "redis://redis:6379"
+CELERY_RESULT_BACKEND = "redis://redis:6379"
+CELERY_BEAT_SCHEDULE = {
+    "sample_task": {
+        "task": "core.tasks.sample_task",
+        "schedule": crontab(minute="*/1"),
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
