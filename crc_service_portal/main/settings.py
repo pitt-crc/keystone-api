@@ -68,9 +68,10 @@ INSTALLED_APPS = [
     'health_check.contrib.migrations',
     'rest_framework',
     'apps.allocations',
+    'apps.docs',
+    'apps.health',
     'apps.research_products',
     'apps.users',
-    'apps.health',
 ]
 
 MIDDLEWARE = [
