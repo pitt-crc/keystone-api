@@ -1,5 +1,3 @@
-from celery import Celery
+from .celery import app as celery_app
 
-app = Celery("scheduler")
-app.config_from_object("django.conf:settings", namespace="CELERY")
-app.autodiscover_tasks()
+__all__ = ['celery_app']

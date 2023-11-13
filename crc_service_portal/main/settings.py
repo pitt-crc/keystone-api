@@ -6,7 +6,6 @@ import sys
 from pathlib import Path
 
 import ldap
-from celery.schedules import crontab
 from django.core.management.utils import get_random_secret_key
 from django_auth_ldap.config import LDAPSearch
 from dotenv import load_dotenv
@@ -14,7 +13,7 @@ from dotenv import load_dotenv
 try:
     VERSION = importlib.metadata.version('crc-shinigami')
 
-except importlib.metadata.PackageNotFoundError:  # pragma: no cover
+except importlib.metadata.PackageNotFoundError:
     VERSION = '0.0.0'
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -69,12 +68,17 @@ INSTALLED_APPS = [
     'health_check.db',
     'health_check.storage',
     'health_check.contrib.migrations',
+    'health_check.contrib.celery_ping',
+    'health_check.contrib.redis',
     'rest_framework',
     'django_celery_beat',
+    'django_celery_results',
     'apps.allocations',
     'apps.docs',
     'apps.health',
     'apps.research_products',
+    'apps.scheduler',
+    'apps.slurm',
     'apps.users',
 ]
 
@@ -138,14 +142,9 @@ if DEBUG:  # Disable the api GUI if not in debug mode
     REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'].append('rest_framework.renderers.BrowsableAPIRenderer')
 
 # Celery scheduler
-CELERY_BROKER_URL = "redis://redis:6379"
-CELERY_RESULT_BACKEND = "redis://redis:6379"
-CELERY_BEAT_SCHEDULE = {
-    "sample_task": {
-        "task": "core.tasks.sample_task",
-        "schedule": crontab(minute="*/1"),
-    },
-}
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', "redis://127.0.0.1:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', "redis://127.0.0.1:6379/0")
+CELERY_CACHE_BACKEND = 'django-cache'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
