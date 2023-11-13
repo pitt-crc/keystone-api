@@ -20,4 +20,4 @@ ENV PIP_ROOT_USER_ACTION=ignore
 RUN pip install -e .
 
 # Setup and launch the application
-CMD ["crc-service-portal", "quickstart", "--static", "--migrate", "--uvicorn"]
+CMD ["crc-service-api", "quickstart", "--static", "--migrate", "--uvicorn"]

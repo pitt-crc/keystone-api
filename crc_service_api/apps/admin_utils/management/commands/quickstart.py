@@ -89,5 +89,5 @@ class Command(BaseCommand):
           port: The port to bind to
         """
 
-        command = ['uvicorn', 'crc_service_api.main.wsgi:application', '--host', host, '--port', str(port)]
+        command = ['uvicorn', 'crc_service_api.main.asgi:application', '--host', host, '--port', str(port)]
         subprocess.run(command, check=True)
