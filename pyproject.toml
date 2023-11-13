@@ -6,7 +6,7 @@ build-backend = "poetry.core.masonry.api"
 name = "crc-service-api"
 version = "0.0.0"
 readme = "README.md"
-description = "REST API for mnaging HPC resource allcations."
+description = "A REST API for managing user resource allocations on HPC systems.."
 authors = ["Pitt Center for Research Computing"]
 keywords = ["Pitt", "CRC", "HPC", "django"]
 

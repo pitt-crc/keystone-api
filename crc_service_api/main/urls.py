@@ -5,11 +5,11 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('', TemplateView.as_view(template_name='index.html'), name='home'),
-    path('health/', include('apps.health.urls', namespace='health')),
-    path('docs/', include('apps.docs.urls', namespace='docs')),
-    path('auth/', include('apps.authorization.urls', namespace='authorization')),
+    path('admin/', admin.site.urls),
     path('allocations/', include('apps.allocations.urls', namespace='alloc')),
+    path('authorization/', include('apps.authorization.urls', namespace='authorization')),
+    path('docs/', include('apps.docs.urls', namespace='docs')),
+    path('health/', include('apps.health.urls', namespace='health')),
     path('products/', include('apps.research_products.urls', namespace='research_products')),
 ]

@@ -1,18 +1,14 @@
 """URL routing for the parent application"""
 
-from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from .views import *
 
 app_name = 'allocations'
 
-api_router = DefaultRouter()
-api_router.register(r'clusters', ClusterViewSet)
-api_router.register(r'allocations', AllocationViewSet)
-api_router.register(r'proposals', ProposalViewSet)
+router = DefaultRouter()
+router.register(r'clusters', ClusterViewSet)
+router.register(r'allocations', AllocationViewSet)
+router.register(r'proposals', ProposalViewSet)
 
-urlpatterns = [
-    path('', include(api_router.urls)),
-    path('allocations_demo', AllocationsView.as_view(), name='allocations'),
-]
+urlpatterns = router.urls

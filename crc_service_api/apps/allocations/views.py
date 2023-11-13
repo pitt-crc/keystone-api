@@ -10,7 +10,7 @@ from rest_framework import viewsets
 from .models import *
 from .serializers import *
 
-__all__ = ['AllocationViewSet', 'AllocationsView', 'ClusterViewSet', 'ProposalViewSet']
+__all__ = ['AllocationViewSet', 'ClusterViewSet', 'ProposalViewSet']
 
 
 class ClusterViewSet(viewsets.ReadOnlyModelViewSet):
@@ -32,9 +32,3 @@ class ProposalViewSet(viewsets.ModelViewSet):
 
     queryset = Proposal.objects.all()
     serializer_class = ProposalSerializer
-
-
-class AllocationsView(TemplateView):
-    """View for creating new allocation records"""
-
-    template_name = 'allocations/allocations.html'

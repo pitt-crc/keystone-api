@@ -4,7 +4,8 @@ View objects handle the processing of incoming HTTP requests and return the
 appropriately rendered HTML template or other HTTP response.
 """
 
-from django.conf import settings
+import importlib.metadata
+
 from django.views.generic import TemplateView
 from rest_framework.schemas import get_schema_view
 
@@ -12,8 +13,8 @@ __all__ = ['RedocView', 'SchemaView']
 
 SchemaView = get_schema_view(
     title="CRC Self Service API",
-    description="An API for administrating user resources on HPC systems.",
-    version=settings.VERSION
+    description="A REST API for managing user resource allocations on HPC systems.",
+    version=importlib.metadata.version('crc-service-api')
 )
 
 # The `schema_url` assumes the application is installed under the namespace `docs`

@@ -6,16 +6,17 @@ appropriately rendered HTML template or other HTTP response.
 
 from django.core.handlers.wsgi import HttpRequest
 from django.http import JsonResponse
-from health_check.backends import BaseHealthCheckBackend
-from health_check.views import MainView
+from health_check.mixins import CheckMixin
 
-__all__ = ['HealthCheckView']
+__all__ = ['HealthCheckViewSet']
+
+from rest_framework.viewsets import ViewSet
 
 
-class HealthCheckView(MainView):
+class HealthCheckViewSet(CheckMixin, ViewSet):
     """View for rendering system status messages"""
 
-    def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
+    def list(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
         """Return a JSON responses detailing system status checks
 
         Functions similarly to the overloaded parent method, except responses
@@ -25,7 +26,7 @@ class HealthCheckView(MainView):
         status_code = 500 if self.errors else 200
         return self.render_to_response_json(self.plugins, status_code)
 
-    def render_to_response_json(self, plugins: list[BaseHealthCheckBackend], status: int) -> JsonResponse:
+    def render_to_response_json(self, plugins, status: int) -> JsonResponse:
         """Render a JSON response summarizing the status for a list of plugins
 
         Args:

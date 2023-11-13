@@ -1,6 +1,5 @@
 """Top level Django application settings."""
 
-import importlib.metadata
 import os
 import sys
 from pathlib import Path
@@ -9,12 +8,6 @@ import ldap
 from django.core.management.utils import get_random_secret_key
 from django_auth_ldap.config import LDAPSearch
 from dotenv import load_dotenv
-
-try:
-    VERSION = importlib.metadata.version('crc-shinigami')
-
-except importlib.metadata.PackageNotFoundError:
-    VERSION = '0.0.0'
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR))
