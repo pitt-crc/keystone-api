@@ -10,6 +10,8 @@ from rest_framework import serializers
 
 from .models import *
 
+__all__ = ['AllocationSerializer', 'ClusterSerializer', 'ProposalSerializer']
+
 
 class ClusterSerializer(serializers.ModelSerializer):
     """Object serializer for the `Cluster` class"""

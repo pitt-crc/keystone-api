@@ -10,6 +10,8 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.template.defaultfilters import truncatechars
 
+__all__ = ['Allocation', 'Cluster', 'Proposal', 'ProposalReview']
+
 
 class Cluster(models.Model):
     """A slurm cluster"""
@@ -51,6 +53,7 @@ class Allocation(models.Model):
     def __str__(self) -> str:
         """Return a human-readable summary of the allocation"""
 
+        self.proposal: Proposal
         return f'{self.cluster} allocation for {self.proposal.user} starting {self.start}'
 
 
@@ -67,4 +70,5 @@ class ProposalReview(models.Model):
     def __str__(self) -> str:
         """Return a human-readable identifier for the proposal"""
 
+        self.proposal: Proposal
         return f'{self.reviewer} review for \"{self.proposal.title}\"'

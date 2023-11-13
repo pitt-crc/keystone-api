@@ -7,7 +7,10 @@ appropriately rendered HTML template or other HTTP response.
 from django.views.generic import TemplateView
 from rest_framework import viewsets
 
+from .models import *
 from .serializers import *
+
+__all__ = ['AllocationViewSet', 'AllocationsView', 'ClusterViewSet', 'ProposalViewSet']
 
 
 class ClusterViewSet(viewsets.ReadOnlyModelViewSet):

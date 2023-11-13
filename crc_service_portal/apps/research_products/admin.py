@@ -24,9 +24,10 @@ class PublicationAdmin(admin.ModelAdmin):
     def title(obj: Publication) -> str:
         """Return a publication's title as a human/table friendly string"""
 
+        # Rely on the object to determine the appropriate string title representation
         return str(obj)
 
-    list_display = ['user', title, 'date']
+    list_display = ['user', 'title', 'date']
     list_display_links = list_display
     search_fields = ['title', 'user__username']
     list_filter = [
