@@ -1,4 +1,4 @@
 *.sqlite3
 *.sqlite3-journal
-crc_service_portal/email
-crc_service_portal/static_root
+crc_service_api/email
+crc_service_api/static_root

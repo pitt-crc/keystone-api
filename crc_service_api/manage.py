@@ -10,7 +10,7 @@ from django.core.management import execute_from_command_line
 def main():
     """Parse the commandline and run administrative tasks."""
 
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'crc_service_portal.main.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'crc_service_api.main.settings')
     execute_from_command_line(sys.argv)
 
 

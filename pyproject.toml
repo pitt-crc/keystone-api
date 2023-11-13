@@ -3,15 +3,15 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "crc-service-portal"
+name = "crc-service-api"
 version = "0.0.0"
 readme = "README.md"
-description = "Self service portal for the Pitt CRC."
+description = "REST API for mnaging HPC resource allcations."
 authors = ["Pitt Center for Research Computing"]
 keywords = ["Pitt", "CRC", "HPC", "django"]
 
 [tool.poetry.scripts]
-crc-service-portal = "crc_service_portal.manage:main"
+crc-service-api = "crc_service_api.manage:main"
 
 [tool.poetry.dependencies]
 python = "^3.10"

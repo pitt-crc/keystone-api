@@ -8,7 +8,7 @@ ENV PYTHONUNBUFFERED 1
 
 # Copy only the files needed to build the application
 WORKDIR /app
-COPY crc_service_portal crc_service_portal
+COPY crc_service_api crc_service_api
 COPY pyproject.toml pyproject.toml
 COPY README.md README.md
 
@@ -20,4 +20,4 @@ ENV PIP_ROOT_USER_ACTION=ignore
 RUN pip install -e .
 
 # Setup and launch the application
-CMD ["crc-service-portal", "quickstart", "--static", "--migrate", "--uvicorn"]
+CMD ["crc-service-api", "quickstart", "--static", "--migrate", "--uvicorn"]
