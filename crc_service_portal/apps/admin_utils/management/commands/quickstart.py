@@ -8,22 +8,13 @@ to handle database migrations, static file collection, and web server deployment
 
 | Argument   | Description                                                      |
 |------------|------------------------------------------------------------------|
-| --no-input | Do not prompt for user input of any kind                         |
 | --static   | Collect static files                                             |
 | --migrate  | Run database migrations                                          |
-| --flush    | Delete all database data before running migrations               |
-| --serve    | Launch a web server using Django's built-in webserver            |
+| --no-input | Do not prompt for user input of any kind                         |
 | --gunicorn | Launch a web server using Gunicorn                               |
 | --uvicorn  | Launch a web server using Uvicorn                                |
 | --host     | Specify the host for the development server (default: '0.0.0.0') |
 | --port     | Specify the port for the development server (default: 8000)      |
-
-## Examples
-
-```python
-# Run migrations, collect static files, and start the development server
-python manage.py deploy_tasks --migrate --static
-```
 """
 
 from argparse import ArgumentParser
@@ -44,14 +35,12 @@ class Command(BaseCommand):
           parser (ArgumentParser): The argument parser instance.
         """
 
-        parser.add_argument('--no-input', action='store_true', help='Do not prompt for user input of any kind.')
         parser.add_argument('--static', action='store_true', help='Collect static files.')
         parser.add_argument('--migrate', action='store_true', help='Run database migrations.')
-        parser.add_argument('--flush', action='store_true', help='Delete all database data before running migrations.')
+        parser.add_argument('--no-input', action='store_true', help='Do not prompt for user input of any kind.')
 
         webserver = parser.add_argument_group('Web Server')
         server_type = webserver.add_mutually_exclusive_group()
-        server_type.add_argument('--serve', action='store_true', help='Run a django development server.')
         server_type.add_argument('--gunicorn', action='store_true', help='Run a web server using Gunicorn.')
         server_type.add_argument('--uvicorn', action='store_true', help='Run a web server using Uvicorn.')
         parser.add_argument('--host', default='0.0.0.0')
@@ -66,10 +55,6 @@ class Command(BaseCommand):
 
         """
 
-        if options['flush']:
-            self.stdout.write(self.style.NOTICE('Flushing the database...'))
-            call_command('migrate', no_input=options['no_input'])
-
         if options['migrate']:
             self.stdout.write(self.style.SUCCESS('Running database migrations...'))
             call_command('migrate', no_input=options['no_input'])
@@ -78,11 +63,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS('Collecting static files...'))
             call_command('collectstatic', no_input=options['no_input'])
 
-        if options['serve']:
-            self.stdout.write(self.style.SUCCESS('Starting development server...'))
-            call_command('runserver')
-
-        elif options['gunicorn']:
+        if options['gunicorn']:
             self.stdout.write(self.style.SUCCESS('Starting Gunicorn server...'))
             self.run_gunicorn()
 

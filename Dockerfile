@@ -17,8 +17,7 @@ RUN apt-get update && apt-get install -y build-essential libsasl2-dev libldap2-d
 
 # Install the application
 ENV PIP_ROOT_USER_ACTION=ignore
-RUN pip install poetry && pip install -e .
+RUN pip install -e .
 
 # Setup and launch the application
-ENTRYPOINT ["crc-service-portal"]
-CMD ["rundev", "--static", "--migrate", "--uvicorn"]
+CMD ["crc-service-portal", "quickstart", "--static", "--migrate", "--uvicorn"]
