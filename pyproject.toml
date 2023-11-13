@@ -11,7 +11,7 @@ authors = ["Pitt Center for Research Computing"]
 keywords = ["Pitt", "CRC", "HPC", "django"]
 
 [tool.poetry.scripts]
-crc-service-portal = "crc_service_portal.manage:main"
+crc-service-api = "crc_service_api.manage:main"
 
 [tool.poetry.dependencies]
 python = "^3.10"

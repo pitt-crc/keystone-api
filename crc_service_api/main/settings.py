@@ -151,7 +151,7 @@ CELERY_CACHE_BACKEND = 'django-cache'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 _driver = os.environ.get('DB_DRIVER', 'sqlite3')
-_name = BASE_DIR / 'crc_service_portal.sqlite3' if _driver == 'sqlite3' else 'crc_service_portal'
+_name = BASE_DIR / 'crc_service.sqlite3' if _driver == 'sqlite3' else 'crc_service'
 DATABASES = {
     'default': {
         "ENGINE": f'django.db.backends.{_driver}',

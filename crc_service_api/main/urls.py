@@ -1,4 +1,4 @@
-"""Top level URL configuration for crc_service_portal project."""
+"""Top level URL configuration for crc_service_api project."""
 
 from django.contrib import admin
 from django.urls import path, include
