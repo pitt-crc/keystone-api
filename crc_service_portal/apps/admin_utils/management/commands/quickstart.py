@@ -1,5 +1,5 @@
 """
-A Django management command for quickly deploying a development server.
+A Django management command for quickly migrating/deploying a development server.
 
 This management command streamlines development by providing a single command
 to handle database migrations, static file collection, and web server deployment.
@@ -17,9 +17,10 @@ to handle database migrations, static file collection, and web server deployment
 | --port     | Specify the port for the development server (default: 8000)      |
 """
 
+import subprocess
 from argparse import ArgumentParser
 
-import uvicorn
+from django.core.asgi import get_asgi_application
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
@@ -79,7 +80,8 @@ class Command(BaseCommand):
           port: The port to bind to
         """
 
-        raise NotImplementedError('Gunicorn support is still being implemented')
+        gunicorn_command = ['gunicorn', '--bind', f'{host}:{port}', 'crc_service_portal.main.wsgi:application', ]
+        subprocess.run(gunicorn_command, check=True)
 
     def run_uvicorn(self, host: str = '0.0.0.0', port: int = 8000):
         """Start a Uvicorn server.
@@ -89,4 +91,5 @@ class Command(BaseCommand):
           port: The port to bind to
         """
 
-        uvicorn.run("crc_service_portal.main.asgi:application", host=host, port=port)
+        import uvicorn
+        uvicorn.run(get_asgi_application(), host=host, port=port)
