@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 try:
     VERSION = importlib.metadata.version('crc-shinigami')
 
-except importlib.metadata.PackageNotFoundError:  # pragma: no cover
+except importlib.metadata.PackageNotFoundError:
     VERSION = '0.0.0'
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,24 +21,19 @@ sys.path.insert(0, str(BASE_DIR))
 load_dotenv()
 
 # Debugging features/settings
-
 if DEBUG := (os.environ.get('DEBUG', default='0') != '0'):
     EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
     EMAIL_FILE_PATH = Path(os.environ.get('EMAIL_FILE_PATH', BASE_DIR / 'email'))
 
 # Security settings
-
 SECRET_KEY = os.environ.get('SECRET_KEY', get_random_secret_key())
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", default="localhost 127.0.0.1").split(" ")
-
-# LDAP authentication
-
 AUTHENTICATION_BACKENDS = [
     "django_auth_ldap.backend.LDAPBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
 
-# These settings enable LDAP to mirror group permissions between ldap and djangp
+# LDAP Settings
 AUTH_LDAP_MIRROR_GROUPS = True
 AUTH_LDAP_ALWAYS_UPDATE_USER = True
 AUTH_LDAP_START_TLS = os.environ.get("AUTH_LDAP_START_TLS", "1") != '0'
@@ -73,11 +68,17 @@ INSTALLED_APPS = [
     'health_check.db',
     'health_check.storage',
     'health_check.contrib.migrations',
+    'health_check.contrib.celery_ping',
+    'health_check.contrib.redis',
     'rest_framework',
+    'django_celery_beat',
+    'django_celery_results',
     'apps.allocations',
     'apps.docs',
     'apps.health',
     'apps.research_products',
+    'apps.scheduler',
+    'apps.slurm',
     'apps.users',
 ]
 
@@ -109,7 +110,6 @@ TEMPLATES = [
 ]
 
 # Base styling for the Admin UI
-
 JAZZMIN_SETTINGS = {
     "site_title": "CRC Self Service",
     "site_header": "CRC Self Service",
@@ -127,7 +127,7 @@ JAZZMIN_SETTINGS = {
     "login_logo": "theme/img/logo/Pitt_Primary_3Color_small.png",
 }
 
-# REST API
+# REST API settings
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
@@ -138,9 +138,13 @@ REST_FRAMEWORK = {
     ],
 }
 
-# Disable the api GUI if not in debug mode
-if DEBUG:
+if DEBUG:  # Disable the api GUI if not in debug mode
     REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'].append('rest_framework.renderers.BrowsableAPIRenderer')
+
+# Celery scheduler
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', "redis://127.0.0.1:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', "redis://127.0.0.1:6379/0")
+CELERY_CACHE_BACKEND = 'django-cache'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
