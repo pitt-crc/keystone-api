@@ -1,5 +1,7 @@
 FROM python:3.11.4-slim
 
+EXPOSE 8000
+
 # Disable Python byte code caching and output buffering
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
@@ -15,6 +17,7 @@ RUN apt-get update && apt-get install -y build-essential libsasl2-dev libldap2-d
 
 # Install the application
 ENV PIP_ROOT_USER_ACTION=ignore
-RUN pip3 install gunicorn && pip3 install -e .
+RUN pip install -e .
 
-EXPOSE 8000
+# Setup and launch the application
+CMD ["crc-service-portal", "quickstart", "--static", "--migrate", "--uvicorn"]

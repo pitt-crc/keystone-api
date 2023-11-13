@@ -74,6 +74,7 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'django_celery_results',
     'apps.allocations',
+    'apps.admin_utils',
     'apps.docs',
     'apps.health',
     'apps.research_products',
