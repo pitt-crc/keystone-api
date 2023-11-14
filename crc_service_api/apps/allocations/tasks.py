@@ -1,4 +1,7 @@
-"""General utilities for interacting with the Slurm REST API"""
+"""Schedule tasks executed in parallel by Celery."""
+
+from celery import shared_task
+
 
 # The functions in this module are listed as examples only
 # The actual implementation may very significantly
@@ -13,4 +16,9 @@ async def get_usage(*args, **kwargs) -> int:
 
 
 async def update_cluster_account_status(*args, **kwargs) -> None:
+    """Lock/unlock user accounts based on the status of their SU allocation"""
+
+
+@shared_task(name='Update Account Status')
+def update_account_status():
     """Lock/unlock user accounts based on the status of their SU allocation"""

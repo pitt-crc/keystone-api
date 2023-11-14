@@ -72,7 +72,6 @@ INSTALLED_APPS = [
     'apps.health',
     'apps.research_products',
     'apps.scheduler',
-    'apps.slurm',
     'apps.users',
 ]
 
