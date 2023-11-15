@@ -15,6 +15,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+<<<<<<< Updated upstream
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
@@ -22,6 +23,10 @@ jobs:
 
       - name: Install dependencies
         run: poetry install --with tests
+=======
+    - name: Install dependencies
+      run: pip install .
+>>>>>>> Stashed changes
 
       - name: Run tests
         run: crc-service-api test
