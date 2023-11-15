@@ -4,6 +4,28 @@ on:
   push:
 
 jobs:
+  app_tests:
+    name: App Tests
+    runs-on: ubuntu-latest
+
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        virtualenvs-create: false
+
+    - name: Install dependencies
+      run: poetry install --with tests
+
+    - name: Run tests
+      run: crc-service-api test
+
   container-status:
     name: Container Status
     runs-on: ubuntu-latest
@@ -32,3 +54,13 @@ jobs:
             curl $endpoint
             exit 1
           fi
+
+  report-test-status:
+    name: Report Test Status
+    if: always()
+    needs: [ app-tests, container-status ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check build status
+        if: ${{ contains(needs.*.result, 'failure') }}
+        run: exit 1
