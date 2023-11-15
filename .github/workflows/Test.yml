@@ -4,7 +4,8 @@ on:
   push:
 
 jobs:
-  test-container:
+  container-status:
+    name: Container Status
     runs-on: ubuntu-latest
 
     steps:
