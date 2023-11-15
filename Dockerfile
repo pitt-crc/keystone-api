@@ -26,4 +26,5 @@ ENV PIP_ROOT_USER_ACTION=ignore
 RUN pip install -e .
 
 # Setup and launch the application
-CMD ["crc-service-api", "quickstart", "--static", "--migrate", "--celery", "--gunicorn"]
+ENTRYPOINT ["crc-service-api"]
+CMD ["quickstart", "--static", "--migrate", "--celery", "--gunicorn"]
