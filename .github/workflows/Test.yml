@@ -74,7 +74,7 @@ jobs:
   report-test-status:
     name: Report Test Status
     runs-on: ubuntu-latest
-    needs: [ app-tests, container-status ]
+    needs: [ app-tests, api-status ]
     if: always()
 
     steps:
