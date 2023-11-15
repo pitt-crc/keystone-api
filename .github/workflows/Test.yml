@@ -28,23 +28,6 @@ jobs:
           name: test-image
           path: /tmp/test-image.tar
 
-  app-tests:
-    name: App Tests
-    runs-on: ubuntu-latest
-    needs: build-image
-
-    steps:
-      - name: Fetch image artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: test-image
-          path: /tmp
-
-      - name: Launch container
-        run: |
-          docker load --input /tmp/test-image.tar
-          docker run test-img test
-
   api-status:
     name: API Status
     runs-on: ubuntu-latest
@@ -60,21 +43,40 @@ jobs:
       - name: Launch container
         run: |
           docker load --input /tmp/test-image.tar
-          docker run -d -p 8000:8000 test-img
+          docker run -d -p 8000:8000 test-image
 
       - name: Check API health
         run: |
           endpoint="http://localhost:8000/health"
           httpstatus=$(curl --silent --output /dev/null --write-out "%{http_code}" $endpoint)
+          
+          # If the status is not 200, print the full status report from the endpoint
           if [ "$httpstatus" -ne 200 ]; then
             curl $endpoint
             exit 1
           fi
 
+  function-tests:
+    name: App Tests
+    runs-on: ubuntu-latest
+    needs: build-image
+
+    steps:
+      - name: Fetch image artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: test-image
+          path: /tmp
+
+      - name: Launch container
+        run: |
+          docker load --input /tmp/test-image.tar
+          docker run test-image test
+
   report-test-status:
     name: Report Test Status
     runs-on: ubuntu-latest
-    needs: [ app-tests, api-status ]
+    needs: [ api-status, function-tests ]
     if: always()
 
     steps:
