@@ -17,16 +17,15 @@ jobs:
       - name: Build Docker image
         uses: docker/build-push-action@v4
         with:
-          tags: crc-service-api:latest
+          tags: test-img:latest
           load: true
-          push: false
 
       - name: Launch container
-        run: docker run -d -p 8000:8000 crc-service-api
+        run: docker run -d -p 8000:8000 test-img
 
       - name: Check API health
         run: |
-          status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/health)
+          status=$(curl --silent --output /dev/null --write-out "%{http_code}" http://localhost:8000/health)
           if [ "$status" == "200" ]; then
             echo "Container health check passed!"
           else
