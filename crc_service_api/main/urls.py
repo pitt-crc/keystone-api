@@ -1,11 +1,12 @@
 """Top level URL configuration for crc_service_api project."""
 
+from django.conf import settings
 from django.contrib import admin
+from django.http import HttpResponse
 from django.urls import path, include
-from django.views.generic import TemplateView
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='index.html'), name='home'),
+    path('', lambda *args: HttpResponse(f"Service Portal API Version {settings.VERSION}"), name='home'),
     path('admin/', admin.site.urls),
     path('allocations/', include('apps.allocations.urls', namespace='alloc')),
     path('authorization/', include('apps.authorization.urls', namespace='authorization')),

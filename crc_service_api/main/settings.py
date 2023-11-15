@@ -1,5 +1,6 @@
 """Top level Django application settings."""
 
+import importlib.metadata
 import os
 import sys
 from pathlib import Path
@@ -10,6 +11,8 @@ from django_auth_ldap.config import LDAPSearch
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+VERSION = importlib.metadata.version('crc-service-api')
+
 sys.path.insert(0, str(BASE_DIR))
 load_dotenv()
 
