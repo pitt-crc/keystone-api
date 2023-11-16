@@ -24,6 +24,12 @@ if DEBUG := (os.environ.get('DEBUG', default='0') != '0'):
 # Security settings
 SECRET_KEY = os.environ.get('SECRET_KEY', get_random_secret_key())
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", default="localhost 127.0.0.1").split(" ")
+SECURE_SSL_REDIRECT = os.environ.get("SECURE_SSL_REDIRECT", default=not DEBUG)
+SESSION_COOKIE_SECURE = os.environ.get("SESSION_COOKIE_SECURE", default=not DEBUG)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = os.environ.get("SECURE_HSTS_INCLUDE_SUBDOMAINS", default=not DEBUG)
+SECURE_HSTS_PRELOAD = os.environ.get("SECURE_HSTS_PRELOAD", default=not DEBUG)
+CSRF_COOKIE_SECURE = os.environ.get("CSRF_COOKIE_SECURE", default=not DEBUG)
+SECURE_HSTS_SECONDS = os.environ.get("SECURE_HSTS_SECONDS", default=0 if DEBUG else 10)
 AUTHENTICATION_BACKENDS = [
     "django_auth_ldap.backend.LDAPBackend",
     "django.contrib.auth.backends.ModelBackend",
