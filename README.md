@@ -18,23 +18,26 @@ User's looking to customize their deployment should adhere to the following gene
 Unless explicitly defined by the user, the `SECURE_SSL_REDIRECT`, `SESSION_TOKENS_ONLY` and HSTS related settings 
 are automatically disabled when running in debug mode.
 
-| Setting Name                     | Default Value         | Description                                             |
-|----------------------------------|-----------------------|---------------------------------------------------------|
-| `SECRET_KEY`                     | Randomly generated    | Secret key used to enforce cryptographic signing.       |
-| `ALLOWED_HOSTS`                  | `localhost 127.0.0.1` | A list of valid host/domain names for the site.         |
-| `SECURE_SSL_REDIRECT`            | `True`                | Automatically redirect all HTTP traffic to HTTPS.       |
-| `SESSION_TOKENS_ONLY`            | `True`                | Only issue session/CSRF tokens over secure connections. |
-| `SECURE_HSTS_SECONDS`            | `31536000` (one year) | The duration, in seconds, to cache HSTS settings.       |
-| `SECURE_HSTS_INCLUDE_SUBDOMAINS` | `True`                | Include HSTS headers for subdomains.                    |
-| `SECURE_HSTS_PRELOAD`            | `True`                | Whether to enable HSTS preload functionality.           |
+| Setting Name                     | Default Value         | Description                                               |
+|----------------------------------|-----------------------|-----------------------------------------------------------|
+| `SECRET_KEY`                     | Randomly generated    | Secret key used to enforce cryptographic signing.         |
+| `ALLOWED_HOSTS`                  | `localhost 127.0.0.1` | A list of valid host/domain names for the site.           |
+| `SECURE_SSL_REDIRECT`            | `True`                | Automatically redirect all HTTP traffic to HTTPS.         |
+| `SESSION_TOKENS_ONLY`            | `True`                | Only issue session/CSRF tokens over secure connections.   |
+| `SECURE_HSTS_SECONDS`            | `31536000` (one year) | The duration, in seconds, to cache HSTS settings.         |
+| `SECURE_HSTS_INCLUDE_SUBDOMAINS` | `True`                | Include HSTS headers for subdomains.                      |
+| `SECURE_HSTS_PRELOAD`            | `True`                | Whether to enable HSTS preload functionality.             |
 
 ### LDAP Authenticating
+
+LDAP authentication support is optional and disabled by default.
+To enable LDAP, set the `AUTH_LDAP_SERVER_URI` value to the desired LDAP endpoint.
 
 | Setting Name                     | Default Value         | Description                                               |
 |----------------------------------|-----------------------|-----------------------------------------------------------|
 | `AUTH_LDAP_START_TLS`            | `True`                | Whether to use TLS when connecting to the LDAP server.    |
 | `AUTH_LDAP_SERVER_URI`           |                       | The URI of the LDAP server.                               |
-| `AUTH_LDAP_BIND_DN`              |                       | The DN to use when binding to the LDAP server.            |
+| `AUTH_LDAP_BIND_DN`              |                       | Optionally bind LDAP queries to the given DN.             |
 | `AUTH_LDAP_BIND_PASSWORD`        |                       | The password to use when binding to the LDAP server.      |
 | `AUTH_LDAP_USER_SEARCH`          | `(uid=%(user)s)`      | The search query for finding a user in the LDAP server.   |
 | `OPT_X_TLS_REQUIRE_CERT`         | `True`                |                                                           |
