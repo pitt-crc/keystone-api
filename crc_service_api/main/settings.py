@@ -117,8 +117,7 @@ JAZZMIN_SETTINGS = {
         "research_products",
         "sites"
     ],
-    "icons": {
-    },
+    "icons": {},
     "site_logo": "theme/img/logo/Shield_White.png",
     "login_logo": "theme/img/logo/Pitt_Primary_3Color_small.png",
 }
@@ -131,11 +130,14 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ],
+    ]
 }
 
-if DEBUG:  # Disable the api GUI if not in debug mode
+if DEBUG:  # Disable the API GUI if not in debug mode
     REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'].append('rest_framework.renderers.BrowsableAPIRenderer')
+
+else:  # Only enforce API permissions in production
+    REST_FRAMEWORK['DEFAULT_PERMISSION_CLASSES'] = ['rest_framework.permissions.IsAuthenticated']
 
 # Celery scheduler
 CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', "redis://127.0.0.1:6379/0")

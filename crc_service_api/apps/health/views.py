@@ -7,10 +7,9 @@ appropriately rendered HTML template or other HTTP response.
 from django.core.handlers.wsgi import HttpRequest
 from django.http import JsonResponse
 from health_check.mixins import CheckMixin
+from rest_framework.viewsets import ViewSet
 
 __all__ = ['HealthCheckViewSet']
-
-from rest_framework.viewsets import ViewSet
 
 
 class HealthCheckViewSet(CheckMixin, ViewSet):
