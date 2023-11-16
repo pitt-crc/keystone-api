@@ -8,5 +8,5 @@ app_name = 'docs'
 
 urlpatterns = [
     path('openapi', SchemaView, name='openapi-schema'),
-    path('', RedocView, name='redoc'),
+    path('', RedocView.as_view(), name='redoc'),
 ]
