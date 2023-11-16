@@ -40,13 +40,13 @@ jobs:
           name: test-image
           path: /tmp
 
-      - name: Launch container
-        run: |
-          docker load --input /tmp/test-image.tar
-          docker run -d -p 8000:8000 test-image
+      - name: Load image
+        run: docker load --input /tmp/test-image.tar
 
       - name: Check API health
         run: |
+          docker run -d -p 8000:8000 test-image
+          
           endpoint="http://localhost:8000/health"
           httpstatus=$(curl --silent --output /dev/null --write-out "%{http_code}" $endpoint)
           
