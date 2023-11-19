@@ -46,7 +46,7 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: stoplight/spectral:latest
-          options: -v ${{ github.workspace }}:${{ github.workspace }} -w ${{ github.workspace }}
+          options: -v ${{ github.workspace }}:${{ github.workspace }}
           run: spectral lint api.yml --fail-severity warn --ruleset .github/spectral.yml
 
   report-qa-status:
