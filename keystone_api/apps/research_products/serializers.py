@@ -17,6 +17,8 @@ class PublicationSerializer(serializers.ModelSerializer):
     """Object serializer for the `Publication` class"""
 
     class Meta:
+        """Serializer settings"""
+
         model = Publication
         fields = '__all__'
 
@@ -25,5 +27,7 @@ class GrantSerializer(serializers.ModelSerializer):
     """Object serializer for the `Grant` class"""
 
     class Meta:
+        """Serializer settings"""
+
         model = Grant
         fields = '__all__'

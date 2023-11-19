@@ -24,6 +24,8 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
+    """A helper utility that wraps other common Django commands for easier devlpment"""
+
     help = 'A helper utility for common deployment tasks'
 
     def add_arguments(self, parser: ArgumentParser) -> None:
