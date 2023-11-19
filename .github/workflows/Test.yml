@@ -55,6 +55,6 @@ jobs:
     if: always()
 
     steps:
-      - name: Check build status
+      - name: Check test status
         if: ${{ contains(needs.*.result, 'failure') }}
         run: exit 1
