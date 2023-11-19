@@ -7,9 +7,7 @@
 ### Security and Networking
 
 Improperly configuring these settings can introduce dangerous vulnerabilities and may damage your production deployment.
-Most default values are chosen to be sufficient out of the box (except `ALLOWED_HOSTS` and `ALLOWED_HOSTS`, which must
-be chosen manually).
-User's looking to customize their deployment should adhere to the following general guidelines:
+Administrators should adhere to the following general guidelines:
 
 - Ensure your deployment is isolated being a web proxy with proper HTTPS handling
 - Allways define the `ALLOWED_HOSTS` list using a restrictive collection of domain patterns
@@ -42,9 +40,9 @@ To enable LDAP, set the `AUTH_LDAP_SERVER_URI` value to the desired LDAP endpoin
 
 ### Database Connection
 
-Official support is included for both SQLite and PostgresSQL database backends.
+Official support is included for both SQLite (`sqlite`) and PostgresSQL (`postgresql`) database protocols.
 However, the former is intended for development and demonstrative use-cases only.
-The `postgresql` backend should always be used in production settings.
+The PostgresSQL backend should always be used in production settings.
 
 | Setting Name   | Default Value                         | Description                                                     |
 |----------------|---------------------------------------|-----------------------------------------------------------------|
@@ -62,7 +60,7 @@ Connection settings for Celery backend utilities.
 ### Static File Hosting
 
 The application is capable of hosting its own static file content.
-However, user's may optionally configure settings to use a dedicated CDN.
+However, user's may optionally configure their deployment to use a dedicated CDN.
 
 | Setting Name   | Default Value               | Description                                                           |
 |----------------|-----------------------------|-----------------------------------------------------------------------|
