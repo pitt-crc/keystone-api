@@ -16,18 +16,15 @@ User's looking to customize their deployment should adhere to the following gene
 - Avoid issuing session/CSRF tokens over unsecured connections by enabling `SESSION_TOKENS_ONLY`
 - HTTP Strict Transport Security (HSTS) should be used to enforce the use of HTTPS
 
-Unless explicitly defined by the user, the `SECURE_SSL_REDIRECT`, `SESSION_TOKENS_ONLY` and HSTS related settings
-are automatically disabled when running in debug mode.
-
 | Setting Name                     | Default Value         | Description                                               |
 |----------------------------------|-----------------------|-----------------------------------------------------------|
 | `SECRET_KEY`                     | Randomly generated    | Secret key used to enforce cryptographic signing.         |
-| `ALLOWED_HOSTS`                  | `localhost 127.0.0.1` | A list of valid host/domain names for the site.           |
-| `SECURE_SSL_REDIRECT`            | `True`                | Automatically redirect all HTTP traffic to HTTPS.         |
-| `SESSION_TOKENS_ONLY`            | `True`                | Only issue session/CSRF tokens over secure connections.   |
-| `SECURE_HSTS_SECONDS`            | `31536000` (one year) | The duration, in seconds, to cache HSTS settings.         |
-| `SECURE_HSTS_INCLUDE_SUBDOMAINS` | `True`                | Include HSTS headers for subdomains.                      |
-| `SECURE_HSTS_PRELOAD`            | `True`                | Whether to enable HSTS preload functionality.             |
+| `ALLOWED_HOSTS`                  | `localhost,127.0.0.1` | Comma seperated list of accepted host/domain names.       |
+| `SECURE_SSL_REDIRECT`            | `False`               | Automatically redirect all HTTP traffic to HTTPS.         |
+| `SESSION_TOKENS_ONLY`            | `False`               | Only issue session/CSRF tokens over secure connections.   |
+| `SECURE_HSTS_SECONDS`            | `0` (Disabled)        | The duration, in seconds, to cache HSTS settings.         |
+| `SECURE_HSTS_INCLUDE_SUBDOMAINS` | `False`               | Include HSTS headers for subdomains.                      |
+| `SECURE_HSTS_PRELOAD`            | `False`               | Whether to enable HSTS preload functionality.             |
 
 ### LDAP Authenticating
 
@@ -45,18 +42,13 @@ To enable LDAP, set the `AUTH_LDAP_SERVER_URI` value to the desired LDAP endpoin
 
 ### Database Connection
 
-Application support is included for both SQLite and PostgresSQL database backends.
+Official support is included for both SQLite and PostgresSQL database backends.
 However, the former is intended for development and demonstrative use-cases only.
 The `postgresql` backend should always be used in production settings.
 
-| Setting Name           | Default Value     | Description                                                             |
-|------------------------|-------------------|-------------------------------------------------------------------------|
-| `DB_DRIVER`            | `sqlite3`         | Whether to use `sqlite` or `postgresql` as the application backend.     |
-| `DB_NAME`              | `crc_service`     | The name of the application database.                                   |
-| `DB_USER`              |                   | Username used when authenticating with the database.                    |
-| `DB_PASSWORD`          |                   | Password used when authenticating with the database.                    |
-| `DB_HOST`              | `localhost`       | Address for the database host.                                          |
-| `DB_PORT`              | `5432`            | Port number the database is listening on.                               |
+| Setting Name   | Default Value                         | Description                                                     |
+|----------------|---------------------------------------|-----------------------------------------------------------------|
+| `DATABASE_URL` | `sqlite:///<INSTALL_DIR>/keystone.db` | The database url `protocol:///username:password@host:port/name` |
 
 ### Celery Workers
 
@@ -72,17 +64,17 @@ Connection settings for Celery backend utilities.
 The application is capable of hosting its own static file content.
 However, user's may optionally configure settings to use a dedicated CDN.
 
-| Setting Name   | Default Value                 | Description                                                         |
-|----------------|-------------------------------|---------------------------------------------------------------------|
-| `STATIC_URL`   | `static/`                     | URL to use when referring to static files.                          |
-| `STATIC_ROOT`  | `<INSTALL_DIR> / static_root` | The absolute path where static files are collected for deployment.  |
+| Setting Name   | Default Value               | Description                                                           |
+|----------------|-----------------------------|-----------------------------------------------------------------------|
+| `STATIC_URL`   | `static/`                   | URL to use when referring to static files.                            |
+| `STATIC_ROOT`  | `<INSTALL_DIR>/static_root` | The absolute path where static files are collected for deployment.    |
 
 ### Developer Settings
 
 The following settings are intended exclusively for use in development settings.
 The `DEBUG` option is inherently insecure and should **never** be enabled in production settings.
 
-| Setting Name      | Default Value           | Description                                                                    |
-|-------------------|-------------------------|--------------------------------------------------------------------------------|
-| `DEBUG`           | `False`                 | Enable or disable debug mode.                                                  |
-| `EMAIL_FILE_PATH` | `<INSTALL_DIR> / email` | In debug mode, emails are written to disk instead of being issued to a server. |
+| Setting Name      | Default Value          | Description                                                                    |
+|-------------------|------------------------|--------------------------------------------------------------------------------|
+| `DEBUG`           | `False`                | Enable or disable debug mode.                                                  |
+| `EMAIL_FILE_PATH` | `<INSTALL_DIR>/email/` | In debug mode, emails are written to disk instead of being issued to a server. |
