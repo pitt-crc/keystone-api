@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y \
 
 # Copy only the files needed to build the application
 WORKDIR /app
-COPY crc_service_api crc_service_api
+COPY keystone_api keystone_api
 COPY pyproject.toml pyproject.toml
 COPY README.md README.md
 
@@ -26,5 +26,5 @@ ENV PIP_ROOT_USER_ACTION=ignore
 RUN pip install -e .
 
 # Setup and launch the application
-ENTRYPOINT ["crc-service-api"]
-CMD ["quickstart", "--static", "--migrate", "--celery", "--gunicorn"]
+ENTRYPOINT ["keystone-api"]
+CMD ["quickstart", "--static", "--migrate", "--celery", "--gunicorn", "--no-input"]

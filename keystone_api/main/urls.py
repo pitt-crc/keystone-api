@@ -1,4 +1,4 @@
-"""Top level URL configuration for crc_service_api project."""
+"""Top level URL configuration for keystone_api project."""
 
 from django.conf import settings
 from django.contrib import admin

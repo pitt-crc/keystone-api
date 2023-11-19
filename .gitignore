@@ -43,8 +43,8 @@ coverage.xml
 *.db
 *.sqlite3
 *.sqlite3-journal
-crc_service_api/email/
-crc_service_api/static_root/
+keystone_api/email/
+keystone_api/static_root/
 health  # API health checks
 
 # Pycharm stuff

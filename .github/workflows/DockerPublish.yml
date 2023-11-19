@@ -5,7 +5,7 @@ on:
     types: [ "released" ]
 
 env:
-  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/crc-service-api
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/keystone-api
 
 jobs:
   publish-docker:

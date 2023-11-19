@@ -1,3 +1,3 @@
-crc_service_api/keystone.db
-crc_service_api/email
-crc_service_api/static_root
+keystone_api/keystone.db
+keystone_api/email
+keystone_api/static_root
