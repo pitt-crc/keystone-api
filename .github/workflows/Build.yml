@@ -5,7 +5,7 @@ on:
 
 jobs:
   build-image:
-    name: Build Image
+    name: Build Docker Image
     runs-on: ubuntu-latest
 
     steps:
