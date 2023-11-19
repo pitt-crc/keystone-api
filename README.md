@@ -1,8 +1,65 @@
-# CRC Self Service Portal
+# Keystone API
 
 [![](https://app.codacy.com/project/badge/Grade/9ee06ecdddef4f75a8deeb42fa4a9651)](https://app.codacy.com?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
+The backend REST API for the Keystone allocation management dashboard.
+
+## Installation
+
+To install the Keystone API, choose from one of the following options.
+
+### Using Docker
+
+Using Docker is the recommended method for building and deploying application instances.
+The most recent image can be pulled from the GitHub container registry:
+
+```bash
+docker pull docker pull ghcr.io/pitt-crc/keystone-api
+docker run -p 8000:8000 ghcr.io/pitt-crc/keystone-api
+```
+
+Alternatively, the latest development version can be built directly from source:
+
+```bash
+git clone https://github.com/pitt-crc/keystone-api
+docker build -t keystone-api:develop keystone-api
+docker run -p 8000:8000 keystone-api:develop
+```
+
+### Installing from source
+
+Installing from source is only recommended for project development or as a fallback for situations where Docker is not available.
+Before proceeding with installation, the following system dependencies must be met:
+- A running Celery instance
+- A running Redis database
+- A running PostgresSQL database (if not using Sqlite)
+- LDAP development binaries (if using LDAP authentication)
+
+In keeping with best practice, it is recommended to install packages in a dedicated virtual environment:
+
+```bash
+conda create -n keystone-api python=3.11
+conda activate keystone-api
+```
+
+The pacakge and it's dependencies are pip installable.
+Note the recommended use of editable mode (`-e`) to simplify development.
+
+```bash
+pip install -e keystone-api
+```
+
+If the installation was successful, the packaged CLI tool will be available in your working environment.
+Use the `--help` option to view the available commands.
+
+```bash
+kystone-api --help
+```
+
 ## Settings
+
+Application settings are configurable as environmental variables.
+Available settings are listed below by category and use case.
 
 ### Security and Networking
 
@@ -13,6 +70,7 @@ Administrators should adhere to the following general guidelines:
 - Allways define the `ALLOWED_HOSTS` list using a restrictive collection of domain patterns
 - Avoid issuing session/CSRF tokens over unsecured connections by enabling `SESSION_TOKENS_ONLY`
 - HTTP Strict Transport Security (HSTS) should be used to enforce the use of HTTPS
+- Use a fixed `SECRET_KEY` value to ensure consistent request signing across application instances/restarts
 
 | Setting Name                     | Default Value         | Description                                               |
 |----------------------------------|-----------------------|-----------------------------------------------------------|
