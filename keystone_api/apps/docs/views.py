@@ -23,4 +23,4 @@ class RedocView(TemplateView):
 
     # The `schema_url` assumes the application is installed under the namespace `docs`
     extra_context = {'schema_url': 'docs:openapi-schema'}
-    template_name = 'api_docs/redoc.html'
+    template_name = 'redoc.html'
