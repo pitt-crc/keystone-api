@@ -43,10 +43,11 @@ jobs:
           name: test-image
           path: /tmp
 
+      - name: Load image
+        run: docker load --input /tmp/test-image.tar
+
       - name: Run tests
-        run: |
-          docker load --input /tmp/test-image.tar
-          docker run test-image test
+        run: docker run test-image test
 
   report-test-status:
     name: Report Test Status
