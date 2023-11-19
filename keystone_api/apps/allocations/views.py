@@ -4,7 +4,6 @@ View objects handle the processing of incoming HTTP requests and return the
 appropriately rendered HTML template or other HTTP response.
 """
 
-from django.views.generic import TemplateView
 from rest_framework import viewsets
 
 from .models import *

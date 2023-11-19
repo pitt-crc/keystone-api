@@ -139,11 +139,11 @@ The `DEBUG` option is inherently insecure and should **never** be enabled in pro
 
 The following section details useful information for application contributors.
 
-## Debug Mode
+### Debug Mode
 
 Running the application in debug mode enables/disables various features to aid in the development process.
 In addition to enabling the standard debugging behavior provided by Django:
-  - A `/docs` page is enabled with full API documentation for the parent application
-  - User permissions are disabled for all API endpoints
-  - A web GUI is enabled for easier interaction with API endpoints
-  - Tracebacks are provided in the browser when an excepting occurs (a Django standard)
+- A `/docs` page is enabled with full API documentation for the parent application
+- User permissions are disabled for all API endpoints
+- A web GUI is enabled for easier interaction with API endpoints
+- Tracebacks are provided in the browser when an exception occurs (a Django standard)

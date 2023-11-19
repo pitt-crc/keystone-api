@@ -7,13 +7,15 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install --no-install-recommends -y \
     # Required for LDAP
     build-essential \
     libsasl2-dev \
     libldap2-dev \
     # Required for celery
-    redis
+    redis \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
 
 # Copy only the files needed to build the application
 WORKDIR /app
