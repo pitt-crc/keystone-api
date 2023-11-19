@@ -42,12 +42,15 @@ jobs:
       - name: Generate OpenAPI schema
         run: docker run test-image generateschema >> api.yml
 
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Run Spectral Lint
         uses: addnab/docker-run-action@v3
         with:
           image: stoplight/spectral:latest
           options: -v ${{ github.workspace }}:${{ github.workspace }} -w ${{ github.workspace }}
-          run: ls -R .
+          run: spectral lint api.yml --fail-severity warn --ruleset .github/spectral.yml
 
   report-qa-status:
     name: Report QA Status
