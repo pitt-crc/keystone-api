@@ -21,6 +21,8 @@ jobs:
           context: .
           tags: test-image:latest
           outputs: type=docker,dest=/tmp/test-image.tar
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Upload image artifact
         uses: actions/upload-artifact@v3
