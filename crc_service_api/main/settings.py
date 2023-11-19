@@ -1,51 +1,53 @@
 """Top level Django application settings."""
 
 import importlib.metadata
-import os
 import sys
 from pathlib import Path
 
+import environ
 import ldap
 from django.core.management.utils import get_random_secret_key
 from django_auth_ldap.config import LDAPSearch
-from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(BASE_DIR))
+
+env = environ.Env()
+DEBUG = env.bool('DEBUG', False)
 VERSION = importlib.metadata.version('crc-service-api')
 
-sys.path.insert(0, str(BASE_DIR))
-load_dotenv()
+# Core security settings
 
-# Debugging features/settings
-if DEBUG := (os.environ.get('DEBUG', default='0') != '0'):
-    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-    EMAIL_FILE_PATH = Path(os.environ.get('EMAIL_FILE_PATH', BASE_DIR / 'email'))
+SECRET_KEY = env.str('SECRET_KEY', get_random_secret_key())
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
 
-# Security settings
-SECRET_KEY = os.environ.get('SECRET_KEY', get_random_secret_key())
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", default="localhost 127.0.0.1").split(" ")
-AUTHENTICATION_BACKENDS = [
-    "django_auth_ldap.backend.LDAPBackend",
-    "django.contrib.auth.backends.ModelBackend",
-]
+_SESSION_TOKENS_ONLY = env.bool("SESSION_TOKENS_ONLY", default=False)
+SESSION_COOKIE_SECURE = _SESSION_TOKENS_ONLY
+CSRF_COOKIE_SECURE = _SESSION_TOKENS_ONLY
+
+SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=False)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool("SECURE_HSTS_INCLUDE_SUBDOMAINS", default=False)
+SECURE_HSTS_PRELOAD = env.bool("SECURE_HSTS_PRELOAD", default=False)
+SECURE_HSTS_SECONDS = env.int("SECURE_HSTS_SECONDS", default=0)
 
 # LDAP Settings
+
 AUTH_LDAP_MIRROR_GROUPS = True
 AUTH_LDAP_ALWAYS_UPDATE_USER = True
-AUTH_LDAP_START_TLS = os.environ.get("AUTH_LDAP_START_TLS", "1") != '0'
-AUTH_LDAP_SERVER_URI = os.environ.get("AUTH_LDAP_SERVER_URI", "")
-AUTH_LDAP_BIND_DN = os.environ.get("AUTH_LDAP_BIND_DN", "")
-AUTH_LDAP_BIND_PASSWORD = os.environ.get("AUTH_LDAP_BIND_PASSWORD", "")
+AUTH_LDAP_START_TLS = env.bool("AUTH_LDAP_START_TLS", True)
+AUTH_LDAP_SERVER_URI = env.url("AUTH_LDAP_SERVER_URI", "").geturl()
+AUTH_LDAP_BIND_DN = env.str("AUTH_LDAP_BIND_DN", "")
+AUTH_LDAP_BIND_PASSWORD = env.str("AUTH_LDAP_BIND_PASSWORD", "")
 AUTH_LDAP_USER_SEARCH = LDAPSearch(
-    os.environ.get("AUTH_LDAP_USER_SEARCH", ""),
+    env.str("AUTH_LDAP_USER_SEARCH", ""),
     ldap.SCOPE_SUBTREE,
     "(uid=%(user)s)"
 )
 
-if os.environ.get('OPT_X_TLS_REQUIRE_CERT', "1") == "0":
+if env.bool('OPT_X_TLS_REQUIRE_CERT', True):
     AUTH_LDAP_GLOBAL_OPTIONS = {ldap.OPT_X_TLS_REQUIRE_CERT: ldap.OPT_X_TLS_NEVER}
 
-# Application Configuration
+# App Configuration
 
 ROOT_URLCONF = 'main.urls'
 LOGIN_REDIRECT_URL = '/'
@@ -106,6 +108,7 @@ TEMPLATES = [
 ]
 
 # Base styling for the Admin UI
+
 JAZZMIN_SETTINGS = {
     "site_title": "CRC Self Service",
     "site_header": "CRC Self Service",
@@ -140,28 +143,30 @@ else:  # Only enforce API permissions in production
     REST_FRAMEWORK['DEFAULT_PERMISSION_CLASSES'] = ['rest_framework.permissions.IsAuthenticated']
 
 # Celery scheduler
-CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', "redis://127.0.0.1:6379/0")
-CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', "redis://127.0.0.1:6379/0")
+
+CELERY_BROKER_URL = env.url('CELERY_BROKER_URL', "redis://127.0.0.1:6379/0").geturl()
+CELERY_RESULT_BACKEND = env.url('CELERY_RESULT_BACKEND', "redis://127.0.0.1:6379/0").geturl()
 CELERY_CACHE_BACKEND = 'django-cache'
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+# Email handling
 
-_driver = os.environ.get('DB_DRIVER', 'sqlite3')
-_name = BASE_DIR / 'crc_service.sqlite3' if _driver == 'sqlite3' else 'crc_service'
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+    EMAIL_FILE_PATH = env.path('EMAIL_FILE_PATH', BASE_DIR / 'email')
+
+# Database
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_DB_PATH = BASE_DIR / 'keystone.db'
 DATABASES = {
-    'default': {
-        "ENGINE": f'django.db.backends.{_driver}',
-        "NAME": os.environ.get('DB_NAME', _name),
-        "USER": os.environ.get('DB_USER', ''),
-        "PASSWORD": os.environ.get('DB_PASSWORD', ''),
-        "HOST": os.environ.get('DB_HOST', 'localhost'),
-        "PORT": os.environ.get('DB_PORT', '5432'),
-    }
+    'default': env.db('DATABASE_URL', f'sqlite:///{DEFAULT_DB_PATH}')
 }
 
-# Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
+# Authentication
+
+AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.ModelBackend"]
+if AUTH_LDAP_SERVER_URI:
+    AUTHENTICATION_BACKENDS.append("django_auth_ldap.backend.LDAPBackend")
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -170,14 +175,8 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
+# Static file handling (CSS, JavaScript, Images)
 
-STATIC_URL = os.environ.get('STATIC_URL', 'static/')
-STATIC_ROOT = Path(os.environ.get('STATIC_ROOT', BASE_DIR / 'static_root'))
+STATIC_URL = env.str('STATIC_URL', 'static/')
+STATIC_ROOT = env.path('STATIC_ROOT', BASE_DIR / 'static_root')
 STATICFILES_DIRS = [BASE_DIR / 'static']
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
