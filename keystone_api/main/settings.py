@@ -94,7 +94,6 @@ MIDDLEWARE = [
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates', ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -179,4 +178,3 @@ AUTH_PASSWORD_VALIDATORS = [
 
 STATIC_URL = env.str('STATIC_URL', 'static/')
 STATIC_ROOT = env.path('STATIC_ROOT', BASE_DIR / 'static_root')
-STATICFILES_DIRS = [BASE_DIR / 'static']
