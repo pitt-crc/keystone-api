@@ -48,10 +48,27 @@ jobs:
           docker load --input /tmp/test-image.tar
           docker run test-image test
 
+  system-checks:
+    name: System Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Fetch image artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: test-image
+          path: /tmp
+
+      - name: Run system checks
+        run: |
+          docker load --input /tmp/test-image.tar
+          docker run test-image check
+          docker run test-image migrate --check --dry-run
+
   report-test-status:
     name: Report Test Status
     runs-on: ubuntu-latest
-    needs: [ api-status, app-tests ]
+    needs: [ api-status, app-tests, system-checks ]
     if: always()
 
     steps:
