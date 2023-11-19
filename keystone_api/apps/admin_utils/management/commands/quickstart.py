@@ -77,7 +77,7 @@ class Command(BaseCommand):
         """Start a Celery worker."""
 
         subprocess.Popen(['redis-server'])
-        subprocess.Popen(['celery', '-A', 'crc_service_api.apps.scheduler', 'worker', '-D'])
+        subprocess.Popen(['celery', '-A', 'keystone_api.apps.scheduler', 'worker', '-D'])
 
     @staticmethod
     def run_gunicorn(host: str = '0.0.0.0', port: int = 8000) -> None:
@@ -88,7 +88,7 @@ class Command(BaseCommand):
           port: The port to bind to
         """
 
-        command = ['gunicorn', '--bind', f'{host}:{port}', 'crc_service_api.main.wsgi:application']
+        command = ['gunicorn', '--bind', f'{host}:{port}', 'keystone_api.main.wsgi:application']
         subprocess.run(command, check=True)
 
     @staticmethod
@@ -100,5 +100,5 @@ class Command(BaseCommand):
           port: The port to bind to
         """
 
-        command = ['uvicorn', 'crc_service_api.main.asgi:application', '--host', host, '--port', str(port)]
+        command = ['uvicorn', 'keystone_api.main.asgi:application', '--host', host, '--port', str(port)]
         subprocess.run(command, check=True)

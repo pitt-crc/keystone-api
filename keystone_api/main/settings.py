@@ -14,7 +14,7 @@ sys.path.insert(0, str(BASE_DIR))
 
 env = environ.Env()
 DEBUG = env.bool('DEBUG', False)
-VERSION = importlib.metadata.version('crc-service-api')
+VERSION = importlib.metadata.version('keystone-api')
 
 # Core security settings
 

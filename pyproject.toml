@@ -3,7 +3,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "crc-service-api"
+name = "keystone-api"
 version = "0.0.0"
 readme = "README.md"
 description = "A REST API for managing user resource allocations on HPC systems.."
@@ -11,7 +11,7 @@ authors = ["Pitt Center for Research Computing"]
 keywords = ["Pitt", "CRC", "HPC", "django"]
 
 [tool.poetry.scripts]
-crc-service-api = "crc_service_api.manage:main"
+keystone-api = "keystone_api.manage:main"
 
 [tool.poetry.dependencies]
 python = "^3.10"
