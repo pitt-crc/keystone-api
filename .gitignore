@@ -45,6 +45,7 @@ coverage.xml
 *.sqlite3-journal
 crc_service_api/email/
 crc_service_api/static_root/
+health  # API health checks
 
 # Pycharm stuff
 .idea/
