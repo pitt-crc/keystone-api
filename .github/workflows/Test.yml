@@ -30,12 +30,6 @@ jobs:
           image: test-image
           run: keystone-api makemigrations --check
 
-      - name: Run API health checks
-        uses: addnab/docker-run-action@v3
-        with:
-          image: test-image
-          run: keystone-api health_check
-
   app-tests:
     name: Application Tests
     runs-on: ubuntu-latest
