@@ -5,7 +5,7 @@ on:
 
 jobs:
   system-checks:
-    name: API Status
+    name: System Checks
     runs-on: ubuntu-latest
 
     steps:
@@ -19,9 +19,15 @@ jobs:
         run: docker load --input /tmp/test-image.tar
 
       - name: Run system checks
+        run: docker run test-image check
+
+      - name: Check for missing migrations
         run: |
-          docker run test-image check
-          docker run test-image migrate --check
+          docker run test-image makemigrations --check
+          if [ "$?" -ne 0 ]; then
+            echo "One or more applications are missing migrations"
+            exit 1
+          fi
 
       - name: Check API health
         uses: addnab/docker-run-action@v3
