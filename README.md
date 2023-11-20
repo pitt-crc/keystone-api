@@ -18,6 +18,14 @@ docker pull ghcr.io/pitt-crc/keystone-api
 docker run -p 8000:8000 ghcr.io/pitt-crc/keystone-api
 ```
 
+Alternatively, the latest development version can be built directly from source:
+
+```bash
+git clone https://github.com/pitt-crc/keystone-api
+docker build -t keystone-api:develop keystone-api
+docker run -p 8000:8000 keystone-api:develop
+```
+
 The container will automatically launch a fully functioning application served via the Gunicorn web server.
 The application is *not* suitable for full production.
 See the `Deployment` section for more details.
@@ -54,7 +62,8 @@ kystone-api --help
 
 ## Settings
 
-Application settings are configurable as environmental variables. Available settings are listed below by category and use case.
+Application settings are configurable as environmental variables.
+Available settings are listed below by category and use case.
 
 ### Security and Networking
 
@@ -78,7 +87,8 @@ Improperly configuring these settings can introduce dangerous vulnerabilities an
 
 ### LDAP Authentication
 
-LDAP authentication support is optional and disabled by default. To enable LDAP, set the `AUTH_LDAP_SERVER_URI` value to the desired LDAP endpoint.
+LDAP authentication support is optional and disabled by default.
+To enable LDAP, set the `AUTH_LDAP_SERVER_URI` value to the desired LDAP endpoint.
 
 | Setting Name                     | Default Value         | Description                                               |
 |----------------------------------|-----------------------|-----------------------------------------------------------|
@@ -91,7 +101,9 @@ LDAP authentication support is optional and disabled by default. To enable LDAP,
 
 ### Database Connection
 
-Official support is included for both SQLite (`sqlite`) and PostgreSQL (`postgresql`) database protocols. However, the former is intended for development and demonstrative use-cases only. The PostgreSQL backend should always be used in production settings.
+Official support is included for both SQLite (`sqlite`) and PostgreSQL (`postgresql`) database protocols.
+However, the former is intended for development and demonstrative use-cases only.
+The PostgreSQL backend should always be used in production settings.
 
 | Setting Name   | Default Value                         | Description                                                     |
 |----------------|---------------------------------------|-----------------------------------------------------------------|
@@ -108,7 +120,8 @@ Connection settings for Celery backend utilities.
 
 ### Static File Hosting
 
-The application is capable of hosting its own static file content. However, users may optionally configure their deployment to use a dedicated CDN.
+The application is capable of hosting its own static file content.
+However, users may optionally configure their deployment to use a dedicated CDN.
 
 | Setting Name   | Default Value               | Description                                                           |
 |----------------|-----------------------------|-----------------------------------------------------------------------|
@@ -117,7 +130,8 @@ The application is capable of hosting its own static file content. However, user
 
 ### Developer Settings
 
-The following settings are intended exclusively for use in development settings. The `DEBUG` option is inherently insecure and should **never** be enabled in production settings.
+The following settings are intended exclusively for use in development settings.
+The `DEBUG` option is inherently insecure and should **never** be enabled in production settings.
 
 | Setting Name      | Default Value          | Description                                                                    |
 |-------------------|------------------------|--------------------------------------------------------------------------------|
@@ -130,7 +144,8 @@ The following section details useful information for application contributors.
 
 ### Debug Mode
 
-Running the application in debug mode enables/disables various features to aid in the development process. In addition to enabling the standard debugging behavior provided by Django:
+Running the application in debug mode enables/disables various features to aid in the development process.
+In addition to enabling the standard debugging behavior provided by Django:
 - A `/docs` page is enabled with full API documentation for the parent application
 - User permissions are disabled for all API endpoints
 - A web GUI is enabled for easier interaction with API endpoints
