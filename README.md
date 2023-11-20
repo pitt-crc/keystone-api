@@ -14,7 +14,7 @@ Using Docker is the recommended method for building and deploying application in
 The most recent image can be pulled from the GitHub container registry:
 
 ```bash
-docker pull docker pull ghcr.io/pitt-crc/keystone-api
+docker pull ghcr.io/pitt-crc/keystone-api
 docker run -p 8000:8000 ghcr.io/pitt-crc/keystone-api
 ```
 
@@ -26,13 +26,17 @@ docker build -t keystone-api:develop keystone-api
 docker run -p 8000:8000 keystone-api:develop
 ```
 
+The container will automatically launch a fully functioning application served via the Gunicorn web server.
+The application is *not* suitable for full production out of the box.
+See the [Settings](#settings) section for a complete overview of availible settings.
+
 ### Installing from source
 
 Installing from source is only recommended for project development or as a fallback for situations where Docker is not available.
 Before proceeding with installation, the following system dependencies must be met:
 - A running Celery instance
 - A running Redis database
-- A running PostgresSQL database (if not using Sqlite)
+- A running PostgreSQL database (if not using SQLite)
 - LDAP development binaries (if using LDAP authentication)
 
 In keeping with best practice, it is recommended to install packages in a dedicated virtual environment:
@@ -42,7 +46,7 @@ conda create -n keystone-api python=3.11
 conda activate keystone-api
 ```
 
-The pacakge and it's dependencies are pip installable.
+The package and its dependencies are pip installable.
 Note the recommended use of editable mode (`-e`) to simplify development.
 
 ```bash
@@ -63,11 +67,10 @@ Available settings are listed below by category and use case.
 
 ### Security and Networking
 
-Improperly configuring these settings can introduce dangerous vulnerabilities and may damage your production deployment.
-Administrators should adhere to the following general guidelines:
+Improperly configuring these settings can introduce dangerous vulnerabilities and may damage your production deployment. Administrators should adhere to the following general guidelines:
 
-- Ensure your deployment is isolated being a web proxy with proper HTTPS handling
-- Allways define the `ALLOWED_HOSTS` list using a restrictive collection of domain patterns
+- Ensure your deployment is isolated behind a web proxy with proper HTTPS handling
+- Always define the `ALLOWED_HOSTS` list using a restrictive collection of domain patterns
 - Avoid issuing session/CSRF tokens over unsecured connections by enabling `SESSION_TOKENS_ONLY`
 - HTTP Strict Transport Security (HSTS) should be used to enforce the use of HTTPS
 - Use a fixed `SECRET_KEY` value to ensure consistent request signing across application instances/restarts
@@ -75,14 +78,14 @@ Administrators should adhere to the following general guidelines:
 | Setting Name                     | Default Value         | Description                                               |
 |----------------------------------|-----------------------|-----------------------------------------------------------|
 | `SECRET_KEY`                     | Randomly generated    | Secret key used to enforce cryptographic signing.         |
-| `ALLOWED_HOSTS`                  | `localhost,127.0.0.1` | Comma seperated list of accepted host/domain names.       |
+| `ALLOWED_HOSTS`                  | `localhost,127.0.0.1` | Comma-separated list of accepted host/domain names.       |
 | `SECURE_SSL_REDIRECT`            | `False`               | Automatically redirect all HTTP traffic to HTTPS.         |
 | `SESSION_TOKENS_ONLY`            | `False`               | Only issue session/CSRF tokens over secure connections.   |
 | `SECURE_HSTS_SECONDS`            | `0` (Disabled)        | The duration, in seconds, to cache HSTS settings.         |
 | `SECURE_HSTS_INCLUDE_SUBDOMAINS` | `False`               | Include HSTS headers for subdomains.                      |
 | `SECURE_HSTS_PRELOAD`            | `False`               | Whether to enable HSTS preload functionality.             |
 
-### LDAP Authenticating
+### LDAP Authentication
 
 LDAP authentication support is optional and disabled by default.
 To enable LDAP, set the `AUTH_LDAP_SERVER_URI` value to the desired LDAP endpoint.
@@ -98,13 +101,13 @@ To enable LDAP, set the `AUTH_LDAP_SERVER_URI` value to the desired LDAP endpoin
 
 ### Database Connection
 
-Official support is included for both SQLite (`sqlite`) and PostgresSQL (`postgresql`) database protocols.
+Official support is included for both SQLite (`sqlite`) and PostgreSQL (`postgresql`) database protocols.
 However, the former is intended for development and demonstrative use-cases only.
-The PostgresSQL backend should always be used in production settings.
+The PostgreSQL backend should always be used in production settings.
 
 | Setting Name   | Default Value                         | Description                                                     |
 |----------------|---------------------------------------|-----------------------------------------------------------------|
-| `DATABASE_URL` | `sqlite:///<INSTALL_DIR>/keystone.db` | The database url `protocol:///username:password@host:port/name` |
+| `DATABASE_URL` | `sqlite:///<INSTALL_DIR>/keystone.db` | The database URL `protocol:///username:password@host:port/name` |
 
 ### Celery Workers
 
@@ -118,7 +121,7 @@ Connection settings for Celery backend utilities.
 ### Static File Hosting
 
 The application is capable of hosting its own static file content.
-However, user's may optionally configure their deployment to use a dedicated CDN.
+However, users may optionally configure their deployment to use a dedicated CDN.
 
 | Setting Name   | Default Value               | Description                                                           |
 |----------------|-----------------------------|-----------------------------------------------------------------------|
