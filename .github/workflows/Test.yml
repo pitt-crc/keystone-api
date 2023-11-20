@@ -18,10 +18,13 @@ jobs:
       - name: Load image
         run: docker load --input /tmp/test-image.tar
 
-      - name: Run system checks
-        run: docker run test-image check
+      - name: Run project checks
+        uses: addnab/docker-run-action@v3
+        with:
+          image: test-image
+          run: keystone-api check
 
-      - name: Check for missing migrations
+      - name: Run migration checks
         run: |
           docker run test-image makemigrations --check
           if [ "$?" -ne 0 ]; then
@@ -29,10 +32,11 @@ jobs:
             exit 1
           fi
 
-      - name: Check API health
+      - name: Run API health checks
+        uses: addnab/docker-run-action@v3
         with:
           image: test-image
-          run:  keystone-api health_check
+          run: keystone-api health_check
 
   app-tests:
     name: Application Tests
