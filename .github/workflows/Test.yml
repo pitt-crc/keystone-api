@@ -30,7 +30,9 @@ jobs:
           fi
 
       - name: Check API health
-        run: docker run test-image health_check
+        with:
+          image: test-image
+          run:  keystone-api health_check
 
   app-tests:
     name: Application Tests
