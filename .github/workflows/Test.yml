@@ -30,18 +30,7 @@ jobs:
           fi
 
       - name: Check API health
-        uses: addnab/docker-run-action@v3
-        with:
-          image: test-image
-          run:  |
-            endpoint="http://localhost:8000/health"
-            httpstatus=$(curl --silent --output /dev/null --write-out "%{http_code}" $endpoint)
-            curl $endpoint
-
-            # If the status is not 200, print the full status report from the endpoint
-            if [ "$httpstatus" -ne 200 ]; then
-              exit 1
-            fi
+        run: docker run test-image health_check
 
   app-tests:
     name: Application Tests
