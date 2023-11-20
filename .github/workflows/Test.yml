@@ -25,7 +25,7 @@ jobs:
         run: |
           docker run test-image makemigrations --check
           if [ "$?" -ne 0 ]; then
-            echo ""::error::One or more applications are missing migrations"
+            echo "::error::One or more applications are missing migrations"
             exit 1
           fi
 
