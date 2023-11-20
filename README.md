@@ -27,8 +27,8 @@ docker run -p 8000:8000 keystone-api:develop
 ```
 
 The container will automatically launch a fully functioning application served via the Gunicorn web server.
-The application is *not* suitable for full production.
-See the `Deployment` section for more details.
+The application is *not* suitable for full production out of the box.
+See the [Settings](#settings) section for a complete overview of availible settings.
 
 ### Installing from source
 
