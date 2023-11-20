@@ -25,12 +25,10 @@ jobs:
           run: keystone-api check
 
       - name: Run migration checks
-        run: |
-          docker run test-image makemigrations --check
-          if [ "$?" -ne 0 ]; then
-            echo "::error::One or more applications are missing migrations"
-            exit 1
-          fi
+        uses: addnab/docker-run-action@v3
+        with:
+          image: test-image
+          run: keystone-api makemigrations --check
 
       - name: Run API health checks
         uses: addnab/docker-run-action@v3
