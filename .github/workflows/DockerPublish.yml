@@ -1,8 +1,7 @@
 name: Publish Docker Image
 
 on:
-  release:
-    types: [ "released" ]
+  workflow_call:
 
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/keystone-api
@@ -43,5 +42,6 @@ jobs:
       - name: Build and publish image
         uses: docker/build-push-action@v5
         with:
+          context: .
           push: true
           tags: ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }},${{ env.IMAGE_NAME }}:latest

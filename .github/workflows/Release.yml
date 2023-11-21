@@ -1,0 +1,23 @@
+name: Release
+
+on:
+  release:
+    types: [ "released" ]
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/keystone-api
+
+jobs:
+  build:
+    name: Build
+    uses: ./.github/workflows/Build.yml
+
+  test:
+    name: Test
+    needs: build
+    uses: ./.github/workflows/Test.yml
+  
+  docker:
+    name: Docker
+    needs: test
+    uses: ./.github/workflows/DockerPublish.yml
