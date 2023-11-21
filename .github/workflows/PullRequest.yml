@@ -6,17 +6,17 @@ on:
 jobs:
   build:
     name: Build
-    uses: ./.github/recipes/Build.yml
+    uses: ./.github/workflows/Build.yml
 
   test:
     name: Test
     needs: build
-    uses: ./.github/recipes/Test.yml
+    uses: ./.github/workflows/Test.yml
 
   qa:
     name: QA
     needs: build
-    uses: ./.github/recipes/QA.yml
+    uses: ./.github/workflows/QA.yml
 
   report-pr-status:
     name: Report PR Status
