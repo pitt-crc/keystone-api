@@ -12,8 +12,8 @@ from .serializers import *
 __all__ = ['AllocationViewSet', 'ClusterViewSet', 'ProposalViewSet', 'ProposalReviewViewSet']
 
 
-class ClusterViewSet(viewsets.ReadOnlyModelViewSet):
-    """Read-only JSON ViewSet for querying cluster database records."""
+class ClusterViewSet(viewsets.ModelViewSet):
+    """System settings and configuration for managed Slurm clusters."""
 
     queryset = Cluster.objects.all()
     serializer_class = ClusterSerializer

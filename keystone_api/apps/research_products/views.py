@@ -3,7 +3,6 @@
 View objects handle the processing of incoming HTTP requests and return the
 appropriately rendered HTML template or other HTTP response.
 """
-from typing import overload
 
 from rest_framework import viewsets
 
