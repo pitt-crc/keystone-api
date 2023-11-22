@@ -3,6 +3,7 @@
 View objects handle the processing of incoming HTTP requests and return the
 appropriately rendered HTML template or other HTTP response.
 """
+from typing import overload
 
 from rest_framework import viewsets
 
@@ -13,14 +14,14 @@ __all__ = ['GrantViewSet', 'PublicationViewSet']
 
 
 class PublicationViewSet(viewsets.ReadOnlyModelViewSet):
-    """ViewSet for querying cluster publication records"""
+    """Manage metadata for research publications."""
 
     queryset = Publication.objects.all()
     serializer_class = PublicationSerializer
 
 
 class GrantViewSet(viewsets.ReadOnlyModelViewSet):
-    """ViewSet for querying grant database records"""
+    """Track funding awards and grant information."""
 
     queryset = Grant.objects.all()
     serializer_class = GrantSerializer

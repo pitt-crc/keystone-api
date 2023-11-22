@@ -10,7 +10,7 @@ from rest_framework import serializers
 
 from .models import *
 
-__all__ = ['AllocationSerializer', 'ClusterSerializer', 'ProposalSerializer']
+__all__ = ['AllocationSerializer', 'ClusterSerializer', 'ProposalSerializer', 'ProposalReviewSerializer']
 
 
 class ClusterSerializer(serializers.ModelSerializer):
@@ -34,4 +34,12 @@ class ProposalSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Proposal
+        fields = '__all__'
+
+
+class ProposalReviewSerializer(serializers.ModelSerializer):
+    """Object serializer for the `ProposalReview` class"""
+
+    class Meta:
+        model = ProposalReview
         fields = '__all__'
