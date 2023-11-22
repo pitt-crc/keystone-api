@@ -12,7 +12,7 @@ from .serializers import *
 __all__ = ['AllocationViewSet', 'ClusterViewSet', 'ProposalViewSet', 'ProposalReviewViewSet']
 
 
-class ClusterViewSet(viewsets.ReadOnlyModelViewSet):
+class ClusterViewSet(viewsets.ModelViewSet):
     """Read-only JSON ViewSet for querying cluster database records."""
 
     queryset = Cluster.objects.all()
