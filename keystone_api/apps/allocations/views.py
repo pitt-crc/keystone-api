@@ -13,7 +13,7 @@ __all__ = ['AllocationViewSet', 'ClusterViewSet', 'ProposalViewSet', 'ProposalRe
 
 
 class ClusterViewSet(viewsets.ModelViewSet):
-    """Read-only JSON ViewSet for querying cluster database records."""
+    """System settings and configuration for managed Slurm clusters."""
 
     queryset = Cluster.objects.all()
     serializer_class = ClusterSerializer
