@@ -44,7 +44,7 @@ class Command(BaseCommand):
         server_type.add_argument('--gunicorn', action='store_true', help='Run a web server using Gunicorn.')
         server_type.add_argument('--uvicorn', action='store_true', help='Run a web server using Uvicorn.')
 
-        parser.add_argument('--no-input', action='store_true', help='Do not prompt for user input of any kind.')
+        parser.add_argument('--no-input', action='store_false', help='Do not prompt for user input of any kind.')
 
     def handle(self, *args, **options) -> None:
         """Handle the command execution.
@@ -56,11 +56,11 @@ class Command(BaseCommand):
 
         if options['static']:
             self.stdout.write(self.style.SUCCESS('Collecting static files...'))
-            call_command('collectstatic', no_input=not options['no_input'])
+            call_command('collectstatic', no_input=options['no_input'])
 
         if options['migrate']:
             self.stdout.write(self.style.SUCCESS('Running database migrations...'))
-            call_command('migrate', no_input=not options['no_input'])
+            call_command('migrate', no_input=options['no_input'])
 
         if options['celery']:
             self.stdout.write(self.style.SUCCESS('Starting Celery worker...'))
