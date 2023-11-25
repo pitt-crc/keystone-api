@@ -44,7 +44,7 @@ jobs:
       - name: Run tests
         run: |
           docker load --input /tmp/test-image.tar
-          docker run test-image test apps
+          docker run test-image test
 
   report-test-status:
     name: Report Test Status

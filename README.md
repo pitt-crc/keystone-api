@@ -150,3 +150,26 @@ In addition to enabling the standard debugging behavior provided by Django:
 - User permissions are disabled for all API endpoints
 - A web GUI is enabled for easier interaction with API endpoints
 - Tracebacks are provided in the browser when an exception occurs (a Django standard)
+
+### Tests and System Checks
+
+Application tests are run using the `test` command:
+
+```bash
+keystone-api test
+```
+
+Specific subsets of tests are run by specifying an app label.
+For example, tests for the `admin_utils` application are executed as:
+
+```bash
+keystone-api test apps.admin_utils
+```
+
+The default django system checks can also be executed as standard:
+
+```bash
+keystone-api check                   # Check for system configuraion errors
+keystone-api makemigrations --check  # Check for missing database migrations
+keystone-api health_check            # Check the status of running backnd services
+```
