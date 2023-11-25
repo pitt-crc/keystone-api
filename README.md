@@ -75,15 +75,14 @@ Improperly configuring these settings can introduce dangerous vulnerabilities an
 - HTTP Strict Transport Security (HSTS) should be used to enforce the use of HTTPS
 - Use a fixed `SECRET_KEY` value to ensure consistent request signing across application instances/restarts
 
-| Setting Name                     | Default Value         | Description                                               |
-|----------------------------------|-----------------------|-----------------------------------------------------------|
-| `SECRET_KEY`                     | Randomly generated    | Secret key used to enforce cryptographic signing.         |
-| `ALLOWED_HOSTS`                  | `localhost,127.0.0.1` | Comma-separated list of accepted host/domain names.       |
-| `SECURE_SSL_REDIRECT`            | `False`               | Automatically redirect all HTTP traffic to HTTPS.         |
-| `SESSION_TOKENS_ONLY`            | `False`               | Only issue session/CSRF tokens over secure connections.   |
-| `SECURE_HSTS_SECONDS`            | `0` (Disabled)        | The duration, in seconds, to cache HSTS settings.         |
-| `SECURE_HSTS_INCLUDE_SUBDOMAINS` | `False`               | Include HSTS headers for subdomains.                      |
-| `SECURE_HSTS_PRELOAD`            | `False`               | Whether to enable HSTS preload functionality.             |
+| Setting Name          | Default Value         | Description                                                          |
+|-----------------------|-----------------------|----------------------------------------------------------------------|
+| `SECRET_KEY`          | Randomly generated    | Secret key used to enforce cryptographic signing.                    |
+| `ALLOWED_HOSTS`       | `localhost,127.0.0.1` | Comma-separated list of accepted host/domain names.                  |
+| `SECURE_SSL_REDIRECT` | `False`               | Automatically redirect all HTTP traffic to HTTPS.                    |
+| `SESSION_TOKENS_ONLY` | `False`               | Only issue session/CSRF tokens over secure connections.              |
+| `SECURE_HSTS_SECONDS` | `0` (Disabled)        | HSTS cache duration in seconds for the site (and it's subdomains).   |
+| `SECURE_HSTS_PRELOAD` | `False`               | Whether to enable HSTS preload functionality.                        |
 
 ### LDAP Authentication
 
