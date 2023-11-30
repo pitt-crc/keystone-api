@@ -138,8 +138,8 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle'
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': env.str('THROTTLE_ANON', default=None),
-        'user': env.str('THROTTLE_USER', default=None)
+        'anon': env.str('THROTTLE_ANON', default='1000/day'),
+        'user': env.str('THROTTLE_USER', default='10000/day')
     },
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',

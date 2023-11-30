@@ -89,10 +89,13 @@ Administrators should adhere to the following general guidelines:
 
 ### Networking
 
+Networking settings are used to throttle incoming API requests against a maximum limit.
+Limits are specified as the maximum number of requests per `day`, `minute`, `hour`, or `second`.
+
 | Setting Name              | Default Value            | Description                                                   |
 |---------------------------|--------------------------|---------------------------------------------------------------|
-| `THROTTLE_ANON`           | `None`                   | Rate limiting for anonymous (unauthenticated) users.          |
-| `THROTTLE_USER`           | `None`                   | Rate limiting for authenticated users.                        |
+| `THROTTLE_ANON`           | `1000/day`               | Rate limiting for anonymous (unauthenticated) users.          |
+| `THROTTLE_USER`           | `10000/day`              | Rate limiting for authenticated users.                        |
 
 ### Authentication
 
