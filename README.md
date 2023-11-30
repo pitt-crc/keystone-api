@@ -28,12 +28,11 @@ docker run -p 8000:8000 keystone-api:develop
 
 The container will automatically launch a fully functioning application served via the Gunicorn web server.
 The application is *not* suitable for full production out of the box.
-See the [Settings](#settings) section for a complete overview of availible settings.
+See the [Settings](#settings) section for a complete overview of available settings.
 
 ### Installing from source
 
-Installing from source is only recommended for project development or as a fallback for situations where Docker is not
-available.
+Installing from source is only recommended for developers or as a fallback for situations where Docker is not available.
 Before proceeding with installation, the following system dependencies must be met:
 
 - A running Celery instance
@@ -41,7 +40,7 @@ Before proceeding with installation, the following system dependencies must be m
 - A running PostgreSQL database (if not using SQLite)
 - LDAP development binaries (if using LDAP authentication)
 
-In keeping with best practice, it is recommended to install packages in a dedicated virtual environment:
+In keeping with best practice, it is recommended to install packages into a dedicated virtual environment:
 
 ```bash
 conda create -n keystone-api python=3.11
@@ -76,7 +75,7 @@ Administrators should adhere to the following general guidelines:
 - Always define the `ALLOWED_HOSTS` list using a restrictive collection of domain patterns
 - Avoid issuing session/CSRF tokens over unsecured connections by enabling `SESSION_TOKENS_ONLY`
 - HTTP Strict Transport Security (HSTS) should be used to enforce the use of HTTPS
-- Use a fixed `SECRET_KEY` value to ensure consistent request signing across application instances/restarts
+- Use a fixed (and secure) `SECRET_KEY` value to ensure consistent request signing across application instances/restarts
 
 | Setting Name           | Default Value         | Description                                                         |
 |------------------------|-----------------------|---------------------------------------------------------------------|
@@ -99,7 +98,7 @@ Limits are specified as the maximum number of requests per `day`, `minute`, `hou
 
 ### Authentication
 
-LDAP authentication support is optional and disabled by default.
+Enabling LDAP authentication is optional and disabled by default.
 To enable LDAP, set the `AUTH_LDAP_SERVER_URI` value to the desired LDAP endpoint.
 
 | Setting Name              | Default Value            | Description                                                   |
