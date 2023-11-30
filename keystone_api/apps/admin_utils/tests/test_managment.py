@@ -9,7 +9,7 @@ from django.test import TestCase
 class Quickstart(TestCase):
     """Tests for the `quickstart` CLI utility"""
 
-    def test_celery_command(self):
+    def test_celery_command(self) -> None:
         """Test the `--celery` flag executes a celery command"""
 
         with patch('subprocess.Popen') as mock_popen:
@@ -17,7 +17,7 @@ class Quickstart(TestCase):
             mock_popen.assert_called_with(
                 ['celery', '-A', 'keystone_api.apps.scheduler', 'worker', '-D'])
 
-    def test_gunicorn_command(self):
+    def test_gunicorn_command(self) -> None:
         """Test the `--gunicorn` flag executes a gunicorn server command"""
 
         with patch('subprocess.run') as mock_run:
@@ -25,8 +25,9 @@ class Quickstart(TestCase):
             mock_run.assert_called_with(
                 ['gunicorn', '--bind', '0.0.0.0:8000', 'keystone_api.main.wsgi:application'], check=True)
 
-    def test_uvicorn_command(self):
+    def test_uvicorn_command(self) -> None:
         """Test the `--uvicorn` command executes a uvicorn server command"""
+
         with patch('subprocess.run') as mock_run:
             call_command('quickstart', '--uvicorn', '--no-input')
             mock_run.assert_called_with(
