@@ -18,17 +18,17 @@ VERSION = importlib.metadata.version('keystone-api')
 
 # Core security settings
 
-SECRET_KEY = env.str('SECRET_KEY', get_random_secret_key())
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
+SECRET_KEY = env.str('SECURE_SECRET_KEY', get_random_secret_key())
+ALLOWED_HOSTS = env.list("SECURE_ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
 
-_SESSION_TOKENS_ONLY = env.bool("SESSION_TOKENS_ONLY", default=False)
-SESSION_COOKIE_SECURE = _SESSION_TOKENS_ONLY
-CSRF_COOKIE_SECURE = _SESSION_TOKENS_ONLY
+_SECURE_SESSION_TOKENS = env.bool("SECURE_SESSION_TOKENS", default=False)
+SESSION_COOKIE_SECURE = _SECURE_SESSION_TOKENS
+CSRF_COOKIE_SECURE = _SECURE_SESSION_TOKENS
 
 SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=False)
 SECURE_HSTS_PRELOAD = env.bool("SECURE_HSTS_PRELOAD", default=False)
 SECURE_HSTS_SECONDS = env.int("SECURE_HSTS_SECONDS", default=0)
-SECURE_HSTS_INCLUDE_SUBDOMAINS = bool(SECURE_HSTS_SECONDS)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool("SECURE_HSTS_SUBDOMAINS", default=False)
 
 # LDAP Settings
 
@@ -44,7 +44,7 @@ AUTH_LDAP_USER_SEARCH = LDAPSearch(
     "(uid=%(user)s)"
 )
 
-if env.bool('OPT_X_TLS_REQUIRE_CERT', True):
+if env.bool('AUTH_LDAP_REQUIRE_CERT', True):
     AUTH_LDAP_GLOBAL_OPTIONS = {ldap.OPT_X_TLS_REQUIRE_CERT: ldap.OPT_X_TLS_NEVER}
 
 # App Configuration
@@ -138,8 +138,8 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle'
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': env.str('THROTTLE_ANON', default='1000/day'),
-        'user': env.str('THROTTLE_USER', default='10000/day')
+        'anon': env.str('API_THROTTLE_ANON', default='1000/day'),
+        'user': env.str('API_THROTTLE_USER', default='10000/day')
     },
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
