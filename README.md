@@ -85,7 +85,7 @@ Administrators should adhere to the following general guidelines:
 | `SECURE_SESSION_TOKENS`   | `False`                  | Only issue session/CSRF tokens over secure connections.       |
 | `SECURE_HSTS_SECONDS`     | `0` (Disabled)           | HSTS cache duration in seconds.                               |
 | `SECURE_HSTS_SUBDOMAINS`  | `False`                  | Enable HSTS for subdomains.                                   |
-| `SECURE_HSTS_PRELOAD`     | `False`                  | Whether to enable HSTS preload functionality.                 |
+| `SECURE_HSTS_PRELOAD`     | `False`                  | Enable HSTS preload functionality.                            |
 
 ### API Throttling
 
@@ -148,7 +148,6 @@ The `DEBUG` option is inherently insecure and should **never** be enabled in pro
 | Setting Name      | Default Value          | Description                                                                    |
 |-------------------|------------------------|--------------------------------------------------------------------------------|
 | `DEBUG`           | `False`                | Enable or disable debug mode.                                                  |
-| `EMAIL_FILE_PATH` | `<INSTALL_DIR>/email/` | In debug mode, emails are written to disk instead of being issued to a server. |
 
 ## Developer Notes
 

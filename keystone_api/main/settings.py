@@ -156,12 +156,6 @@ CELERY_BROKER_URL = env.url('CELERY_BROKER_URL', "redis://127.0.0.1:6379/0").get
 CELERY_RESULT_BACKEND = env.url('CELERY_RESULT_BACKEND', "redis://127.0.0.1:6379/0").geturl()
 CELERY_CACHE_BACKEND = 'django-cache'
 
-# Email handling
-
-if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-    EMAIL_FILE_PATH = env.path('EMAIL_FILE_PATH', BASE_DIR / 'email')
-
 # Database
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
