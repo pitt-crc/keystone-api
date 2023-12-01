@@ -82,7 +82,7 @@ Improperly configuring these settings can introduce dangerous vulnerabilities an
 | `SECURE_SSL_REDIRECT` | `False`               | Automatically redirect all HTTP traffic to HTTPS.                    |
 | `SESSION_TOKENS_ONLY` | `False`               | Only issue session/CSRF tokens over secure connections.              |
 | `SECURE_HSTS_SECONDS` | `0` (Disabled)        | HSTS cache duration in seconds for the site (and it's subdomains).   |
-| `SECURE_HSTS_PRELOAD` | `False`               | Whether to enable HSTS preload functionality.                        |
+| `SECURE_HSTS_PRELOAD` | `False`               | Enable HSTS preload functionality.                                   |
 
 ### LDAP Authentication
 
