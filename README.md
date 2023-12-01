@@ -182,7 +182,7 @@ keystone-api test apps.admin_utils
 The default django system checks can also be executed as standard:
 
 ```bash
-keystone-api check                   # Check for system configuraion errors
+keystone-api check                   # Check for system configuration errors
 keystone-api makemigrations --check  # Check for missing database migrations
-keystone-api health_check            # Check the status of running backnd services
+keystone-api health_check            # Check the status of running backend services
 ```
