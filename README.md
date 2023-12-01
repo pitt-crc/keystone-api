@@ -135,7 +135,6 @@ The `DEBUG` option is inherently insecure and should **never** be enabled in pro
 | Setting Name      | Default Value          | Description                                                                    |
 |-------------------|------------------------|--------------------------------------------------------------------------------|
 | `DEBUG`           | `False`                | Enable or disable debug mode.                                                  |
-| `EMAIL_FILE_PATH` | `<INSTALL_DIR>/email/` | In debug mode, emails are written to disk instead of being issued to a server. |
 
 ## Developer Notes
 
