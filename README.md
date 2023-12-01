@@ -72,10 +72,10 @@ Improperly configuring these settings can introduce dangerous vulnerabilities an
 Administrators should adhere to the following general guidelines:
 
 - Ensure your deployment is isolated behind a web proxy with proper HTTPS handling
-- Always define the `ALLOWED_HOSTS` list using a restrictive collection of domain patterns
-- Avoid issuing session/CSRF tokens over unsecured connections by enabling `SESSION_TOKENS_ONLY`
+- Always define the `SECURE_ALLOWED_HOSTS` list using a restrictive collection of domain patterns
+- Avoid issuing session/CSRF tokens over unsecured connections by enabling `SECURE_SESSION_TOKENS`
 - HTTP Strict Transport Security (HSTS) should be used to enforce the use of HTTPS
-- Use a fixed (and secure) `SECRET_KEY` value to ensure consistent request signing across application instances/restarts
+- Use a fixed (and secure) `SECURE_SECRET_KEY` value to ensure consistent request signing across application instances/restarts
 
 | Setting Name              | Default Value            | Description                                                   |
 |---------------------------|--------------------------|---------------------------------------------------------------|
