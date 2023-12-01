@@ -28,12 +28,11 @@ docker run -p 8000:8000 keystone-api:develop
 
 The container will automatically launch a fully functioning application served via the Gunicorn web server.
 The application is *not* suitable for full production out of the box.
-See the [Settings](#settings) section for a complete overview of availible settings.
+See the [Settings](#settings) section for a complete overview of available settings.
 
 ### Installing from source
 
-Installing from source is only recommended for project development or as a fallback for situations where Docker is not
-available.
+Installing from source is only recommended for developers or as a fallback for situations where Docker is not available.
 Before proceeding with installation, the following system dependencies must be met:
 
 - A running Celery instance
@@ -41,7 +40,7 @@ Before proceeding with installation, the following system dependencies must be m
 - A running PostgreSQL database (if not using SQLite)
 - LDAP development binaries (if using LDAP authentication)
 
-In keeping with best practice, it is recommended to install packages in a dedicated virtual environment:
+In keeping with best practice, it is recommended to install packages into a dedicated virtual environment:
 
 ```bash
 conda create -n keystone-api python=3.11
@@ -76,30 +75,31 @@ Administrators should adhere to the following general guidelines:
 - Always define the `ALLOWED_HOSTS` list using a restrictive collection of domain patterns
 - Avoid issuing session/CSRF tokens over unsecured connections by enabling `SESSION_TOKENS_ONLY`
 - HTTP Strict Transport Security (HSTS) should be used to enforce the use of HTTPS
-- Use a fixed `SECRET_KEY` value to ensure consistent request signing across application instances/restarts
+- Use a fixed (and secure) `SECRET_KEY` value to ensure consistent request signing across application instances/restarts
 
-| Setting Name           | Default Value         | Description                                                         |
-|------------------------|-----------------------|---------------------------------------------------------------------|
-| `SECRET_KEY`           | Randomly generated    | Secret key used to enforce cryptographic signing.                   |
-| `ALLOWED_HOSTS`        | `localhost,127.0.0.1` | Comma-separated list of accepted host/domain names.                 |
-| `SECURE_SSL_REDIRECT`  | `False`               | Automatically redirect all HTTP traffic to HTTPS.                   |
-| `SESSION_TOKENS_ONLY`  | `False`               | Only issue session/CSRF tokens over secure connections.             |
-| `SECURE_HSTS_SECONDS`  | `0` (Disabled)        | HSTS cache duration in seconds for the site (including subdomains). |
-| `SECURE_HSTS_PRELOAD`  | `False`               | Whether to enable HSTS preload functionality.                       |
+| Setting Name              | Default Value            | Description                                                   |
+|---------------------------|--------------------------|---------------------------------------------------------------|
+| `SECURE_SECRET_KEY`       | Randomly generated       | Secret key used to enforce cryptographic signing.             |
+| `SECURE_ALLOWED_HOSTS`    | `localhost,127.0.0.1`    | Comma-separated list of accepted host/domain names.           |
+| `SECURE_SSL_REDIRECT`     | `False`                  | Automatically redirect all HTTP traffic to HTTPS.             |
+| `SECURE_SESSION_TOKENS`   | `False`                  | Only issue session/CSRF tokens over secure connections.       |
+| `SECURE_HSTS_SECONDS`     | `0` (Disabled)           | HSTS cache duration in seconds.                               |
+| `SECURE_HSTS_SUBDOMAINS`  | `False`                  | Enable HSTS for subdomains.                                   |
+| `SECURE_HSTS_PRELOAD`     | `False`                  | Whether to enable HSTS preload functionality.                 |
 
-### Networking
+### API Throttling
 
-Networking settings are used to throttle incoming API requests against a maximum limit.
+API settings are used to throttle incoming API requests against a maximum limit.
 Limits are specified as the maximum number of requests per `day`, `minute`, `hour`, or `second`.
 
 | Setting Name              | Default Value            | Description                                                   |
 |---------------------------|--------------------------|---------------------------------------------------------------|
-| `THROTTLE_ANON`           | `1000/day`               | Rate limiting for anonymous (unauthenticated) users.          |
-| `THROTTLE_USER`           | `10000/day`              | Rate limiting for authenticated users.                        |
+| `API_THROTTLE_ANON`       | `1000/day`               | Rate limiting for anonymous (unauthenticated) users.          |
+| `API_THROTTLE_USER`       | `10000/day`              | Rate limiting for authenticated users.                        |
 
 ### Authentication
 
-LDAP authentication support is optional and disabled by default.
+Enabling LDAP authentication is optional and disabled by default.
 To enable LDAP, set the `AUTH_LDAP_SERVER_URI` value to the desired LDAP endpoint.
 
 | Setting Name              | Default Value            | Description                                                   |
@@ -109,7 +109,7 @@ To enable LDAP, set the `AUTH_LDAP_SERVER_URI` value to the desired LDAP endpoin
 | `AUTH_LDAP_BIND_DN`       |                          | Optionally bind LDAP queries to the given DN.                 |
 | `AUTH_LDAP_BIND_PASSWORD` |                          | The password to use when binding to the LDAP server.          |
 | `AUTH_LDAP_USER_SEARCH`   | `(uid=%(user)s)`         | The search query for finding a user in the LDAP server.       |
-| `OPT_X_TLS_REQUIRE_CERT`  | `True`                   | Require TLS when connecting to LDAP.                          |
+| `AUTH_LDAP_REQUIRE_CERT`  | `True`                   | Require TLS when connecting to LDAP.                          |
 
 ### Database Connection
 
@@ -182,7 +182,7 @@ keystone-api test apps.admin_utils
 The default django system checks can also be executed as standard:
 
 ```bash
-keystone-api check                   # Check for system configuraion errors
+keystone-api check                   # Check for system configuration errors
 keystone-api makemigrations --check  # Check for missing database migrations
-keystone-api health_check            # Check the status of running backnd services
+keystone-api health_check            # Check the status of running backend services
 ```
