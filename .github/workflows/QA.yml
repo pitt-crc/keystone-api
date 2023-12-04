@@ -26,10 +26,25 @@ jobs:
         with:
           category: /language:${{matrix.language}}
 
+  codacy:
+    name: Codacy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@main
+
+      - name: Run Codacy
+        uses: codacy/codacy-analysis-cli-action@master
+        with:
+          tool: <CLIENT_SIDE_TOOL_NAME>
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          upload: true
+          max-allowed-issues: 2147483647
+
   report-qa-status:
     name: Report QA Status
     runs-on: ubuntu-latest
-    needs: [ codeql ]
+    needs: [ codeql, codacy ]
     if: always()
 
     steps:
