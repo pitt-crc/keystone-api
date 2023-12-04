@@ -41,7 +41,7 @@ jobs:
       - name: Run API health checks
         run: |
           docker run --detach -p 8000:8000 test-image
-          curl localhst:8000
+          curl localhost:8000/health
 
   app-tests:
     name: Application Tests
