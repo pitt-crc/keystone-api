@@ -38,9 +38,9 @@ jobs:
       - name: Load image
         run: docker load --input /tmp/test-image.tar
 
-      - name: Run migration checks
+      - name: Run API health checks
         run: |
-          docker run -p 8000:8000 test-image
+          docker run --detach -p 8000:8000 test-image
           curl localhst:8000
 
   app-tests:
