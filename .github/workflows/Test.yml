@@ -22,13 +22,13 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: test-image
-          run: keystone-api check
+          run: check
 
       - name: Run migration checks
         uses: addnab/docker-run-action@v3
         with:
           image: test-image
-          run: keystone-api makemigrations --check
+          run: makemigrations --check
 
   app-tests:
     name: Application Tests
