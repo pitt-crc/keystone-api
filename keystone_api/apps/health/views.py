@@ -15,6 +15,8 @@ __all__ = ['HealthChecks']
 class HealthChecks(ViewSet, CheckMixin):
     """View for rendering system status messages"""
 
+    permission_classes = []
+
     def list(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
         """Return a JSON response detailing system status checks.
 
