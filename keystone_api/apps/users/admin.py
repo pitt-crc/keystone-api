@@ -14,11 +14,11 @@ from .models import *
 settings.JAZZMIN_SETTINGS['icons'].update({
     'users.User': 'fa fa-user',
     'users.Group': 'fa fa-user-shield',
-    'users.Delegate': 'fa fa-users',
+    'users.ResearchGroup': 'fa fa-users',
 })
 
 settings.JAZZMIN_SETTINGS['order_with_respect_to'].extend([
-    'users.User', 'users.Group', 'users.Delegate'
+    'users.User', 'users.Group', 'users.ResearchGroup'
 ])
 
 # Remove the original authentication admin
