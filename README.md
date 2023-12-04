@@ -37,7 +37,10 @@ Before proceeding with installation, the following system dependencies must be m
 
 - A running Celery instance
 - A running Redis database
-- A running PostgreSQL database (if not using SQLite)
+
+The following system dependencies are optional:
+
+- A running PostgreSQL database (if using PostgreSQL instead of SQLite)
 - LDAP development binaries (if using LDAP authentication)
 
 In keeping with best practice, it is recommended to install packages into a dedicated virtual environment:
@@ -104,8 +107,8 @@ To enable LDAP, set the `AUTH_LDAP_SERVER_URI` value to the desired LDAP endpoin
 
 | Setting Name              | Default Value            | Description                                                   |
 |---------------------------|--------------------------|---------------------------------------------------------------|
-| `AUTH_LDAP_START_TLS`     | `True`                   | Whether to use TLS when connecting to the LDAP server.        |
 | `AUTH_LDAP_SERVER_URI`    |                          | The URI of the LDAP server.                                   |
+| `AUTH_LDAP_START_TLS`     | `True`                   | Whether to use TLS when connecting to the LDAP server.        |
 | `AUTH_LDAP_BIND_DN`       |                          | Optionally bind LDAP queries to the given DN.                 |
 | `AUTH_LDAP_BIND_PASSWORD` |                          | The password to use when binding to the LDAP server.          |
 | `AUTH_LDAP_USER_SEARCH`   | `(uid=%(user)s)`         | The search query for finding a user in the LDAP server.       |
