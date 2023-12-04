@@ -41,7 +41,11 @@ jobs:
       - name: Run API health checks
         run: |
           docker run --detach -p 8000:8000 test-image
-          curl localhost:8000/health
+          http_status=$(wget -NS localhost:8000/health/ 2>&1 | grep "HTTP/" | awk '{print $2}')
+          jq . index.html
+          if [ "$http_status" -ne 200 ]; then
+            exit 1
+          fi
 
   app-tests:
     name: Application Tests
