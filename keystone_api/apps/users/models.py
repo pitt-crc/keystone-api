@@ -9,7 +9,7 @@ the associated table/fields/records are presented by parent interfaces.
 from django.contrib.auth import models as auth_model
 from django.db import models
 
-__all__ = ['Delegate', 'Group', 'User']
+__all__ = ['ResearchGroup', 'Group', 'User']
 
 
 class User(auth_model.User):
@@ -26,12 +26,14 @@ class Group(auth_model.Group):
         proxy = True
 
 
-class Delegate(models.Model):
-    """Delegated user permissions where PI's allow other users to work in their stead"""
+class ResearchGroup(models.Model):
+    """A user research group tied to a slurm account"""
 
-    pi = models.ForeignKey(User, on_delete=models.CASCADE, related_name='delegate_pi')
-    delegates = models.ManyToManyField(User, related_name='delegate_delegates')
+    acc_name = models.CharField(max_length=255)
+    pi = models.ForeignKey(User, on_delete=models.CASCADE, related_name='research_group_pi')
+    admins = models.ManyToManyField(User, related_name='research_group_admins')
 
     def __str__(self) -> str:
-        self.pi: User
-        return f'Delegates for {self.pi.username}'
+        """Return the research group's account name"""
+
+        return str(self.acc_name)
