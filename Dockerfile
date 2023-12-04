@@ -25,7 +25,7 @@ COPY README.md README.md
 
 # Install the application
 ENV PIP_ROOT_USER_ACTION=ignore
-RUN pip install -e .
+RUN pip install -e . && pip cache purge
 
 # Setup and launch the application
 ENTRYPOINT ["keystone-api"]

@@ -9,18 +9,23 @@ from django.http import JsonResponse
 from health_check.mixins import CheckMixin
 from rest_framework.viewsets import ViewSet
 
-__all__ = ['HealthCheckViewSet']
+__all__ = ['HealthChecks']
 
 
-class HealthCheckViewSet(CheckMixin, ViewSet):
+class HealthChecks(ViewSet, CheckMixin):
     """View for rendering system status messages"""
 
-    def list(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
-        """Return a JSON responses detailing system status checks
+    permission_classes = []
 
-        Functions similarly to the overloaded parent method, except responses
-        are forced to be JSON format and are never rendered HTML.
+    def list(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
+        """Return a JSON response detailing system status checks.
+
+        The returned status code will be 200 if all checks pass. If any checks
+        fail, the status code will be 500.
         """
+
+        # This method functions similarly to the overloaded parent method,
+        # except responses are forced to be JSON and never rendered HTML.
 
         status_code = 500 if self.errors else 200
         return self.render_to_response_json(self.plugins, status_code)

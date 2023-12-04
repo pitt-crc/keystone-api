@@ -6,12 +6,8 @@ with the Celery application instance for all applications defined in the
 `settings.INSTALLED_APPS` list.
 """
 
-import os
-
 from celery import Celery
 from django.conf import settings
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "keystone_api.main.settings")
 
 celery_app = Celery("scheduler")
 celery_app.config_from_object("django.conf:settings", namespace="CELERY")

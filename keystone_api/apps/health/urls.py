@@ -7,6 +7,6 @@ from .views import *
 app_name = 'health'
 
 router = DefaultRouter()
-router.register('', HealthCheckViewSet, basename='health')
+router.register('', HealthChecks, basename='health')
 
 urlpatterns = router.urls
