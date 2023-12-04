@@ -4,6 +4,9 @@ on:
   workflow_call:
 
 jobs:
+
+  # System configuration tests including checks for obviously
+  # incorrect settings and missing database migrations
   system-checks:
     name: System Checks
     runs-on: ubuntu-latest
@@ -24,6 +27,8 @@ jobs:
       - name: Run migration checks
         run: docker run test-image makemigrations --check
 
+  # Integration test requiring all API health checks to pass
+  # when launching the docker container with default settings.
   health-checks:
     name: API Health Checks
     runs-on: ubuntu-latest
@@ -41,7 +46,7 @@ jobs:
       - name: Run API health checks
         run: |
           docker run --detach -p 8000:8000 test-image
-          sleep 30
+          sleep 30  # Wait for API server to start
           
           http_status=$(wget -NS localhost:8000/health/ 2>&1 | grep "HTTP/" | awk '{print $2}')
           jq . index.html
@@ -49,6 +54,7 @@ jobs:
             exit 1
           fi
 
+  # Run any/all application tests using the Django `test` utility
   app-tests:
     name: Application Tests
     runs-on: ubuntu-latest
