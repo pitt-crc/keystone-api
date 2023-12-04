@@ -14,11 +14,11 @@ from .models import *
 settings.JAZZMIN_SETTINGS['icons'].update({
     'users.User': 'fa fa-user',
     'users.Group': 'fa fa-user-shield',
-    'users.Delegate': 'fa fa-users',
+    'users.ResearchGroup': 'fa fa-users',
 })
 
 settings.JAZZMIN_SETTINGS['order_with_respect_to'].extend([
-    'users.User', 'users.Group', 'users.Delegate'
+    'users.User', 'users.Group', 'users.ResearchGroup'
 ])
 
 # Remove the original authentication admin
@@ -36,9 +36,9 @@ class GroupAdmin(auth.admin.GroupAdmin):
     """Admin interface for managing user groups"""
 
 
-@admin.register(Delegate)
+@admin.register(ResearchGroup)
 class ResearchGroupAdmin(admin.ModelAdmin):
     """Admin interface for managing research group delegates"""
 
     list_display = ['pi']
-    filter_horizontal = ('delegates',)
+    filter_horizontal = ('admins',)
