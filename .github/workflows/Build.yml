@@ -20,16 +20,9 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Get version
-        id: version
-        run: |
-          release_tag=${{github.ref}}
-          echo $release_tag
-          exit 1
-          echo "version=${release_tag#refs/tags/v}" >> $GITHUB_OUTPUT
-
       - name: Set package version
-        run: poetry version ${{ steps.version.outputs.version }}
+        if: startsWith(github.ref, 'refs/tags')
+        run: poetry version $(echo ${{github.ref}} | sed 's/refs\/tags\/v//')
 
       - name: Build image
         uses: docker/build-push-action@v5
