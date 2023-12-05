@@ -12,23 +12,6 @@ jobs:
     name: Publish Image
 
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
-
-      - name: Get version
-        id: version
-        run: |
-          release_tag=${{github.ref}}
-          echo "version=${release_tag#refs/tags/v}" >> $GITHUB_OUTPUT
-
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: false
-
-      - name: Set package version
-        run: poetry version ${{ steps.version.outputs.version }}
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -39,7 +22,16 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and publish image
+      - name: Fetch image artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: test-image
+          path: /tmp
+
+      - name: Load image
+        run: docker load --input /tmp/test-image.tar
+
+      - name: Publish image
         uses: docker/build-push-action@v5
         with:
           context: .
