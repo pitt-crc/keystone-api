@@ -1,4 +1,4 @@
-name: Publish Docker Image
+name: Publish Docker
 
 on:
   workflow_call:
@@ -12,15 +12,6 @@ jobs:
     name: Publish Image
 
     steps:
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Fetch image artifact
         uses: actions/download-artifact@v3
@@ -30,6 +21,17 @@ jobs:
 
       - name: Load image
         run: docker load --input /tmp/test-image.tar
+
+      - name: Get application version
+        id: version
+        run: echo "version=$(docker inspect --format='{{index .Config.Labels "keystone-api-version"}}' test-image)" >> $GITHUB_OUTPUT
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish image
         uses: docker/build-push-action@v5
