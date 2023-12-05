@@ -3,7 +3,6 @@ name: Release
 on:
   release:
     types: [ "released" ]
-  pull_request:
 
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/keystone-api
