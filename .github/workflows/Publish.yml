@@ -25,7 +25,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: keystone-api
+          images: ghcr.io/${{ github.repository_owner }}/keystone-api
           tags: |
             type=semver,pattern={{version}}
             type=raw,value=latest
