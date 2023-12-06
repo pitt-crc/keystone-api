@@ -18,15 +18,11 @@ jobs:
       - name: Fetch image artifact
         uses: actions/download-artifact@v3
         with:
-          name: test-image
+          name: keystone-api
           path: /tmp
 
       - name: Load image
-        run: docker load --input /tmp/test-image.tar
-
-      - name: Get application version
-        id: version
-        run: echo "version=$(docker inspect --format='{{index .Config.Labels "keystone-api-version"}}' test-image)" >> $GITHUB_OUTPUT
+        run: docker load --input /tmp/keystone-api.tar
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -40,4 +36,3 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }},${{ env.IMAGE_NAME }}:latest
