@@ -15,17 +15,17 @@ jobs:
       - name: Fetch image artifact
         uses: actions/download-artifact@v3
         with:
-          name: test-image
+          name: keystone-api
           path: /tmp
 
       - name: Load image
-        run: docker load --input /tmp/test-image.tar
+        run: docker load --input /tmp/keystone-api.tar
 
       - name: Run project checks
-        run: docker run test-image check
+        run: docker run keystone-api check
 
       - name: Run migration checks
-        run: docker run test-image makemigrations --check
+        run: docker run keystone-api makemigrations --check
 
   # Integration test requiring all API health checks to pass
   # when launching the docker container with default settings.
@@ -37,15 +37,15 @@ jobs:
       - name: Fetch image artifact
         uses: actions/download-artifact@v3
         with:
-          name: test-image
+          name: keystone-api
           path: /tmp
 
       - name: Load image
-        run: docker load --input /tmp/test-image.tar
+        run: docker load --input /tmp/keystone-api.tar
 
       - name: Run API health checks
         run: |
-          docker run --detach -p 8000:8000 test-image
+          docker run --detach -p 8000:8000 keystone-api
           sleep 30  # Wait for API server to start
           
           http_status=$(wget -NS localhost:8000/health/ 2>&1 | grep "HTTP/" | awk '{print $2}')
@@ -63,14 +63,14 @@ jobs:
       - name: Fetch image artifact
         uses: actions/download-artifact@v3
         with:
-          name: test-image
+          name: keystone-api
           path: /tmp
 
       - name: Load image
-        run: docker load --input /tmp/test-image.tar
+        run: docker load --input /tmp/keystone-api.tar
 
       - name: Run tests
-        run: docker run test-image test
+        run: docker run keystone-api test
 
   report-test-status:
     name: Report Test Status

@@ -20,4 +20,4 @@ jobs:
   docker:
     name: Docker
     needs: test
-    uses: ./.github/workflows/DockerPublish.yml
+    uses: ./.github/workflows/Publish.yml

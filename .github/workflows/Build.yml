@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout source
         uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
@@ -19,13 +19,11 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          tags: test-image:latest
-          outputs: type=docker,dest=/tmp/test-image.tar
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          tags: keystone-api:latest
+          outputs: type=docker,dest=/tmp/keystone-api.tar
 
       - name: Upload image artifact
         uses: actions/upload-artifact@v3
         with:
-          name: test-image
-          path: /tmp/test-image.tar
+          name: keystone-api
+          path: /tmp/keystone-api.tar
