@@ -19,7 +19,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          tags: latest
+          tags: keystone-api:latest
           outputs: type=docker,dest=/tmp/keystone-api.tar
 
       - name: Upload image artifact
