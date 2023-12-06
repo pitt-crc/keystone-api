@@ -12,33 +12,28 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Get application version
-        id: version
-        run: echo "version=$(echo ${{ github.ref }} | sed 's/refs\/tags\/v//')" >> $GITHUB_OUTPUT
-
-      - name: Install Poetry
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: false
-
-      - name: Set package version
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: poetry version ${{ steps.version.outputs.version }}
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: keystone-api
+          tags: |
+            type=semver,pattern={{version}}
+            type=raw,value=latest
 
       - name: Build image
         uses: docker/build-push-action@v5
         with:
           context: .
-          labels: keystone-api-version=${{ steps.version.outputs.version }}
-          tags: test-image:latest
-          outputs: type=docker,dest=/tmp/test-image.tar
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          outputs: type=docker,dest=/tmp/keystone-api.tar
 
       - name: Upload image artifact
         uses: actions/upload-artifact@v3
         with:
-          name: test-image
-          path: /tmp/test-image.tar
+          name: keystone-api
+          path: /tmp/keystone-api.tar
