@@ -14,16 +14,16 @@ jobs:
 
       - name: Get application version
         id: version
-        run: echo "version=$(echo ${{github.ref}} | sed 's/refs\/tags\/v//')" >> $GITHUB_OUTPUT
+        run: echo "version=$(echo ${{ github.ref }} | sed 's/refs\/tags\/v//')" >> $GITHUB_OUTPUT
 
       - name: Install Poetry
-        if: startsWith(github.ref, 'refs/tags')
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: snok/install-poetry@v1
         with:
           virtualenvs-create: false
 
       - name: Set package version
-        if: startsWith(github.ref, 'refs/tags')
+        if: startsWith(github.ref, 'refs/tags/v')
         run: poetry version ${{ steps.version.outputs.version }}
 
       - name: Set up Docker Buildx

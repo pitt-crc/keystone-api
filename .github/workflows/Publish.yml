@@ -12,6 +12,8 @@ jobs:
     name: Publish Image
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
 
       - name: Fetch image artifact
         uses: actions/download-artifact@v3
