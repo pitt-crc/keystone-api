@@ -137,11 +137,6 @@ else:
 # Audit log
 
 AUDITLOG_INCLUDE_ALL_MODELS = True
-AUDITLOG_EXCLUDE_TRACKING_FIELDS = (
-    "created",
-    "modified",
-    "password"
-)
 
 # Celery scheduler
 
