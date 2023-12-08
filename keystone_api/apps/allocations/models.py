@@ -5,6 +5,7 @@ tables and provide an object-oriented interface for executing database logic.
 Each model reflects a different database and defines low-level defaults for how
 the associated table/fields/records are presented by parent interfaces.
 """
+
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.template.defaultfilters import truncatechars
