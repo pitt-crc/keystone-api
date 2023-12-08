@@ -5,7 +5,7 @@ appropriately rendered HTML template or other HTTP response.
 """
 
 from auditlog.models import LogEntry
-from rest_framework import viewsets
+from rest_framework import permissions, viewsets
 
 from .serializers import *
 
@@ -17,3 +17,4 @@ class LogEntryViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = LogEntry.objects.all()
     serializer_class = LogEntrySerializer
+    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
