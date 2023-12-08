@@ -52,8 +52,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_celery_beat',
     'django_celery_results',
-    'apps.allocations',
+    'auditlog',
     'apps.admin_utils',
+    'apps.allocations',
+    'apps.audit',
     'apps.docs',
     'apps.health',
     'apps.research_products',
@@ -69,6 +71,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'auditlog.middleware.AuditlogMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
