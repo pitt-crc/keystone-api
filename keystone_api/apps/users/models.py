@@ -26,7 +26,7 @@ class Group(auth_model.Group):
         proxy = True
 
 
-class Permission(auth_model.Group):
+class Permission(auth_model.Permission):
     """Proxy model for the built-in django `Permission` model"""
 
     class Meta:
