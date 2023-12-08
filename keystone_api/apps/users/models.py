@@ -26,6 +26,13 @@ class Group(auth_model.Group):
         proxy = True
 
 
+class Permission(auth_model.Permission):
+    """Proxy model for the built-in django `Permission` model"""
+
+    class Meta:
+        proxy = True
+
+
 class ResearchGroup(models.Model):
     """A user research group tied to a slurm account"""
 
