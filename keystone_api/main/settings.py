@@ -134,6 +134,15 @@ if DEBUG:  # Disable the API GUI if not in debug mode
 else:
     REST_FRAMEWORK['DEFAULT_PERMISSION_CLASSES'].append('rest_framework.permissions.IsAuthenticated')
 
+# Audit log
+
+AUDITLOG_INCLUDE_ALL_MODELS = True
+AUDITLOG_EXCLUDE_TRACKING_FIELDS = (
+    "created",
+    "modified",
+    "password"
+)
+
 # Celery scheduler
 
 CELERY_BROKER_URL = env.url('CELERY_BROKER_URL', "redis://127.0.0.1:6379/0").geturl()

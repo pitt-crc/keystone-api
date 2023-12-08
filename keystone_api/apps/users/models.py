@@ -6,7 +6,6 @@ Each model reflects a different database and defines low-level defaults for how
 the associated table/fields/records are presented by parent interfaces.
 """
 
-from auditlog.registry import auditlog
 from django.contrib.auth import models as auth_model
 from django.db import models
 
@@ -27,6 +26,13 @@ class Group(auth_model.Group):
         proxy = True
 
 
+class Permission(auth_model.Group):
+    """Proxy model for the built-in django `Permission` model"""
+
+    class Meta:
+        proxy = True
+
+
 class ResearchGroup(models.Model):
     """A user research group tied to a slurm account"""
 
@@ -38,8 +44,3 @@ class ResearchGroup(models.Model):
         """Return the research group's account name"""
 
         return str(self.acc_name)
-
-
-auditlog.register(User)
-auditlog.register(Group)
-auditlog.register(ResearchGroup)

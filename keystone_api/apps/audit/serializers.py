@@ -6,6 +6,8 @@ They encapsulate object serialization, data validation, and database object
 creation.
 """
 
+import json
+
 from auditlog.models import LogEntry
 from rest_framework import serializers
 
@@ -20,3 +22,20 @@ class LogEntrySerializer(serializers.ModelSerializer):
 
         model = LogEntry
         fields = '__all__'
+
+    def protect_passwords(self, d: dict):
+        """Prevent passwords from being shared in serialized log entries"""
+
+        if 'password' in d:
+            d.pop('password', None)
+            d['password'] = ["***", "***"]
+
+        for key, value in d.items():
+            if isinstance(value, dict):
+                self.protect_passwords(value)
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['changes'] = json.loads(representation['changes'])
+        self.protect_passwords(representation)
+        return representation
