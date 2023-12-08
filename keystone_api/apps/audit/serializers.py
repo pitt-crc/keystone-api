@@ -28,5 +28,5 @@ class LogEntrySerializer(serializers.ModelSerializer):
 
         representation = super().to_representation(instance)
         representation['changes'] = json.loads(representation['changes'])
-        representation['changes'].pop('password')
+        representation['changes'].pop('password', None)
         return representation
