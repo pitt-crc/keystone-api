@@ -14,7 +14,8 @@ SchemaView = get_schema_view(
     title="CRC Self Service API",
     description="A REST API for managing user resource allocations on HPC systems.",
     version=settings.VERSION,
-    permission_classes=[]
+    permission_classes=[],
+    public=True
 )
 
 
