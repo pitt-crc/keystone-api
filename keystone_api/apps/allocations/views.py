@@ -17,6 +17,7 @@ class ClusterViewSet(viewsets.ModelViewSet):
 
     queryset = Cluster.objects.all()
     serializer_class = ClusterSerializer
+    filterset_fields = '__all__'
 
 
 class AllocationViewSet(viewsets.ModelViewSet):
@@ -24,6 +25,7 @@ class AllocationViewSet(viewsets.ModelViewSet):
 
     queryset = Allocation.objects.all()
     serializer_class = AllocationSerializer
+    filterset_fields = '__all__'
 
 
 class ProposalViewSet(viewsets.ModelViewSet):
@@ -31,6 +33,7 @@ class ProposalViewSet(viewsets.ModelViewSet):
 
     queryset = Proposal.objects.all()
     serializer_class = ProposalSerializer
+    filterset_fields = '__all__'
 
 
 class ProposalReviewViewSet(viewsets.ModelViewSet):
@@ -38,3 +41,4 @@ class ProposalReviewViewSet(viewsets.ModelViewSet):
 
     queryset = ProposalReview.objects.all()
     serializer_class = ProposalReviewSerializer
+    filterset_fields = '__all__'

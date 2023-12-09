@@ -17,6 +17,7 @@ class PublicationViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Publication.objects.all()
     serializer_class = PublicationSerializer
+    filterset_fields = '__all__'
 
 
 class GrantViewSet(viewsets.ReadOnlyModelViewSet):
@@ -24,3 +25,4 @@ class GrantViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Grant.objects.all()
     serializer_class = GrantSerializer
+    filterset_fields = '__all__'
