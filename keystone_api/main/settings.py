@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_celery_beat',
     'django_celery_results',
+    'django_filters',
     'auditlog',
     'apps.admin_utils',
     'apps.allocations',
@@ -125,7 +126,10 @@ REST_FRAMEWORK = {
     },
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
-    ]
+    ],
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
 }
 
 if DEBUG:  # Disable the API GUI if not in debug mode
