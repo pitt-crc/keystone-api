@@ -34,7 +34,7 @@ class LogEntrySerialization(TestCase):
 
         log_entry = LogEntry(**{
             'id': 1,
-            'changes': "{\"field1\": [\"None\", \"abc\"], \"passwrd\": [\"foo\", \"bar\"]}",
+            'changes': "{\"field1\": [\"None\", \"abc\"], \"password\": [\"foo\", \"bar\"]}",
         })
 
         serialized_data = LogEntrySerializer(instance=log_entry).data
