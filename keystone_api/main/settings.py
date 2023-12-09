@@ -52,8 +52,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_celery_beat',
     'django_celery_results',
-    'apps.allocations',
+    'auditlog',
     'apps.admin_utils',
+    'apps.allocations',
+    'apps.audit',
     'apps.docs',
     'apps.health',
     'apps.research_products',
@@ -69,6 +71,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'auditlog.middleware.AuditlogMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
@@ -130,6 +133,10 @@ if DEBUG:  # Disable the API GUI if not in debug mode
 
 else:
     REST_FRAMEWORK['DEFAULT_PERMISSION_CLASSES'].append('rest_framework.permissions.IsAuthenticated')
+
+# Audit log
+
+AUDITLOG_INCLUDE_ALL_MODELS = True
 
 # Celery scheduler
 
