@@ -3,7 +3,7 @@
 from auditlog.models import LogEntry
 from django.test import TestCase
 
-from keystone_api.apps.audit.serializers import LogEntrySerializer
+from apps.audit.serializers import LogEntrySerializer
 
 
 class LogEntrySerialization(TestCase):
