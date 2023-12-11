@@ -39,6 +39,12 @@ class ResearchGroup(models.Model):
     acc_name = models.CharField(max_length=255)
     pi = models.ForeignKey(User, on_delete=models.CASCADE, related_name='research_group_pi')
     admins = models.ManyToManyField(User, related_name='research_group_admins')
+    unprivileged = models.ManyToManyField(User, related_name='research_group_unprivileged')
+
+    def get_all_members(self) -> tuple[User]:
+        """Return all system users affiliated with the research group"""
+
+        return (self.pi,) + tuple(self.admins) + tuple(self.unprivileged)
 
     def __str__(self) -> str:
         """Return the research group's account name"""
