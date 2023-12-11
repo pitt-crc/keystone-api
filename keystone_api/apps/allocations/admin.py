@@ -86,9 +86,9 @@ class ProposalAdmin(admin.ModelAdmin):
 
         return sum(1 for review in obj.proposalreview_set.all() if review.approve)
 
-    list_display = ['user', title, 'submitted', 'approved', 'reviews', 'approvals']
+    list_display = ['group', title, 'submitted', 'approved', 'reviews', 'approvals']
     list_display_links = list_display
-    search_fields = ['title', 'description', 'user__first_name', 'user__last_name', 'user__username']
+    search_fields = ['title', 'description', 'group__acc_name']
     ordering = ['submitted']
     list_filter = [
         ('submitted', admin.DateFieldListFilter),
@@ -103,10 +103,10 @@ class AllocationAdmin(admin.ModelAdmin):
 
     @staticmethod
     @admin.display
-    def user(obj: Allocation) -> str:
+    def group(obj: Allocation) -> str:
         """Return the username of the PI for the associated proposal"""
 
-        return obj.proposal.user.username
+        return obj.proposal.group.name
 
     @staticmethod
     @admin.display
@@ -122,10 +122,10 @@ class AllocationAdmin(admin.ModelAdmin):
 
         return f'{obj.sus:,}'
 
-    list_display = [user, 'proposal', 'cluster', 'expire', 'start', service_units, proposal_approved]
+    list_display = [group, 'proposal', 'cluster', 'expire', 'start', service_units, proposal_approved]
     list_display_links = list_display
-    ordering = ['proposal__user__username', '-expire', 'cluster']
-    search_fields = ['proposal__user__username', 'proposal__title', 'cluster__name']
+    ordering = ['proposal__group__name', '-expire', 'cluster']
+    search_fields = ['proposal__group__name', 'proposal__title', 'cluster__name']
     list_filter = [
         ('start', admin.DateFieldListFilter),
         ('expire', admin.DateFieldListFilter),
