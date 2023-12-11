@@ -40,5 +40,5 @@ class GroupAdmin(auth.admin.GroupAdmin):
 class ResearchGroupAdmin(admin.ModelAdmin):
     """Admin interface for managing research group delegates"""
 
-    list_display = ['pi']
-    filter_horizontal = ('admins',)
+    list_display = ['name', 'pi']
+    filter_horizontal = ('admins', 'members')

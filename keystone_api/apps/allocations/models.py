@@ -10,6 +10,8 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.template.defaultfilters import truncatechars
 
+from apps.users.models import ResearchGroup
+
 __all__ = ['Allocation', 'Cluster', 'Proposal', 'ProposalReview']
 
 
@@ -29,7 +31,7 @@ class Cluster(models.Model):
 class Proposal(models.Model):
     """Project proposal requesting service unit allocations on one or more clusters"""
 
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    group = models.ForeignKey(ResearchGroup, on_delete=models.CASCADE)
     title = models.CharField(max_length=250)
     description = models.TextField(max_length=1600)
     submitted = models.DateField('Submission Date')
@@ -54,7 +56,7 @@ class Allocation(models.Model):
         """Return a human-readable summary of the allocation"""
 
         self.proposal: Proposal
-        return f'{self.cluster} allocation for {self.proposal.user} starting {self.start}'
+        return f'{self.cluster} allocation for {self.proposal.group} starting {self.start}'
 
 
 class ProposalReview(models.Model):
