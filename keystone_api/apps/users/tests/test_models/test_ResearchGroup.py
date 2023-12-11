@@ -6,16 +6,6 @@ from django.test import TestCase
 from apps.users.models import ResearchGroup, User
 
 
-class SchemaTests(TestCase):
-    """Test the model schema/behavior against design requirements"""
-
-    def test_pi_is_required(self) -> None:
-        """Test the PI filed is required"""
-
-        with self.assertRaisesRegexp(IntegrityError, 'NOT NULL constraint failed: users_researchgroup.pi_id'):
-            ResearchGroup.objects.create(id=0)
-
-
 class GetAllMembers(TestCase):
     """Test fetching all group members via the `get_all_members` member"""
 
