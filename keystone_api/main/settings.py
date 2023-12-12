@@ -10,9 +10,16 @@ from django.core.management.utils import get_random_secret_key
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR))
 
+# Application metadata
+
+dist = importlib.metadata.distribution('keystone-api')
+VERSION = dist.metadata['version']
+SUMMARY = dist.metadata['summary']
+
+# Developer settings
+
 env = environ.Env()
 DEBUG = env.bool('DEBUG', False)
-VERSION = importlib.metadata.version('keystone-api')
 
 # Core security settings
 
@@ -143,7 +150,7 @@ if DEBUG:  # Disable the API GUI if not in debug mode
 
 SPECTACULAR_SETTINGS = {
     'TITLE': f'Keystone API v{VERSION}',
-    'DESCRIPTION': 'Allocation management API for HPC systems.',
+    'DESCRIPTION': SUMMARY,
     'VERSION': VERSION,
     'SERVE_INCLUDE_SCHEMA': False,
 }
