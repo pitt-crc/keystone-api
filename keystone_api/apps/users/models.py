@@ -9,6 +9,8 @@ the associated table/fields/records are presented by parent interfaces.
 from django.contrib.auth import models as auth_model
 from django.db import models
 
+from keystone_api.apps.users.managers import ResearchGroupManager
+
 __all__ = ['Group', 'Permission', 'ResearchGroup', 'User']
 
 
@@ -38,8 +40,10 @@ class ResearchGroup(models.Model):
 
     name = models.CharField(max_length=255)
     pi = models.ForeignKey(User, on_delete=models.CASCADE, related_name='research_group_pi')
-    admins = models.ManyToManyField(User, related_name='research_group_admins', null=True, blank=True)
-    members = models.ManyToManyField(User, related_name='research_group_unprivileged', null=True, blank=True)
+    admins = models.ManyToManyField(User, related_name='research_group_admins', blank=True)
+    members = models.ManyToManyField(User, related_name='research_group_unprivileged', blank=True)
+
+    objects = ResearchGroupManager()
 
     def get_all_members(self) -> tuple[User]:
         """Return all research group members"""
