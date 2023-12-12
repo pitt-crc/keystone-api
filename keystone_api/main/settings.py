@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'django_celery_results',
     'django_filters',
+    'drf_spectacular',
     'auditlog',
     'apps.admin_utils',
     'apps.allocations',
@@ -115,7 +116,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
-    'DEFAULT_PERMISSION_CLASSES': [],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated'
+    ],
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.AnonRateThrottle',
         'rest_framework.throttling.UserRateThrottle'
@@ -130,13 +133,20 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
     ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 if DEBUG:  # Disable the API GUI if not in debug mode
     REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'].append('rest_framework.renderers.BrowsableAPIRenderer')
 
-else:
-    REST_FRAMEWORK['DEFAULT_PERMISSION_CLASSES'].append('rest_framework.permissions.IsAuthenticated')
+# Customize the generation of OpenAPI specifications
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': f'Keystone API v{VERSION}',
+    'DESCRIPTION': 'Allocation management API for HPC systems.',
+    'VERSION': VERSION,
+    'SERVE_INCLUDE_SCHEMA': False,
+}
 
 # Audit log
 
