@@ -14,7 +14,7 @@ sys.path.insert(0, str(BASE_DIR))
 
 dist = importlib.metadata.distribution('keystone-api')
 VERSION = dist.metadata['version']
-DESCRIPTION = dist.metadata['description']
+SUMMARY = dist.metadata['summary']
 
 # Developer settings
 
@@ -149,8 +149,8 @@ if DEBUG:  # Disable the API GUI if not in debug mode
 # Customize the generation of OpenAPI specifications
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': f'Keystone API v{VERSION}',
-    'DESCRIPTION': DESCRIPTION,
+    'TITLE': f'Keystone API',
+    'DESCRIPTION': SUMMARY,
     'VERSION': VERSION,
     'SERVE_INCLUDE_SCHEMA': False,
 }
