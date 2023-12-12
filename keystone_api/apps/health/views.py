@@ -6,6 +6,7 @@ appropriately rendered HTML template or other HTTP response.
 
 from django.core.handlers.wsgi import HttpRequest
 from django.http import JsonResponse
+from drf_spectacular.utils import inline_serializer, extend_schema
 from health_check.mixins import CheckMixin
 from rest_framework.viewsets import ViewSet
 
@@ -17,6 +18,7 @@ class HealthChecks(ViewSet, CheckMixin):
 
     permission_classes = []
 
+    @extend_schema(responses={'2XX': inline_serializer('success', dict())})
     def list(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
         """Return a JSON response detailing system status checks.
 
