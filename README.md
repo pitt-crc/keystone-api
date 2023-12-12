@@ -162,7 +162,6 @@ Running the application in debug mode enables/disables various features to aid i
 In addition to enabling the standard debugging behavior provided by Django:
 
 - A `/docs` page is enabled with full API documentation for the parent application
-- User authentication is not required for API endpoints
 - A web GUI is enabled for easier interaction with API endpoints
 - Tracebacks are provided in the browser when an exception occurs (a Django standard)
 
@@ -187,4 +186,12 @@ The default django system checks can also be executed as standard:
 keystone-api check                   # Check for system configuration errors
 keystone-api makemigrations --check  # Check for missing database migrations
 keystone-api health_check            # Check the status of running backend services
+```
+
+### API Schema Generation
+
+Use the `spectacular` command to dynamically generate an OpenAPI schema:
+
+```bash
+keystone-api spectacular >> api.yml
 ```
