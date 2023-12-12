@@ -25,4 +25,4 @@ class ResearchGroupManager(models.Manager):
             A filtered queryset
         """
 
-        return self.get_queryset().filter(models.Q(pi=user) | models.Q(admins=user) | models.Q(members=user))
+        return self.get_queryset().filter(models.Q(pi=user.id) | models.Q(admins=user.id) | models.Q(members=user.id))

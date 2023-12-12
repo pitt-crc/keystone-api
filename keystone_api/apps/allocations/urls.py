@@ -8,8 +8,8 @@ app_name = 'allocations'
 
 router = DefaultRouter()
 router.register(r'clusters', ClusterViewSet)
-router.register(r'allocations', AllocationViewSet)
-router.register(r'proposals', ProposalViewSet)
+router.register(r'allocations', AllocationViewSet, basename='Allocation')
+router.register(r'proposals', ProposalViewSet, basename='Proposal')
 router.register(r'proposal-reviews', ProposalReviewViewSet)
 
 urlpatterns = router.urls

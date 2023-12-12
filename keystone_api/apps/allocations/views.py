@@ -4,7 +4,8 @@ View objects handle the processing of incoming HTTP requests and return the
 appropriately rendered HTML template or other HTTP response.
 """
 
-from rest_framework import viewsets
+from apps.users.models import ResearchGroup
+from rest_framework import viewsets, permissions
 
 from .models import *
 from .serializers import *
@@ -23,17 +24,25 @@ class ClusterViewSet(viewsets.ModelViewSet):
 class AllocationViewSet(viewsets.ModelViewSet):
     """Manage SU allocations for user research groups."""
 
-    queryset = Allocation.objects.all()
     serializer_class = AllocationSerializer
     filterset_fields = '__all__'
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        research_groups = ResearchGroup.objects.groups_for_user(self.request.user)
+        return Allocation.objects.filter(proposal__group__in=research_groups).all()
 
 
 class ProposalViewSet(viewsets.ModelViewSet):
     """Manage project proposals used to request additional service unit allocations."""
 
-    queryset = Proposal.objects.all()
     serializer_class = ProposalSerializer
     filterset_fields = '__all__'
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        research_groups = ResearchGroup.objects.groups_for_user(self.request.user)
+        return Allocation.objects.filter(group__in=research_groups).all()
 
 
 class ProposalReviewViewSet(viewsets.ModelViewSet):
