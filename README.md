@@ -26,9 +26,16 @@ docker build -t keystone-api:develop keystone-api
 docker run -p 8000:8000 keystone-api:develop
 ```
 
-The container will automatically launch a fully functioning application served via the Gunicorn web server.
-The application is *not* suitable for full production out of the box.
-See the [Settings](#settings) section for a complete overview of available settings.
+The container will automatically launch a fully functioning API server.
+If the container is being launched for the first time, you will need to manually create the first user account.
+To do so, execute the following command with the appropriate container name and follow the onscreen prompts.
+
+```bash
+docker exec -it [CONTAINER NAME] keystone-api createsuperuser
+```
+
+The default container instance is *not* suitable for full production out of the box.
+See the [Settings](#settings) section for a complete overview of configurable options and recommended settings.
 
 ### Installing from source
 
@@ -62,6 +69,13 @@ Use the `--help` option to view the available commands.
 
 ```bash
 kystone-api --help
+```
+
+When running the application for the first time, you will need to manually create the first user account.
+Use the following command to create a new user with admin privliges:
+
+```bash
+keystone-api createsuperuser
 ```
 
 ## Settings
