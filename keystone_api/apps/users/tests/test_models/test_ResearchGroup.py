@@ -14,8 +14,8 @@ class GetAllMembers(TestCase):
         self.pi = User.objects.create_user(username='pi')
         self.admin1 = User.objects.create_user(username='admin1')
         self.admin2 = User.objects.create_user(username='admin2')
-        self.unprivileged1 = User.objects.create_user(username='unprivileged1')
-        self.unprivileged2 = User.objects.create_user(username='unprivileged2')
+        self.member1 = User.objects.create_user(username='unprivileged1')
+        self.member2 = User.objects.create_user(username='unprivileged2')
 
     def test_all_accounts_returned(self) -> None:
         """Test all group members are included in the returned list"""
@@ -23,10 +23,10 @@ class GetAllMembers(TestCase):
         group = ResearchGroup.objects.create(pi=self.pi)
         group.admins.add(self.admin1)
         group.admins.add(self.admin2)
-        group.unprivileged.add(self.unprivileged1)
-        group.unprivileged.add(self.unprivileged2)
+        group.members.add(self.member1)
+        group.members.add(self.member2)
 
-        expected_members = (self.pi, self.admin1, self.admin2, self.unprivileged1, self.unprivileged2)
+        expected_members = (self.pi, self.admin1, self.admin2, self.member1, self.member2)
         self.assertEqual(expected_members, group.get_all_members())
 
 
@@ -39,8 +39,8 @@ class GetPrivilegedMembers(TestCase):
         self.pi = User.objects.create_user(username='pi')
         self.admin1 = User.objects.create_user(username='admin1')
         self.admin2 = User.objects.create_user(username='admin2')
-        self.unprivileged1 = User.objects.create_user(username='unprivileged1')
-        self.unprivileged2 = User.objects.create_user(username='unprivileged2')
+        self.member1 = User.objects.create_user(username='member1')
+        self.member2 = User.objects.create_user(username='member2')
 
     def test_pi_only(self) -> None:
         """Test returned group members for a group with a PI only"""
@@ -59,24 +59,24 @@ class GetPrivilegedMembers(TestCase):
         expected_members = (self.pi, self.admin1, self.admin2)
         self.assertEqual(expected_members, group.get_privileged_members())
 
-    def test_pi_with_unprivileged(self) -> None:
-        """Test returned group members for a group with a PI and unprivileged users"""
+    def test_pi_with_members(self) -> None:
+        """Test returned group members for a group with a PI and unprivileged members"""
 
         group = ResearchGroup.objects.create(pi=self.pi)
-        group.unprivileged.add(self.unprivileged1)
-        group.unprivileged.add(self.unprivileged2)
+        group.members.add(self.member1)
+        group.members.add(self.member2)
 
         expected_members = (self.pi,)
         self.assertEqual(expected_members, group.get_privileged_members())
 
-    def test_pi_with_admin_and_unprivileged(self) -> None:
-        """Test returned group members for a group with a PI, admins, and unprivileged users"""
+    def test_pi_with_admin_and_members(self) -> None:
+        """Test returned group members for a group with a PI, admins, and unprivileged members"""
 
         group = ResearchGroup.objects.create(pi=self.pi)
         group.admins.add(self.admin1)
         group.admins.add(self.admin2)
-        group.unprivileged.add(self.unprivileged1)
-        group.unprivileged.add(self.unprivileged2)
+        group.members.add(self.member1)
+        group.members.add(self.member2)
 
         expected_members = (self.pi, self.admin1, self.admin2)
         self.assertEqual(expected_members, group.get_privileged_members())

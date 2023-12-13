@@ -9,6 +9,8 @@ the associated table/fields/records are presented by parent interfaces.
 from django.contrib.auth import models as auth_model
 from django.db import models
 
+from keystone_api.apps.users.managers import ResearchGroupManager
+
 __all__ = ['Group', 'Permission', 'ResearchGroup', 'User']
 
 
@@ -36,15 +38,17 @@ class Permission(auth_model.Permission):
 class ResearchGroup(models.Model):
     """A user research group tied to a slurm account"""
 
-    acc_name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
     pi = models.ForeignKey(User, on_delete=models.CASCADE, related_name='research_group_pi')
-    admins = models.ManyToManyField(User, related_name='research_group_admins')
-    unprivileged = models.ManyToManyField(User, related_name='research_group_unprivileged')
+    admins = models.ManyToManyField(User, related_name='research_group_admins', blank=True)
+    members = models.ManyToManyField(User, related_name='research_group_unprivileged', blank=True)
+
+    objects = ResearchGroupManager()
 
     def get_all_members(self) -> tuple[User]:
         """Return all research group members"""
 
-        return (self.pi,) + tuple(self.admins.all()) + tuple(self.unprivileged.all())
+        return (self.pi,) + tuple(self.admins.all()) + tuple(self.members.all())
 
     def get_privileged_members(self) -> tuple[User]:
         """Return all research group members with admin privileges"""
@@ -54,4 +58,4 @@ class ResearchGroup(models.Model):
     def __str__(self) -> str:
         """Return the research group's account name"""
 
-        return str(self.acc_name)
+        return str(self.name)

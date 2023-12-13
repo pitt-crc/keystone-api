@@ -10,9 +10,16 @@ from django.core.management.utils import get_random_secret_key
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR))
 
+# Application metadata
+
+dist = importlib.metadata.distribution('keystone-api')
+VERSION = dist.metadata['version']
+SUMMARY = dist.metadata['summary']
+
+# Developer settings
+
 env = environ.Env()
 DEBUG = env.bool('DEBUG', False)
-VERSION = importlib.metadata.version('keystone-api')
 
 # Core security settings
 
@@ -54,6 +61,7 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'django_celery_results',
     'django_filters',
+    'drf_spectacular',
     'auditlog',
     'apps.admin_utils',
     'apps.allocations',
@@ -116,7 +124,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
-    'DEFAULT_PERMISSION_CLASSES': [],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated'
+    ],
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.AnonRateThrottle',
         'rest_framework.throttling.UserRateThrottle'
@@ -131,13 +141,20 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
     ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 if DEBUG:  # Disable the API GUI if not in debug mode
     REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'].append('rest_framework.renderers.BrowsableAPIRenderer')
 
-else:
-    REST_FRAMEWORK['DEFAULT_PERMISSION_CLASSES'].append('rest_framework.permissions.IsAuthenticated')
+# Customize the generation of OpenAPI specifications
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': f'Keystone API',
+    'DESCRIPTION': SUMMARY,
+    'VERSION': VERSION,
+    'SERVE_INCLUDE_SCHEMA': False,
+}
 
 # Audit log
 
