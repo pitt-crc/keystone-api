@@ -40,13 +40,13 @@
   fields:
     name: Research Group
     pi: 1
-    members: [3]
+    members: [ 3 ]
 - model: users.researchgroup
   pk: 2
   fields:
     name: Research Group
     pi: 2
-    members: [3]
+    members: [ 3 ]
 
 # Proposals
 - model: allocations.proposal

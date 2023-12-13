@@ -43,14 +43,9 @@ class List(APITestCase):
         Tests are executed for multiple user account spanning different combinations of group memberships.
         """
 
-        user1 = User.objects.get(username='user1')
-        self.assert_user_returns_allocations(user1, Allocation.objects.affiliated_with_user(user1))
-
-        user2 = User.objects.get(username='user2')
-        self.assert_user_returns_allocations(user1, Allocation.objects.affiliated_with_user(user2))
-
-        common_user = User.objects.get(username='common_user')
-        self.assert_user_returns_allocations(common_user, Allocation.objects.affiliated_with_user(common_user))
+        for username in ('user1', 'user2', 'common_user'):
+            user = User.objects.get(username=username)
+            self.assert_user_returns_allocations(user, Allocation.objects.affiliated_with_user(user))
 
     def test_staff_user(self) -> None:
         """Test staff users have access to all records in the database"""
