@@ -26,7 +26,6 @@ class AllocationViewSet(viewsets.ModelViewSet):
 
     serializer_class = AllocationSerializer
     filterset_fields = '__all__'
-    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self) -> list[Allocation]:
         """Return a list of allocations for the currently authenticated user
@@ -46,7 +45,6 @@ class ProposalViewSet(viewsets.ModelViewSet):
 
     serializer_class = ProposalSerializer
     filterset_fields = '__all__'
-    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self) -> list[Proposal]:
         """Return a list of proposals for the currently authenticated user
@@ -64,7 +62,6 @@ class ProposalViewSet(viewsets.ModelViewSet):
 class ProposalReviewViewSet(viewsets.ModelViewSet):
     """Manage project proposal reviews submitted by administrators."""
 
-    queryset = ProposalReview.objects.all()
     serializer_class = ProposalReviewSerializer
     filterset_fields = '__all__'
 
