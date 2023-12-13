@@ -11,7 +11,7 @@ ENDPOINT = '/allocations/clusters/'
 
 
 class List(APITestCase):
-    """Test fetching bulk records from the root of the API endpoint"""
+    """Test fetching lists of records from the root of the API endpoint"""
 
     fixtures = ["endpoint_testing_data"]
 
