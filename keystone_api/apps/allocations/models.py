@@ -17,7 +17,7 @@ __all__ = ['Allocation', 'Cluster', 'Proposal', 'ProposalReview']
 
 
 class Cluster(models.Model):
-    """A slurm cluster"""
+    """A slurm cluster and it's associated management settings"""
 
     name = models.CharField(max_length=50)
     description = models.TextField(max_length=150, null=True, blank=True)
@@ -60,7 +60,6 @@ class Allocation(models.Model):
     def __str__(self) -> str:
         """Return a human-readable summary of the allocation"""
 
-        self.proposal: Proposal
         return f'{self.cluster} allocation for {self.proposal.group}'
 
 
@@ -79,5 +78,4 @@ class ProposalReview(models.Model):
     def __str__(self) -> str:
         """Return a human-readable identifier for the proposal"""
 
-        self.proposal: Proposal
         return f'{self.reviewer} review for \"{self.proposal.title}\"'
