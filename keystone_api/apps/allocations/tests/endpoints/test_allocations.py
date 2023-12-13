@@ -11,26 +11,9 @@ ENDPOINT = '/allocations/allocations/'
 
 
 class List(APITestCase):
-    """Test the fetching of bulk records from the root of the API endpoint
-
-    API requests are submitted for user accounts with varying levels of privileges
-    and the results are compared to the expected permissions model.
-    """
+    """Test fetching bulk records from the root of the API endpoint"""
 
     fixtures = ["test_allocations"]
-
-    def assert_user_returns_allocations(self, user: User, allocations: list[Allocation]) -> None:
-        """Login as the given user and assert the returned data matches a given list of allocations
-
-        Args:
-            user: The user object to authenticate ass
-            allocations: The expected allocation data
-        """
-
-        self.client.force_authenticate(user=user)
-        response = self.client.get(ENDPOINT)
-        self.assertEqual(AllocationSerializer(allocations, many=True).data, response.data)
-        self.client.logout()
 
     def test_anonymous_user_unauthorized(self) -> None:
         """Test unauthenticated users are returned a 401 status code"""
@@ -45,16 +28,28 @@ class List(APITestCase):
 
         for username in ('user1', 'user2', 'common_user'):
             user = User.objects.get(username=username)
-            self.assert_user_returns_allocations(user, Allocation.objects.affiliated_with_user(user))
+            self.client.force_authenticate(user=user)
+
+            expected_records = Allocation.objects.affiliated_with_user(user).all()
+            response = self.client.get(ENDPOINT)
+            self.assertEqual(AllocationSerializer(expected_records, many=True).data, response.data)
 
     def test_staff_user(self) -> None:
         """Test staff users have access to all records in the database"""
 
         staff_user = User.objects.get(username='staff_user')
-        self.assert_user_returns_allocations(staff_user, Allocation.objects.all())
+        self.client.force_authenticate(user=staff_user)
+
+        expected_records = Allocation.objects.all()
+        expected_data = AllocationSerializer(expected_records, many=True).data
+        self.assertEqual(expected_data, self.client.get(ENDPOINT).data)
 
     def test_super_user(self) -> None:
         """Test super-users have access to all records in the database"""
 
         super_user = User.objects.get(username='super_user')
-        self.assert_user_returns_allocations(super_user, Allocation.objects.all())
+        self.client.force_authenticate(user=super_user)
+
+        expected_records = Allocation.objects.all()
+        expected_data = AllocationSerializer(expected_records, many=True).data
+        self.assertEqual(expected_data, self.client.get(ENDPOINT).data)
