@@ -4,8 +4,7 @@ View objects handle the processing of incoming HTTP requests and return the
 appropriately rendered HTML template or other HTTP response.
 """
 
-from apps.users.models import ResearchGroup
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets
 
 from .models import *
 from .serializers import *
@@ -36,8 +35,7 @@ class AllocationViewSet(viewsets.ModelViewSet):
         if self.request.user.is_staff or self.request.user.is_superuser:
             return Allocation.objects.all()
 
-        research_groups = ResearchGroup.objects.groups_for_user(self.request.user)
-        return Allocation.objects.filter(proposal__group__in=research_groups).all()
+        return Allocation.objects.affiliated_with_user(self.request.user).all()
 
 
 class ProposalViewSet(viewsets.ModelViewSet):
@@ -55,8 +53,7 @@ class ProposalViewSet(viewsets.ModelViewSet):
         if self.request.user.is_staff or self.request.user.is_superuser:
             return Proposal.objects.all()
 
-        research_groups = ResearchGroup.objects.groups_for_user(self.request.user)
-        return Proposal.objects.filter(group__in=research_groups).all()
+        return Proposal.objects.affiliated_with_user(self.request.user).all()
 
 
 class ProposalReviewViewSet(viewsets.ModelViewSet):
@@ -74,5 +71,4 @@ class ProposalReviewViewSet(viewsets.ModelViewSet):
         if self.request.user.is_staff or self.request.user.is_superuser:
             return ProposalReview.objects.all()
 
-        research_groups = ResearchGroup.objects.groups_for_user(self.request.user)
-        return ProposalReview.objects.filter(proposal__group__in=research_groups).all()
+        return ProposalReview.objects.affiliated_with_user(self.request.user).all()

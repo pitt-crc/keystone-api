@@ -17,7 +17,7 @@ class List(APITestCase):
     and the results are compared to the expected permissions model.
     """
 
-    fixtures = ["test_data"]
+    fixtures = ["test_allocations"]
 
     def assert_user_returns_allocations(self, user: User, allocations: list[Allocation]) -> None:
         """Login as the given user and assert the returned data matches a given list of allocations
@@ -38,18 +38,19 @@ class List(APITestCase):
         self.assertEqual(self.client.get(ENDPOINT).status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_regular_user(self) -> None:
-        """Test unprivileged users only have access to records they are affiliated with"""
+        """Test unprivileged users only have access to records they are affiliated with
+
+        Tests are executed for multiple user account spanning different combinations of group memberships.
+        """
 
         user1 = User.objects.get(username='user1')
-        user1_allocation = Allocation.objects.get(id=1)
-        self.assert_user_returns_allocations(user1, [user1_allocation])
+        self.assert_user_returns_allocations(user1, Allocation.objects.affiliated_with_user(user1))
 
         user2 = User.objects.get(username='user2')
-        user2_allocation = Allocation.objects.get(id=2)
-        self.assert_user_returns_allocations(user2, [user2_allocation])
+        self.assert_user_returns_allocations(user1, Allocation.objects.affiliated_with_user(user2))
 
         common_user = User.objects.get(username='common_user')
-        self.assert_user_returns_allocations(common_user, [user1_allocation, user2_allocation])
+        self.assert_user_returns_allocations(common_user, Allocation.objects.affiliated_with_user(common_user))
 
     def test_staff_user(self) -> None:
         """Test staff users have access to all records in the database"""

@@ -11,6 +11,7 @@ from django.db import models
 from django.template.defaultfilters import truncatechars
 
 from apps.users.models import ResearchGroup
+from .managers import *
 
 __all__ = ['Allocation', 'Cluster', 'Proposal', 'ProposalReview']
 
@@ -39,6 +40,8 @@ class Proposal(models.Model):
     active = models.DateField('Active Date', null=True, blank=True)
     expire = models.DateField('Expiration Date', null=True, blank=True)
 
+    objects = ProposalManager()
+
     def __str__(self) -> str:
         """Return the proposal title as a string"""
 
@@ -51,6 +54,8 @@ class Allocation(models.Model):
     cluster = models.ForeignKey(Cluster, on_delete=models.CASCADE)
     sus = models.PositiveIntegerField('Service Units')
     proposal = models.ForeignKey(Proposal, on_delete=models.CASCADE)
+
+    objects = AllocationManager()
 
     def __str__(self) -> str:
         """Return a human-readable summary of the allocation"""
@@ -68,6 +73,8 @@ class ProposalReview(models.Model):
     public_comments = models.CharField(max_length=500, null=True, blank=True)
     proposal = models.ForeignKey(Proposal, on_delete=models.CASCADE)
     date_modified = models.DateTimeField(auto_now=True)
+
+    objects = ProposalReviewManager()
 
     def __str__(self) -> str:
         """Return a human-readable identifier for the proposal"""
