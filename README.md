@@ -26,9 +26,16 @@ docker build -t keystone-api:develop keystone-api
 docker run -p 8000:8000 keystone-api:develop
 ```
 
-The container will automatically launch a fully functioning application served via the Gunicorn web server.
-The application is *not* suitable for full production out of the box.
-See the [Settings](#settings) section for a complete overview of available settings.
+The container will automatically launch a fully functioning API server.
+If the container is being launched for the first time, you will need to manually create the first user account.
+To do so, execute the following command with the appropriate container name and follow the onscreen prompts.
+
+```bash
+docker exec -it [CONTAINER NAME] keystone-api createsuperuser
+```
+
+The default container instance is *not* suitable for full production out of the box.
+See the [Settings](#settings) section for a complete overview of configurable options and recommended settings.
 
 ### Installing from source
 
@@ -62,6 +69,13 @@ Use the `--help` option to view the available commands.
 
 ```bash
 kystone-api --help
+```
+
+When running the application for the first time, you will need to manually create the first user account.
+Use the following command to create a new user with admin privliges:
+
+```bash
+keystone-api createsuperuser
 ```
 
 ## Settings
@@ -162,7 +176,6 @@ Running the application in debug mode enables/disables various features to aid i
 In addition to enabling the standard debugging behavior provided by Django:
 
 - A `/docs` page is enabled with full API documentation for the parent application
-- User authentication is not required for API endpoints
 - A web GUI is enabled for easier interaction with API endpoints
 - Tracebacks are provided in the browser when an exception occurs (a Django standard)
 
@@ -187,4 +200,12 @@ The default django system checks can also be executed as standard:
 keystone-api check                   # Check for system configuration errors
 keystone-api makemigrations --check  # Check for missing database migrations
 keystone-api health_check            # Check the status of running backend services
+```
+
+### API Schema Generation
+
+Use the `spectacular` command to dynamically generate an OpenAPI schema:
+
+```bash
+keystone-api spectacular >> api.yml
 ```
