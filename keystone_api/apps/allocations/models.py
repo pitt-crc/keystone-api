@@ -34,8 +34,10 @@ class Proposal(models.Model):
     group = models.ForeignKey(ResearchGroup, on_delete=models.CASCADE)
     title = models.CharField(max_length=250)
     description = models.TextField(max_length=1600)
-    submitted = models.DateField('Submission Date')
+    submitted = models.DateField('Submission Date', auto_now=True)
     approved = models.DateField('Approval Date', null=True, blank=True)
+    active = models.DateField('Active Date', null=True, blank=True)
+    expire = models.DateField('Expiration Date', null=True, blank=True)
 
     def __str__(self) -> str:
         """Return the proposal title as a string"""
@@ -47,8 +49,6 @@ class Allocation(models.Model):
     """User service unit allocation"""
 
     cluster = models.ForeignKey(Cluster, on_delete=models.CASCADE)
-    start = models.DateField('Start Date')
-    expire = models.DateField('Expiration Date', null=True, blank=True)
     sus = models.PositiveIntegerField('Service Units')
     proposal = models.ForeignKey(Proposal, on_delete=models.CASCADE)
 
@@ -56,7 +56,7 @@ class Allocation(models.Model):
         """Return a human-readable summary of the allocation"""
 
         self.proposal: Proposal
-        return f'{self.cluster} allocation for {self.proposal.group} starting {self.start}'
+        return f'{self.cluster} allocation for {self.proposal.group}'
 
 
 class ProposalReview(models.Model):
