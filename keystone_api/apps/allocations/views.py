@@ -33,7 +33,7 @@ class AllocationViewSet(viewsets.ModelViewSet):
         Admin users are returned a list of all allocations across all users.
         """
 
-        if self.request.user.is_staff() or self.request.user.is_superuser():
+        if self.request.user.is_staff or self.request.user.is_superuser:
             return Allocation.objects.all()
 
         research_groups = ResearchGroup.objects.groups_for_user(self.request.user)
@@ -52,7 +52,7 @@ class ProposalViewSet(viewsets.ModelViewSet):
         Admin users are returned a list of all proposals across all users.
         """
 
-        if self.request.user.is_staff() or self.request.user.is_superuser():
+        if self.request.user.is_staff or self.request.user.is_superuser:
             return Proposal.objects.all()
 
         research_groups = ResearchGroup.objects.groups_for_user(self.request.user)
@@ -71,7 +71,7 @@ class ProposalReviewViewSet(viewsets.ModelViewSet):
         Admin users are returned a list of all records across all users.
         """
 
-        if self.request.user.is_staff() or self.request.user.is_superuser():
+        if self.request.user.is_staff or self.request.user.is_superuser:
             return ProposalReview.objects.all()
 
         research_groups = ResearchGroup.objects.groups_for_user(self.request.user)

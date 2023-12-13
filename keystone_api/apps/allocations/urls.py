@@ -10,6 +10,6 @@ router = DefaultRouter()
 router.register(r'clusters', ClusterViewSet)
 router.register(r'allocations', AllocationViewSet, basename='Allocation')
 router.register(r'proposals', ProposalViewSet, basename='Proposal')
-router.register(r'proposal-reviews', ProposalReviewViewSet)
+router.register(r'proposal-reviews', ProposalReviewViewSet, basename='ProposalReview')
 
 urlpatterns = router.urls
