@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('allocations', '0003_remove_allocation_expire_remove_allocation_start_and_more'),
     ]

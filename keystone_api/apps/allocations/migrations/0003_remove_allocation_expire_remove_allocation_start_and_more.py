@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('allocations', '0002_alter_allocation_start_alter_proposal_submitted'),
     ]
