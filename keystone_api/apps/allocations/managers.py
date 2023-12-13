@@ -62,4 +62,4 @@ class ProposalReviewManager(models.Manager):
         """
 
         research_groups = ResearchGroup.objects.groups_for_user(user)
-        return self.get_queryset().objects.filter(proposal__group__in=research_groups)
+        return self.get_queryset().filter(proposal__group__in=research_groups)
