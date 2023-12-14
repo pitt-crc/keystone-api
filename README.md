@@ -68,7 +68,7 @@ If the installation was successful, the packaged CLI tool will be available in y
 Use the `--help` option to view the available commands.
 
 ```bash
-kystone-api --help
+keystone-api --help
 ```
 
 When running the application for the first time, you will need to manually create the first user account.
