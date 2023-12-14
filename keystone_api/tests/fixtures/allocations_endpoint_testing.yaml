@@ -1,0 +1,78 @@
+# This test fixture creates three user accounts spanning two research groups.
+# It is designed to support tests against research group based user permissions.
+
+# Clusters
+- model: allocations.cluster
+  pk: 1
+  fields:
+    name: cluster
+    enabled: true
+
+# Users
+- model: auth.user
+  pk: 1
+  fields:
+    username: user1
+    password: testpassword
+- model: auth.user
+  pk: 2
+  fields:
+    username: user2
+    password: testpassword
+- model: auth.user
+  pk: 3
+  fields:
+    username: common_user
+    password: testpassword
+- model: auth.user
+  pk: 4
+  fields:
+    username: super_user
+    password: testpassword
+    is_superuser: true
+- model: auth.user
+  pk: 5
+  fields:
+    username: staff_user
+    password: testpassword
+    is_staff: true
+
+# Research Groups
+- model: users.researchgroup
+  pk: 1
+  fields:
+    name: Research Group
+    pi: 1
+    members: [ 3 ]
+- model: users.researchgroup
+  pk: 2
+  fields:
+    name: Research Group
+    pi: 2
+    members: [ 3 ]
+
+# Proposals
+- model: allocations.proposal
+  pk: 1
+  fields:
+    group: 1
+    submitted: "2023-01-01"
+- model: allocations.proposal
+  pk: 2
+  fields:
+    group: 2
+    submitted: "2023-01-01"
+
+# Allocations
+- model: allocations.allocation
+  pk: 1
+  fields:
+    proposal: 1
+    cluster: 1
+    sus: 10000
+- model: allocations.allocation
+  pk: 2
+  fields:
+    proposal: 2
+    cluster: 1
+    sus: 10000

@@ -18,7 +18,7 @@ class ClusterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cluster
-        fields = '__all__'
+        fields = ('name', 'enabled', 'description')
 
 
 class AllocationSerializer(serializers.ModelSerializer):

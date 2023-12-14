@@ -23,22 +23,52 @@ class ClusterViewSet(viewsets.ModelViewSet):
 class AllocationViewSet(viewsets.ModelViewSet):
     """Manage SU allocations for user research groups."""
 
-    queryset = Allocation.objects.all()
     serializer_class = AllocationSerializer
     filterset_fields = '__all__'
 
+    def get_queryset(self) -> list[Allocation]:
+        """Return a list of allocations for the currently authenticated user
+
+        Admin users are returned a list of all allocations across all users.
+        """
+
+        if self.request.user.is_staff or self.request.user.is_superuser:
+            return Allocation.objects.all()
+
+        return Allocation.objects.affiliated_with_user(self.request.user).all()
+
 
 class ProposalViewSet(viewsets.ModelViewSet):
-    """Manage project proposals used to request additional service unit allocations."""
+    """Manage project proposals submitted by users to request additional service unit allocations."""
 
-    queryset = Proposal.objects.all()
     serializer_class = ProposalSerializer
     filterset_fields = '__all__'
 
+    def get_queryset(self) -> list[Proposal]:
+        """Return a list of proposals for the currently authenticated user
+
+        Admin users are returned a list of all proposals across all users.
+        """
+
+        if self.request.user.is_staff or self.request.user.is_superuser:
+            return Proposal.objects.all()
+
+        return Proposal.objects.affiliated_with_user(self.request.user).all()
+
 
 class ProposalReviewViewSet(viewsets.ModelViewSet):
-    """Manage project proposal reviews."""
+    """Manage project proposal reviews submitted by administrators."""
 
-    queryset = ProposalReview.objects.all()
     serializer_class = ProposalReviewSerializer
     filterset_fields = '__all__'
+
+    def get_queryset(self) -> list[Allocation]:
+        """Return a list of proposal reviews for the currently authenticated user
+
+        Admin users are returned a list of all records across all users.
+        """
+
+        if self.request.user.is_staff or self.request.user.is_superuser:
+            return ProposalReview.objects.all()
+
+        return ProposalReview.objects.affiliated_with_user(self.request.user).all()
