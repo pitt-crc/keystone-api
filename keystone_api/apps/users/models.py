@@ -45,16 +45,6 @@ class ResearchGroup(models.Model):
 
     objects = ResearchGroupManager()
 
-    def get_all_members(self) -> tuple[User]:
-        """Return all research group members"""
-
-        return (self.pi,) + tuple(self.admins.all()) + tuple(self.members.all())
-
-    def get_privileged_members(self) -> tuple[User]:
-        """Return all research group members with admin privileges"""
-
-        return (self.pi,) + tuple(self.admins.all())
-
     def __str__(self) -> str:
         """Return the research group's account name"""
 

@@ -42,6 +42,12 @@ class Proposal(models.Model):
 
     objects = ProposalManager()
 
+    def get_research_group(self) -> ResearchGroup:
+        """Return the research group tied to the current record"""
+
+        #
+        return self.group
+
     def __str__(self) -> str:
         """Return the proposal title as a string"""
 
@@ -56,6 +62,11 @@ class Allocation(models.Model):
     proposal = models.ForeignKey(Proposal, on_delete=models.CASCADE)
 
     objects = AllocationManager()
+
+    def get_research_group(self) -> ResearchGroup:
+        """Return the research group tied to the current record"""
+
+        return self.proposal.group
 
     def __str__(self) -> str:
         """Return a human-readable summary of the allocation"""
@@ -74,6 +85,11 @@ class ProposalReview(models.Model):
     date_modified = models.DateTimeField(auto_now=True)
 
     objects = ProposalReviewManager()
+
+    def get_research_group(self) -> ResearchGroup:
+        """Return the research group tied to the current record"""
+
+        return self.proposal.group
 
     def __str__(self) -> str:
         """Return a human-readable identifier for the proposal"""
