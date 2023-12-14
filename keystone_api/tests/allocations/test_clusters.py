@@ -13,7 +13,7 @@ ENDPOINT = '/allocations/clusters/'
 class List(APITestCase):
     """Test fetching lists of records from the root of the API endpoint"""
 
-    fixtures = ["endpoint_testing_data"]
+    fixtures = ["allocations_endpoint_testing.yaml"]
 
     def test_anonymous_user_unauthorized(self) -> None:
         """Test unauthenticated users are returned a 401 status code"""

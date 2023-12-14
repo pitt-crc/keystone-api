@@ -13,4 +13,4 @@ class List(BaseListTests, APITestCase):
     model = Allocation
     serializer = AllocationSerializer
     endpoint = '/allocations/allocations/'
-    fixtures = ["endpoint_testing_data"]
+    fixtures = ["allocations_endpoint_testing.yaml"]

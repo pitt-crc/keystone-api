@@ -13,4 +13,4 @@ class List(BaseListTests, APITestCase):
     model = ProposalReview
     serializer = ProposalReviewSerializer
     endpoint = '/allocations/proposal-reviews/'
-    fixtures = ["endpoint_testing_data"]
+    fixtures = ["allocations_endpoint_testing.yaml"]
