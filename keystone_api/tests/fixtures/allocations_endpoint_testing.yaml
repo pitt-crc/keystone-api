@@ -1,3 +1,6 @@
+# This test fixture creates three user accounts spanning two research groups.
+# It is designed to support tests against research group based user permissions.
+
 # Clusters
 - model: allocations.cluster
   pk: 1
