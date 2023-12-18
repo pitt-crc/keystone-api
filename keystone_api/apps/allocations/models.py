@@ -17,7 +17,7 @@ from .managers import *
 __all__ = ['Allocation', 'Cluster', 'Proposal', 'ProposalReview', 'RGAffiliatedModel']
 
 
-class RGAffiliatedModel(abc.ABC):
+class RGAffiliatedModel:
     """Abstract base class for database models affiliated with a research group"""
 
     @abc.abstractmethod

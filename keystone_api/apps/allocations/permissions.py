@@ -20,25 +20,25 @@ class CustomBasePermission(permissions.BasePermission):
     Provides simple utility methods for checking request metadata
     """
 
-    def request_is_read(self) -> bool:
+    def request_is_read(self, request) -> bool:
         """Return whether the incoming HTTP request is a read operation"""
 
-        return self.request.method in permissions.SAFE_METHODS
+        return request.method in permissions.SAFE_METHODS
 
-    def request_is_write(self) -> bool:
+    def request_is_write(self, request) -> bool:
         """Return whether the incoming HTTP request is a write operation"""
 
-        return not self.request_is_read()
+        return not self.request_is_read(request)
 
-    def user_is_authenticated(self) -> bool:
+    def user_is_authenticated(self, request) -> bool:
         """Return whether the incoming request is coming from an authenticated account"""
 
-        return self.request.user.is_authenticated
+        return request.user.is_authenticated
 
-    def user_is_admin(self) -> bool:
+    def user_is_admin(self, request) -> bool:
         """Return whether the incoming request is coming from an admin account"""
 
-        return self.request.user.is_staff or self.request.user.is_superuser
+        return request.user.is_staff or request.user.is_superuser
 
 
 class IsAuthenticatedReadObj(CustomBasePermission):
@@ -50,7 +50,7 @@ class IsAuthenticatedReadObj(CustomBasePermission):
     def has_object_permission(self, request, view, obj: RGAffiliatedModel) -> bool:
         """Return whether the incoming HTTP request has permission to access a database record"""
 
-        return self.request_is_write() or self.user_is_authenticated()
+        return self.request_is_write(request) or self.user_is_authenticated(request)
 
 
 class IsAuthenticatedWriteObj(CustomBasePermission):
@@ -62,7 +62,7 @@ class IsAuthenticatedWriteObj(CustomBasePermission):
     def has_object_permission(self, request, view, obj: RGAffiliatedModel) -> bool:
         """Return whether the incoming HTTP request has permission to access a database record"""
 
-        return self.request_is_read() or self.user_is_authenticated()
+        return self.request_is_read(request) or self.user_is_authenticated(request)
 
 
 class IsGroupMemberReadObj(CustomBasePermission):
@@ -74,10 +74,10 @@ class IsGroupMemberReadObj(CustomBasePermission):
     def has_object_permission(self, request, view, obj: RGAffiliatedModel) -> bool:
         """Return whether the incoming HTTP request has permission to access a database record"""
 
-        if self.request_is_write() or self.user_is_admin():
+        if self.request_is_write(request) or self.user_is_admin(request):
             return True
 
-        user = self.request.user
+        user = request.user
         obj_group = obj.get_research_group()
         return user.is_authenticated and user in obj_group.get_all_members()
 
@@ -91,10 +91,10 @@ class IsGroupMemberWriteObj(CustomBasePermission):
     def has_object_permission(self, request, view, obj: RGAffiliatedModel) -> bool:
         """Return whether the incoming HTTP request has permission to access a database record"""
 
-        if self.request_is_read() or self.user_is_admin():
+        if self.request_is_read(request) or self.user_is_admin(request):
             return True
 
-        user = self.request.user
+        user = request.user
         obj_group = obj.get_research_group()
         return user.is_authenticated and user in obj_group.get_all_members()
 
@@ -108,10 +108,10 @@ class IsGroupAdminReadObj(CustomBasePermission):
     def has_object_permission(self, request, view, obj: RGAffiliatedModel) -> bool:
         """Return whether the incoming HTTP request has permission to access a database record"""
 
-        if self.request_is_write() or self.user_is_admin():
+        if self.request_is_write(request) or self.user_is_admin(request):
             return True
 
-        user = self.request.user
+        user = request.user
         obj_group = obj.get_research_group()
         return user.is_authenticated and user in obj_group.get_privileged_members()
 
@@ -125,10 +125,10 @@ class IsGroupAdminWriteObj(CustomBasePermission):
     def has_object_permission(self, request, view, obj: RGAffiliatedModel) -> bool:
         """Return whether the incoming HTTP request has permission to access a database record"""
 
-        if self.request_is_read() or self.user_is_admin():
+        if self.request_is_read(request) or self.user_is_admin(request):
             return True
 
-        user = self.request.user
+        user = request.user
         obj_group = obj.get_research_group()
         return user.is_authenticated and user in obj_group.get_privileged_members()
 
@@ -142,7 +142,7 @@ class IsAdminReadObj(CustomBasePermission):
     def has_object_permission(self, request, view, obj: RGAffiliatedModel) -> bool:
         """Return whether the incoming HTTP request has permission to access a database record"""
 
-        return self.request_is_write() or self.user_is_admin()
+        return self.request_is_write(request) or self.user_is_admin(request)
 
 
 class IsAdminWriteObj(CustomBasePermission):
@@ -154,4 +154,4 @@ class IsAdminWriteObj(CustomBasePermission):
     def has_object_permission(self, request, view, obj: RGAffiliatedModel) -> bool:
         """Return whether the incoming HTTP request has permission to access a database record"""
 
-        return self.request_is_read() or self.user_is_admin()
+        return self.request_is_read(request) or self.user_is_admin(request)
