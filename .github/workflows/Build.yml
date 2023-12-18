@@ -1,4 +1,4 @@
-name: ":no_entry: Build"
+name: 🤖 Build
 
 on:
   workflow_call:
