@@ -29,7 +29,10 @@ class CustomBasePermission(permissions.BasePermission):
 
 
 class IsAuthenticatedReadObj(CustomBasePermission):
-    """Object level permissions restricting read access to authenticated users"""
+    """Object level permissions restricting read access to authenticated users
+
+    All write operations are allowed by this permission class.
+    """
 
     def has_object_permission(self, request, view, obj: RGAffiliatedModel) -> bool:
         """Return whether the incoming HTTP request has permission to access a database record"""
@@ -38,7 +41,10 @@ class IsAuthenticatedReadObj(CustomBasePermission):
 
 
 class IsAuthenticatedWriteObj(CustomBasePermission):
-    """Object level permissions restricting write access to authenticated users"""
+    """Object level permissions restricting write access to authenticated users
+
+    All read operations are allowed by this permission class.
+    """
 
     def has_object_permission(self, request, view, obj: RGAffiliatedModel) -> bool:
         """Return whether the incoming HTTP request has permission to access a database record"""
@@ -47,7 +53,10 @@ class IsAuthenticatedWriteObj(CustomBasePermission):
 
 
 class IsGroupAdminReadObj(CustomBasePermission):
-    """Object level permissions restricting read access to RESEARCH GROUP admins"""
+    """Object level permissions restricting read access to RESEARCH GROUP admins
+
+    All write operations are allowed by this permission class.
+    """
 
     def has_object_permission(self, request, view, obj: RGAffiliatedModel) -> bool:
         """Return whether the incoming HTTP request has permission to access a database record"""
@@ -61,7 +70,10 @@ class IsGroupAdminReadObj(CustomBasePermission):
 
 
 class IsGroupAdminWriteObj(CustomBasePermission):
-    """Object level permissions restricting write access to research group admins"""
+    """Object level permissions restricting write access to research group admins
+
+    All read operations are allowed by this permission class.
+    """
 
     def has_object_permission(self, request, view, obj: RGAffiliatedModel) -> bool:
         """Return whether the incoming HTTP request has permission to access a database record"""
@@ -75,7 +87,10 @@ class IsGroupAdminWriteObj(CustomBasePermission):
 
 
 class IsAdminReadObj(CustomBasePermission):
-    """Object level permissions restricting read access to admin users"""
+    """Object level permissions restricting read access to admin users
+
+    All write operations are allowed by this permission class.
+    """
 
     def has_object_permission(self, request, view, obj: RGAffiliatedModel) -> bool:
         """Return whether the incoming HTTP request has permission to access a database record"""
@@ -84,7 +99,10 @@ class IsAdminReadObj(CustomBasePermission):
 
 
 class IsAdminWriteObj(CustomBasePermission):
-    """Object level permissions restricting write access to admin users"""
+    """Object level permissions restricting write access to admin users
+
+    All read operations are allowed by this permission class.
+    """
 
     def has_object_permission(self, request, view, obj: RGAffiliatedModel) -> bool:
         """Return whether the incoming HTTP request has permission to access a database record"""
