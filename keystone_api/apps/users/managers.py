@@ -16,37 +16,13 @@ class ResearchGroupManager(models.Manager):
     """Object manager for the `ResearchGroup` database model"""
 
     def groups_for_user(self, user: User) -> models.QuerySet:
-        """Get all research groups the user is affiliated with
+        """Get all research groups the user is affiliated with.
 
         Args:
-            user: The user to return groups for
+            user: The user to return affiliate groups for
 
         Return:
             A filtered queryset
         """
 
         return self.get_queryset().filter(models.Q(pi=user.id) | models.Q(admins=user.id) | models.Q(members=user.id))
-
-    def groups_for_admin(self, user: User) -> models.QuerySet:
-        """Get all research groups the user has admin privileges for
-
-        Args:
-            user: The user to return groups for
-
-        Return:
-            A filtered queryset
-        """
-
-        return self.get_queryset().filter(models.Q(pi=user.id) | models.Q(admins=user.id))
-
-    def groups_for_pi(self, user: User) -> models.QuerySet:
-        """Get all research groups the user is a PI for
-
-        Args:
-            user: The user to return groups for
-
-        Return:
-            A filtered queryset
-        """
-
-        return self.get_queryset().filter(models.Q(pi=user.id))
