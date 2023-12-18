@@ -2,7 +2,7 @@
 
 from django.urls import path
 
-from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView
 
 app_name = 'docs'
 

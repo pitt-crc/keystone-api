@@ -11,12 +11,13 @@ from django.db import models
 from django.template.defaultfilters import truncatechars
 
 from apps.users.models import ResearchGroup
+from .managers import *
 
 __all__ = ['Allocation', 'Cluster', 'Proposal', 'ProposalReview']
 
 
 class Cluster(models.Model):
-    """A slurm cluster"""
+    """A slurm cluster and it's associated management settings"""
 
     name = models.CharField(max_length=50)
     description = models.TextField(max_length=150, null=True, blank=True)
@@ -34,8 +35,12 @@ class Proposal(models.Model):
     group = models.ForeignKey(ResearchGroup, on_delete=models.CASCADE)
     title = models.CharField(max_length=250)
     description = models.TextField(max_length=1600)
-    submitted = models.DateField('Submission Date')
+    submitted = models.DateField('Submission Date', auto_now=True)
     approved = models.DateField('Approval Date', null=True, blank=True)
+    active = models.DateField('Active Date', null=True, blank=True)
+    expire = models.DateField('Expiration Date', null=True, blank=True)
+
+    objects = ProposalManager()
 
     def __str__(self) -> str:
         """Return the proposal title as a string"""
@@ -47,16 +52,15 @@ class Allocation(models.Model):
     """User service unit allocation"""
 
     cluster = models.ForeignKey(Cluster, on_delete=models.CASCADE)
-    start = models.DateField('Start Date')
-    expire = models.DateField('Expiration Date', null=True, blank=True)
     sus = models.PositiveIntegerField('Service Units')
     proposal = models.ForeignKey(Proposal, on_delete=models.CASCADE)
+
+    objects = AllocationManager()
 
     def __str__(self) -> str:
         """Return a human-readable summary of the allocation"""
 
-        self.proposal: Proposal
-        return f'{self.cluster} allocation for {self.proposal.group} starting {self.start}'
+        return f'{self.cluster} allocation for {self.proposal.group}'
 
 
 class ProposalReview(models.Model):
@@ -69,8 +73,9 @@ class ProposalReview(models.Model):
     proposal = models.ForeignKey(Proposal, on_delete=models.CASCADE)
     date_modified = models.DateTimeField(auto_now=True)
 
+    objects = ProposalReviewManager()
+
     def __str__(self) -> str:
         """Return a human-readable identifier for the proposal"""
 
-        self.proposal: Proposal
         return f'{self.reviewer} review for \"{self.proposal.title}\"'

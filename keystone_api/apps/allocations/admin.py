@@ -86,7 +86,7 @@ class ProposalAdmin(admin.ModelAdmin):
 
         return sum(1 for review in obj.proposalreview_set.all() if review.approve)
 
-    list_display = ['group', title, 'submitted', 'approved', 'reviews', 'approvals']
+    list_display = ['group', title, 'submitted', 'approved', 'active', 'expire', 'reviews', 'approvals']
     list_display_links = list_display
     search_fields = ['title', 'description', 'group__acc_name']
     ordering = ['submitted']
@@ -122,9 +122,9 @@ class AllocationAdmin(admin.ModelAdmin):
 
         return f'{obj.sus:,}'
 
-    list_display = [group, 'proposal', 'cluster', 'expire', 'start', service_units, proposal_approved]
+    list_display = [group, 'proposal', 'cluster', service_units, proposal_approved]
     list_display_links = list_display
-    ordering = ['proposal__group__name', '-expire', 'cluster']
+    ordering = ['proposal__group__name', 'cluster']
     search_fields = ['proposal__group__name', 'proposal__title', 'cluster__name']
     list_filter = [
         ('start', admin.DateFieldListFilter),
