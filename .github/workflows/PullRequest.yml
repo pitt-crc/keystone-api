@@ -15,7 +15,6 @@ jobs:
 
   qa:
     name: QA
-    needs: build
     uses: ./.github/workflows/QA.yml
 
   report-pr-status:
