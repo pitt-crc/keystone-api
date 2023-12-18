@@ -1,4 +1,4 @@
-name: Build
+name: ":no_entry: Build"
 
 on:
   workflow_call:
