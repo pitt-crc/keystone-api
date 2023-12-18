@@ -7,6 +7,7 @@ appropriately rendered HTML template or other HTTP response.
 from rest_framework import viewsets
 
 from .models import *
+from .permissions import *
 from .serializers import *
 
 __all__ = ['AllocationViewSet', 'ClusterViewSet', 'ProposalViewSet', 'ProposalReviewViewSet']
@@ -15,6 +16,7 @@ __all__ = ['AllocationViewSet', 'ClusterViewSet', 'ProposalViewSet', 'ProposalRe
 class ClusterViewSet(viewsets.ModelViewSet):
     """System settings and configuration for managed Slurm clusters."""
 
+    permission_classes = [IsAuthenticatedReadObj, IsAdminWriteObj]
     queryset = Cluster.objects.all()
     serializer_class = ClusterSerializer
     filterset_fields = '__all__'
@@ -23,6 +25,7 @@ class ClusterViewSet(viewsets.ModelViewSet):
 class AllocationViewSet(viewsets.ModelViewSet):
     """Manage SU allocations for user research groups."""
 
+    permission_classes = [IsGroupMemberReadObj, IsAdminWriteObj]
     serializer_class = AllocationSerializer
     filterset_fields = '__all__'
 
@@ -41,6 +44,7 @@ class AllocationViewSet(viewsets.ModelViewSet):
 class ProposalViewSet(viewsets.ModelViewSet):
     """Manage project proposals submitted by users to request additional service unit allocations."""
 
+    permission_classes = [IsGroupMemberReadObj, IsAdminWriteObj]
     serializer_class = ProposalSerializer
     filterset_fields = '__all__'
 
@@ -59,6 +63,7 @@ class ProposalViewSet(viewsets.ModelViewSet):
 class ProposalReviewViewSet(viewsets.ModelViewSet):
     """Manage project proposal reviews submitted by administrators."""
 
+    permission_classes = [IsAdminReadObj, IsAdminWriteObj]
     serializer_class = ProposalReviewSerializer
     filterset_fields = '__all__'
 
