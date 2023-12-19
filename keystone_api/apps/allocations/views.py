@@ -26,7 +26,7 @@ class ClusterViewSet(viewsets.ModelViewSet):
 class AllocationViewSet(viewsets.ModelViewSet):
     """Manage SU allocations for user research groups."""
 
-    permission_classes = [IsGroupMemberReadObj, IsAdminWriteObj]
+    permission_classes = [permissions.IsAuthenticated, IsGroupMemberReadObj, IsAdminWriteObj]
     serializer_class = AllocationSerializer
     filterset_fields = '__all__'
 

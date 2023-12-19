@@ -7,7 +7,7 @@ from apps.users.models import User
 
 
 class ListEndpointPermissions(APITestCase):
-    """Test user permissions against the `/allocations/clusters/` endpoint
+    """Test user permissions for the `/allocations/clusters/` endpoint
 
     Endpoint permissions are tested against the following matrix of HTTP responses.
     All listed responses assume the associated HTTP request is otherwise valid.
@@ -20,6 +20,7 @@ class ListEndpointPermissions(APITestCase):
     """
 
     endpoint = '/allocations/clusters/'
+    valid_post_data = {'name': 'foo'}
     fixtures = ['allocations_endpoint_testing.yaml']
 
     def test_anonymous_user_permissions(self) -> None:
@@ -64,7 +65,7 @@ class ListEndpointPermissions(APITestCase):
         self.assertEqual(self.client.head(self.endpoint).status_code, status.HTTP_200_OK)
         self.assertEqual(self.client.options(self.endpoint).status_code, status.HTTP_200_OK)
 
-        post = self.client.post(self.endpoint, data={'name': 'foo'})
+        post = self.client.post(self.endpoint, data=self.valid_post_data)
         self.assertEqual(post.status_code, status.HTTP_201_CREATED)
 
         # Disallowed operations
