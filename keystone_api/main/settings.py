@@ -207,5 +207,5 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Static file handling (CSS, JavaScript, Images)
 
-STATIC_URL = env.str('STATIC_URL', 'static/')
-STATIC_ROOT = env.path('STATIC_ROOT', BASE_DIR / 'static_root')
+STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'static_root'

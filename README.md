@@ -147,16 +147,6 @@ Connection settings for Celery backend utilities.
 | `CELERY_BROKER_URL`       | `redis://127.0.0.1:6379/0` | URL for the Celery message broker.                          |
 | `CELERY_RESULT_BACKEND`   | `redis://127.0.0.1:6379/0` | URL for the Celery result backend.                          |
 
-### Static File Hosting
-
-The application is capable of hosting its own static file content.
-However, users may optionally configure their deployment to use a dedicated CDN.
-
-| Setting Name   | Default Value               | Description                                                           |
-|----------------|-----------------------------|-----------------------------------------------------------------------|
-| `STATIC_URL`   | `static/`                   | URL to use when referring to static files.                            |
-| `STATIC_ROOT`  | `<INSTALL_DIR>/static_root` | The absolute path where static files are collected for deployment.    |
-
 ### Developer Settings
 
 The following settings are intended exclusively for use in development settings.
