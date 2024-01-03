@@ -29,4 +29,4 @@ RUN pip install -e . && pip cache purge
 
 # Setup and launch the application
 ENTRYPOINT ["keystone-api"]
-CMD ["quickstart", "--static", "--migrate", "--celery", "--gunicorn", "--no-input"]
+CMD ["quickstart", "--migrate", "--celery", "--gunicorn", "--no-input"]
