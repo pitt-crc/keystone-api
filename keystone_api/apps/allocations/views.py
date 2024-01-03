@@ -4,7 +4,7 @@ View objects handle the processing of incoming HTTP requests and return the
 appropriately rendered HTML template or other HTTP response.
 """
 
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 
 from .models import *
 from .permissions import *
@@ -16,7 +16,7 @@ __all__ = ['AllocationViewSet', 'ClusterViewSet', 'ProposalViewSet', 'ProposalRe
 class ClusterViewSet(viewsets.ModelViewSet):
     """System settings and configuration for managed Slurm clusters."""
 
-    permission_classes = [StaffWriteAuthenticatedRead]
+    permission_classes = [permissions.IsAuthenticated, StaffWriteAuthenticatedRead]
     queryset = Cluster.objects.all()
     serializer_class = ClusterSerializer
     filterset_fields = '__all__'
@@ -25,7 +25,7 @@ class ClusterViewSet(viewsets.ModelViewSet):
 class AllocationViewSet(viewsets.ModelViewSet):
     """Manage SU allocations for user research groups."""
 
-    permission_classes = [StaffWriteGroupRead]
+    permission_classes = [permissions.IsAuthenticated, StaffWriteGroupRead]
     serializer_class = AllocationSerializer
     filterset_fields = '__all__'
 
