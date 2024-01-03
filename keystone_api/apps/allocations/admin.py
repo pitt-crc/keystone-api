@@ -93,6 +93,8 @@ class ProposalAdmin(admin.ModelAdmin):
     list_filter = [
         ('submitted', admin.DateFieldListFilter),
         ('approved', admin.DateFieldListFilter),
+        ('active', admin.DateFieldListFilter),
+        ('expire', admin.DateFieldListFilter),
     ]
     inlines = [AllocationInline, ProposalReviewInline]
 
