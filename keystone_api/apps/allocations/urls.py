@@ -7,7 +7,7 @@ from .views import *
 app_name = 'allocations'
 
 router = DefaultRouter()
-router.register(r'clusters', ClusterViewSet)
+router.register(r'clusters', ClusterViewSet, basename='Cluster')
 router.register(r'allocations', AllocationViewSet, basename='Allocation')
 router.register(r'proposals', ProposalViewSet, basename='Proposal')
 router.register(r'proposal-reviews', ProposalReviewViewSet, basename='ProposalReview')

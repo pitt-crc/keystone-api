@@ -18,7 +18,7 @@ __all__ = ['Allocation', 'Cluster', 'Proposal', 'ProposalReview', 'RGAffiliatedM
 
 
 class RGAffiliatedModel:
-    """Abstract base class for database models affiliated with a research group"""
+    """Interface class for database models affiliated with a research group"""
 
     @abc.abstractmethod
     def get_research_group(self) -> ResearchGroup:
@@ -63,10 +63,11 @@ class Proposal(RGAffiliatedModel, models.Model):
         return truncatechars(self.title, 100)
 
 
-class Allocation(models.Model):
+class Allocation(RGAffiliatedModel, models.Model):
     """User service unit allocation"""
 
     sus = models.PositiveIntegerField('Service Units')
+    final = models.PositiveIntegerField('Final Usage', null=True, blank=True)
 
     cluster: Cluster = models.ForeignKey(Cluster, on_delete=models.CASCADE)
     proposal: Proposal = models.ForeignKey(Proposal, on_delete=models.CASCADE)
@@ -84,7 +85,7 @@ class Allocation(models.Model):
         return f'{self.cluster} allocation for {self.proposal.group}'
 
 
-class ProposalReview(models.Model):
+class ProposalReview(RGAffiliatedModel, models.Model):
     """Review feedback for a project proposal"""
 
     approve = models.BooleanField()
