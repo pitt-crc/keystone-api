@@ -1,3 +1,5 @@
+"""Custom permission objects used to manage access to HTTP endpoints."""
+
 from rest_framework import permissions
 
 __all__ = ['StaffWriteAuthenticatedRead']
