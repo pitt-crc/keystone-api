@@ -21,7 +21,7 @@ class ListEndpointPermissions(APITestCase):
 
     endpoint = '/allocations/clusters/'
     valid_post_data = {'name': 'foo'}
-    fixtures = ['allocations_endpoint_testing.yaml']
+    fixtures = ['multi_research_group.yaml']
 
     def test_anonymous_user_permissions(self) -> None:
         """Test unauthenticated users cannot access resources"""
@@ -90,7 +90,7 @@ class RecordEndpointPermissions(APITestCase):
     """
 
     endpoint = '/allocations/clusters/{pk}/'
-    fixtures = ['allocations_endpoint_testing.yaml']
+    fixtures = ['multi_research_group.yaml']
 
     def test_anonymous_user_permissions(self) -> None:
         """Test unauthenticated users cannot access resources"""
