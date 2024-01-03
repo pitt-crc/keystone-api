@@ -74,3 +74,64 @@ class ListEndpointPermissions(APITestCase):
         self.assertEqual(self.client.patch(self.endpoint).status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
         self.assertEqual(self.client.delete(self.endpoint).status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
         self.assertEqual(self.client.trace(self.endpoint).status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+class RecordEndpointPermissions(APITestCase):
+    """Test user permissions against the `/allocations/allocations/<pk>` endpoint
+
+    Endpoint permissions are tested against the following matrix of HTTP responses.
+    All listed responses assume the associated HTTP request is otherwise valid.
+
+    | Authentication              | GET | HEAD | OPTIONS | POST | PUT | PATCH | DELETE | TRACE |
+    |-----------------------------|-----|------|---------|------|-----|-------|--------|-------|
+    | Anonymous User              | 401 | 401  | 401     | 401  | 401 | 401   | 401    | 405   |
+    | User accessing own group    |     |      |         |      |     |       |        | 405   |
+    | User accessing other group  |     |      |         |      |     |       |        | 405   |
+    | Staff User                  | 200 | 200  | 200     | 405  | 200 | 200   | 204    | 405   |
+    """
+
+    endpoint = '/allocations/allocations/{pk}/'
+    fixtures = ['multi_research_group.yaml']
+
+    def test_anonymous_user_permissions(self) -> None:
+        """Test unauthenticated users cannot access resources"""
+
+        endpoint = self.endpoint.format(pk=1)
+        self.assertEqual(self.client.get(endpoint).status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(self.client.head(endpoint).status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(self.client.post(endpoint).status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(self.client.put(endpoint).status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(self.client.patch(endpoint).status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(self.client.delete(endpoint).status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(self.client.options(endpoint).status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(self.client.trace(endpoint).status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_authenticated_user_same_group(self) -> None:
+        pass
+
+    def test_authenticated_user_different_group(self) -> None:
+        pass
+
+    def test_staff_user_permissions(self) -> None:
+        """Test staff users have read and write permissions"""
+
+        endpoint = self.endpoint.format(pk=1)
+        user = User.objects.get(username='staff_user')
+        self.client.force_authenticate(user=user)
+
+        # Allowed operations
+        self.assertEqual(self.client.get(endpoint).status_code, status.HTTP_200_OK)
+        self.assertEqual(self.client.head(endpoint).status_code, status.HTTP_200_OK)
+        self.assertEqual(self.client.options(endpoint).status_code, status.HTTP_200_OK)
+
+        put = self.client.put(endpoint, data={'cluster': 1, 'proposal': 1, 'sus': 1000})
+        self.assertEqual(put.status_code, status.HTTP_200_OK)
+
+        patch = self.client.patch(endpoint, data={'sus': 1000})
+        self.assertEqual(patch.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(self.client.delete(endpoint).status_code, status.HTTP_204_NO_CONTENT)
+
+        # Disallowed operations
+        self.assertEqual(self.client.post(endpoint).status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(self.client.trace(endpoint).status_code, status.HTTP_405_METHOD_NOT_ALLOWED)

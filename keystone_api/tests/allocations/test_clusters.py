@@ -77,7 +77,7 @@ class ListEndpointPermissions(APITestCase):
 
 
 class RecordEndpointPermissions(APITestCase):
-    """Test user permissions against the `/allocations/clusters/` endpoint
+    """Test user permissions against the `/allocations/clusters/<pk>` endpoint
 
     Endpoint permissions are tested against the following matrix of HTTP responses.
     All listed responses assume the associated HTTP request is otherwise valid.
@@ -138,10 +138,10 @@ class RecordEndpointPermissions(APITestCase):
         self.assertEqual(self.client.head(endpoint).status_code, status.HTTP_200_OK)
         self.assertEqual(self.client.options(endpoint).status_code, status.HTTP_200_OK)
 
-        put = self.client.put(endpoint, data={'pk': 1, 'name': 'foo'})
+        put = self.client.put(endpoint, data={'name': 'foo'})
         self.assertEqual(put.status_code, status.HTTP_200_OK)
 
-        patch = self.client.patch(endpoint, data={'pk': 1, 'name': 'foo'})
+        patch = self.client.patch(endpoint, data={'name': 'foo'})
         self.assertEqual(patch.status_code, status.HTTP_200_OK)
 
         self.assertEqual(self.client.delete(endpoint).status_code, status.HTTP_204_NO_CONTENT)
