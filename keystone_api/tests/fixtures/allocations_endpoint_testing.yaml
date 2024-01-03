@@ -1,5 +1,11 @@
-# This test fixture creates three user accounts spanning two research groups.
-# It is designed to support tests against research group based user permissions.
+# This test fixture creates five user accounts spanning two research groups:
+#   - `super_user` is a super user account
+#   - `staff_user` is a staff user account
+#   - `user1` is a generic account and is PI of the `Research Group 1` group
+#   - `user2` is a generic account and is PI of the `Research Group 2` group
+#   - `common_user` is a generic account and is a member of both research groups
+#
+# Both research groups have a single proposal with a single allocation.
 
 # Clusters
 - model: allocations.cluster
@@ -41,13 +47,13 @@
 - model: users.researchgroup
   pk: 1
   fields:
-    name: Research Group
+    name: Research Group 1
     pi: 1
     members: [ 3 ]
 - model: users.researchgroup
   pk: 2
   fields:
-    name: Research Group
+    name: Research Group 2
     pi: 2
     members: [ 3 ]
 
