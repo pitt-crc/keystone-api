@@ -46,7 +46,7 @@ class ListEndpointPermissions(APITestCase):
         self.assertEqual(self.client.head(self.endpoint).status_code, status.HTTP_200_OK)
         self.assertEqual(self.client.options(self.endpoint).status_code, status.HTTP_200_OK)
 
-        # Unauthorized operations
+        # Forbidden operations
         self.assertEqual(self.client.post(self.endpoint).status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(self.client.put(self.endpoint).status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(self.client.patch(self.endpoint).status_code, status.HTTP_403_FORBIDDEN)
@@ -61,7 +61,6 @@ class ListEndpointPermissions(APITestCase):
         user = User.objects.get(username='staff_user')
         self.client.force_authenticate(user=user)
 
-        # Allowed operations
         self.assertEqual(self.client.get(self.endpoint).status_code, status.HTTP_200_OK)
         self.assertEqual(self.client.head(self.endpoint).status_code, status.HTTP_200_OK)
         self.assertEqual(self.client.options(self.endpoint).status_code, status.HTTP_200_OK)
@@ -69,7 +68,7 @@ class ListEndpointPermissions(APITestCase):
         post = self.client.post(self.endpoint, data=self.valid_post_data)
         self.assertEqual(post.status_code, status.HTTP_201_CREATED)
 
-        # Disallowed operations
+        # These operations are not supported by list endpoints
         self.assertEqual(self.client.put(self.endpoint).status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
         self.assertEqual(self.client.patch(self.endpoint).status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
         self.assertEqual(self.client.delete(self.endpoint).status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -98,11 +97,11 @@ class RecordEndpointPermissions(APITestCase):
         endpoint = self.endpoint.format(pk=1)
         self.assertEqual(self.client.get(endpoint).status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(self.client.head(endpoint).status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(self.client.options(endpoint).status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(self.client.post(endpoint).status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(self.client.put(endpoint).status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(self.client.patch(endpoint).status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(self.client.delete(endpoint).status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertEqual(self.client.options(endpoint).status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(self.client.trace(endpoint).status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_authenticated_user_permissions(self) -> None:
@@ -112,12 +111,12 @@ class RecordEndpointPermissions(APITestCase):
         user = User.objects.get(username='common_user')
         self.client.force_authenticate(user=user)
 
-        # Allowed operations
+        # All read operations are allowed
         self.assertEqual(self.client.get(endpoint).status_code, status.HTTP_200_OK)
         self.assertEqual(self.client.head(endpoint).status_code, status.HTTP_200_OK)
         self.assertEqual(self.client.options(endpoint).status_code, status.HTTP_200_OK)
 
-        # Unauthorized operations
+        # General users are not allowed to edit cluster records
         self.assertEqual(self.client.post(endpoint).status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(self.client.put(endpoint).status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(self.client.patch(endpoint).status_code, status.HTTP_403_FORBIDDEN)
@@ -133,10 +132,12 @@ class RecordEndpointPermissions(APITestCase):
         user = User.objects.get(username='staff_user')
         self.client.force_authenticate(user=user)
 
-        # Allowed operations
         self.assertEqual(self.client.get(endpoint).status_code, status.HTTP_200_OK)
         self.assertEqual(self.client.head(endpoint).status_code, status.HTTP_200_OK)
         self.assertEqual(self.client.options(endpoint).status_code, status.HTTP_200_OK)
+
+        # Record creation is not supported by record endpoints
+        self.assertEqual(self.client.post(endpoint).status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
         put = self.client.put(endpoint, data={'name': 'foo'})
         self.assertEqual(put.status_code, status.HTTP_200_OK)
@@ -147,5 +148,4 @@ class RecordEndpointPermissions(APITestCase):
         self.assertEqual(self.client.delete(endpoint).status_code, status.HTTP_204_NO_CONTENT)
 
         # Disallowed operations
-        self.assertEqual(self.client.post(endpoint).status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
         self.assertEqual(self.client.trace(endpoint).status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
