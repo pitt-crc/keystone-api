@@ -25,7 +25,7 @@ class StaffWriteAuthenticatedRead(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return request.user.is_authenticated
 
-        return request.user.is_staff or request.method == 'TRACE'
+        return request.user.is_staff
 
 
 class StaffWriteGroupRead(permissions.BasePermission):
@@ -40,12 +40,12 @@ class StaffWriteGroupRead(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return request.user.is_authenticated
 
-        return request.user.is_staff or request.method == 'TRACE'
+        return request.user.is_staff
 
     def has_object_permission(self, request, view, obj: RGAffiliatedModel) -> bool:
         """Return whether the incoming HTTP request has permission to access a database record"""
 
-        if request.user.is_staff or request.method == 'TRACE':
+        if request.user.is_staff:
             return True
 
         user_is_in_group = request.user in obj.get_research_group().get_all_members()

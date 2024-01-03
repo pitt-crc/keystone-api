@@ -14,8 +14,8 @@ class ListEndpointPermissions(APITestCase):
 
     | Authentication      | GET | HEAD | OPTIONS | POST | PUT | PATCH | DELETE | TRACE |
     |---------------------|-----|------|---------|------|-----|-------|--------|-------|
-    | Anonymous User      | 401 | 401  | 401     | 401  | 401 | 401   | 401    | 405   |
-    | Authenticated User  | 200 | 200  | 200     | 403  | 403 | 403   | 403    | 405   |
+    | Anonymous User      | 401 | 401  | 401     | 401  | 401 | 401   | 401    | 401   |
+    | Authenticated User  | 200 | 200  | 200     | 403  | 403 | 403   | 403    | 403   |
     | Staff User          | 200 | 200  | 200     | 201  | 405 | 405   | 405    | 405   |
     """
 
@@ -33,7 +33,7 @@ class ListEndpointPermissions(APITestCase):
         self.assertEqual(self.client.put(self.endpoint).status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(self.client.patch(self.endpoint).status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(self.client.delete(self.endpoint).status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertEqual(self.client.trace(self.endpoint).status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(self.client.trace(self.endpoint).status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_authenticated_user_permissions(self) -> None:
         """Test general authenticated users have read-only permissions"""
@@ -51,9 +51,7 @@ class ListEndpointPermissions(APITestCase):
         self.assertEqual(self.client.put(self.endpoint).status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(self.client.patch(self.endpoint).status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(self.client.delete(self.endpoint).status_code, status.HTTP_403_FORBIDDEN)
-
-        # Disallowed operations
-        self.assertEqual(self.client.trace(self.endpoint).status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(self.client.trace(self.endpoint).status_code, status.HTTP_403_FORBIDDEN)
 
     def test_staff_user_permissions(self) -> None:
         """Test staff users have read and write permissions"""
@@ -83,8 +81,8 @@ class RecordEndpointPermissions(APITestCase):
 
     | Authentication      | GET | HEAD | OPTIONS | POST | PUT | PATCH | DELETE | TRACE |
     |---------------------|-----|------|---------|------|-----|-------|--------|-------|
-    | Anonymous User      | 401 | 401  | 401     | 401  | 401 | 401   | 401    | 405   |
-    | Authenticated User  | 200 | 200  | 200     | 403  | 403 | 403   | 403    | 405   |
+    | Anonymous User      | 401 | 401  | 401     | 401  | 401 | 401   | 401    | 401   |
+    | Authenticated User  | 200 | 200  | 200     | 403  | 403 | 403   | 403    | 403   |
     | Staff User          | 200 | 200  | 200     | 405  | 200 | 200   | 204    | 405   |
     """
 
@@ -102,7 +100,7 @@ class RecordEndpointPermissions(APITestCase):
         self.assertEqual(self.client.put(endpoint).status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(self.client.patch(endpoint).status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(self.client.delete(endpoint).status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertEqual(self.client.trace(endpoint).status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(self.client.trace(endpoint).status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_authenticated_user_permissions(self) -> None:
         """Test general authenticated users have read-only permissions"""
@@ -121,9 +119,7 @@ class RecordEndpointPermissions(APITestCase):
         self.assertEqual(self.client.put(endpoint).status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(self.client.patch(endpoint).status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(self.client.delete(endpoint).status_code, status.HTTP_403_FORBIDDEN)
-
-        # Disallowed operations
-        self.assertEqual(self.client.trace(endpoint).status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(self.client.trace(endpoint).status_code, status.HTTP_403_FORBIDDEN)
 
     def test_staff_user_permissions(self) -> None:
         """Test staff users have read and write permissions"""
