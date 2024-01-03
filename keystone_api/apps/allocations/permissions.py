@@ -1,8 +1,6 @@
 from rest_framework import permissions
 
-from apps.allocations.models import RGAffiliatedModel
-
-__all__ = ['StaffWriteAuthenticatedRead', 'StaffWriteGroupRead']
+__all__ = ['StaffWriteAuthenticatedRead']
 
 
 class StaffWriteAuthenticatedRead(permissions.BasePermission):

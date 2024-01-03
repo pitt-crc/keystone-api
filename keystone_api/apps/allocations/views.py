@@ -25,7 +25,6 @@ class ClusterViewSet(viewsets.ModelViewSet):
 class AllocationViewSet(viewsets.ModelViewSet):
     """Manage SU allocations for user research groups."""
 
-    permission_classes = [StaffWriteGroupRead]
     serializer_class = AllocationSerializer
     filterset_fields = '__all__'
 
@@ -44,7 +43,6 @@ class AllocationViewSet(viewsets.ModelViewSet):
 class ProposalViewSet(viewsets.ModelViewSet):
     """Manage project proposals submitted by users to request additional service unit allocations."""
 
-    # permission_classes = [DelegateCreateGroupRead]
     serializer_class = ProposalSerializer
     filterset_fields = '__all__'
 
@@ -63,7 +61,6 @@ class ProposalViewSet(viewsets.ModelViewSet):
 class ProposalReviewViewSet(viewsets.ModelViewSet):
     """Manage project proposal reviews submitted by administrators."""
 
-    # permission_classes = [StaffWriteGroupRead]
     serializer_class = ProposalReviewSerializer
     filterset_fields = '__all__'
 
