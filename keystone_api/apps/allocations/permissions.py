@@ -10,12 +10,12 @@ from rest_framework import permissions
 
 from .models import RGAffiliatedModel
 
-__all__ = ['StaffWriteAuthenticatedRead', 'StaffWriteGroupRead']
+__all__ = ['GroupAdminCreate', 'StaffWriteAuthenticatedRead', 'StaffWriteGroupRead']
 
 
 class StaffWriteAuthenticatedRead(permissions.BasePermission):
-    """
-    Read access is granted to all authenticated users.
+    """Grant read-only access is granted to all authenticated users.
+
     Staff users retain all read/write permissions.
     """
 
@@ -29,9 +29,9 @@ class StaffWriteAuthenticatedRead(permissions.BasePermission):
 
 
 class StaffWriteGroupRead(permissions.BasePermission):
-    """
-    Read access is granted to all users belonging to the same research group
-    as the requested object. Staff users retain all read/write permissions.
+    """Grant read access to users in to the same research group as the requested object.
+
+    Staff users retain all read/write permissions.
     """
 
     def has_permission(self, request, view) -> bool:
@@ -50,3 +50,21 @@ class StaffWriteGroupRead(permissions.BasePermission):
 
         user_is_in_group = request.user in obj.get_research_group().get_all_members()
         return request.method in permissions.SAFE_METHODS and user_is_in_group
+
+
+class GroupAdminCreate(permissions.BasePermission):
+    """Grant record creation permissions to users in to the same research group as the created object.
+
+    Staff users retain all read/write permissions.
+    """
+
+    def has_object_permission(self, request, view, obj: RGAffiliatedModel) -> bool:
+        """Return whether the request has permissions to access the requested resource"""
+
+        is_group_admin = request.user in obj.get_research_group().get_privileged_members()
+        is_staff = request.user.is_staff
+
+        if request.method in permissions.SAFE_METHODS or request.method == 'POST':
+            return is_group_admin or is_staff
+
+        return is_staff
