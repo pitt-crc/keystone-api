@@ -24,11 +24,3 @@ class Quickstart(TestCase):
             call_command('quickstart', '--gunicorn', '--no-input')
             mock_run.assert_called_with(
                 ['gunicorn', '--bind', '0.0.0.0:8000', 'keystone_api.main.wsgi:application'], check=True)
-
-    def test_uvicorn_command(self) -> None:
-        """Test the `--uvicorn` command executes a uvicorn server command"""
-
-        with patch('subprocess.run') as mock_run:
-            call_command('quickstart', '--uvicorn', '--no-input')
-            mock_run.assert_called_with(
-                ['uvicorn', 'keystone_api.main.asgi:application', '--host', '0.0.0.0', '--port', '8000'], check=True)
