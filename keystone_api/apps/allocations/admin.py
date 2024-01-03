@@ -77,7 +77,7 @@ class ProposalAdmin(admin.ModelAdmin):
     def reviews(obj: Proposal) -> int:
         """Return the total number of proposal reviews"""
 
-        return sum(1 for review in obj.proposalreview_set.all())
+        return sum(1 for _ in obj.proposalreview_set.all())
 
     @staticmethod
     @admin.display
@@ -128,7 +128,3 @@ class AllocationAdmin(admin.ModelAdmin):
     list_display_links = list_display
     ordering = ['proposal__group__name', 'cluster']
     search_fields = ['proposal__group__name', 'proposal__title', 'cluster__name']
-
-
-
-

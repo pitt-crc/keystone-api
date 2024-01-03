@@ -30,10 +30,7 @@ class AllocationViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
 
     def get_queryset(self) -> list[Allocation]:
-        """Return a list of allocations for the currently authenticated user
-
-        Admin users are returned a list of all allocations across all users.
-        """
+        """Return a list of allocations for the currently authenticated user"""
 
         if self.request.user.is_staff or self.request.user.is_superuser:
             return Allocation.objects.all()
@@ -48,10 +45,7 @@ class ProposalViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
 
     def get_queryset(self) -> list[Proposal]:
-        """Return a list of proposals for the currently authenticated user
-
-        Admin users are returned a list of all proposals across all users.
-        """
+        """Return a list of proposals for the currently authenticated user"""
 
         if self.request.user.is_staff or self.request.user.is_superuser:
             return Proposal.objects.all()
@@ -66,10 +60,7 @@ class ProposalReviewViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
 
     def get_queryset(self) -> list[Allocation]:
-        """Return a list of proposal reviews for the currently authenticated user
-
-        Admin users are returned a list of all records across all users.
-        """
+        """Return a list of proposal reviews for the currently authenticated user"""
 
         if self.request.user.is_staff or self.request.user.is_superuser:
             return ProposalReview.objects.all()
