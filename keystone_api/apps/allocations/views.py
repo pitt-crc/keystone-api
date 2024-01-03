@@ -7,6 +7,7 @@ appropriately rendered HTML template or other HTTP response.
 from rest_framework import viewsets
 
 from .models import *
+from .permissions import *
 from .serializers import *
 
 __all__ = ['AllocationViewSet', 'ClusterViewSet', 'ProposalViewSet', 'ProposalReviewViewSet']
@@ -15,6 +16,7 @@ __all__ = ['AllocationViewSet', 'ClusterViewSet', 'ProposalViewSet', 'ProposalRe
 class ClusterViewSet(viewsets.ModelViewSet):
     """System settings and configuration for managed Slurm clusters."""
 
+    permission_classes = [StaffWriteAuthenticatedRead]
     queryset = Cluster.objects.all()
     serializer_class = ClusterSerializer
     filterset_fields = '__all__'

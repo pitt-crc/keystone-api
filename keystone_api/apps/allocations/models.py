@@ -6,14 +6,23 @@ Each model reflects a different database and defines low-level defaults for how
 the associated table/fields/records are presented by parent interfaces.
 """
 
-from django.contrib.auth import get_user_model
+import abc
+
 from django.db import models
 from django.template.defaultfilters import truncatechars
 
-from apps.users.models import ResearchGroup
+from apps.users.models import ResearchGroup, User
 from .managers import *
 
-__all__ = ['Allocation', 'Cluster', 'Proposal', 'ProposalReview']
+__all__ = ['Allocation', 'Cluster', 'Proposal', 'ProposalReview', 'RGAffiliatedModel']
+
+
+class RGAffiliatedModel:
+    """Abstract base class for database models affiliated with a research group"""
+
+    @abc.abstractmethod
+    def get_research_group(self) -> ResearchGroup:
+        """Return the research group tied to the current record"""
 
 
 class Cluster(models.Model):
@@ -29,10 +38,9 @@ class Cluster(models.Model):
         return str(self.name)
 
 
-class Proposal(models.Model):
+class Proposal(RGAffiliatedModel, models.Model):
     """Project proposal requesting service unit allocations on one or more clusters"""
 
-    group = models.ForeignKey(ResearchGroup, on_delete=models.CASCADE)
     title = models.CharField(max_length=250)
     description = models.TextField(max_length=1600)
     submitted = models.DateField('Submission Date', auto_now=True)
@@ -40,7 +48,14 @@ class Proposal(models.Model):
     active = models.DateField('Active Date', null=True, blank=True)
     expire = models.DateField('Expiration Date', null=True, blank=True)
 
+    group: ResearchGroup = models.ForeignKey(ResearchGroup, on_delete=models.CASCADE)
+
     objects = ProposalManager()
+
+    def get_research_group(self) -> ResearchGroup:
+        """Return the research group tied to the current record"""
+
+        return self.group
 
     def __str__(self) -> str:
         """Return the proposal title as a string"""
@@ -51,11 +66,17 @@ class Proposal(models.Model):
 class Allocation(models.Model):
     """User service unit allocation"""
 
-    cluster = models.ForeignKey(Cluster, on_delete=models.CASCADE)
     sus = models.PositiveIntegerField('Service Units')
-    proposal = models.ForeignKey(Proposal, on_delete=models.CASCADE)
+
+    cluster: Cluster = models.ForeignKey(Cluster, on_delete=models.CASCADE)
+    proposal: Proposal = models.ForeignKey(Proposal, on_delete=models.CASCADE)
 
     objects = AllocationManager()
+
+    def get_research_group(self) -> ResearchGroup:
+        """Return the research group tied to the current record"""
+
+        return self.proposal.group
 
     def __str__(self) -> str:
         """Return a human-readable summary of the allocation"""
@@ -66,14 +87,20 @@ class Allocation(models.Model):
 class ProposalReview(models.Model):
     """Review feedback for a project proposal"""
 
-    reviewer = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     approve = models.BooleanField()
     private_comments = models.CharField(max_length=500, null=True, blank=True)
     public_comments = models.CharField(max_length=500, null=True, blank=True)
-    proposal = models.ForeignKey(Proposal, on_delete=models.CASCADE)
     date_modified = models.DateTimeField(auto_now=True)
 
+    proposal: Proposal = models.ForeignKey(Proposal, on_delete=models.CASCADE)
+    reviewer: User = models.ForeignKey(User, on_delete=models.CASCADE)
+
     objects = ProposalReviewManager()
+
+    def get_research_group(self) -> ResearchGroup:
+        """Return the research group tied to the current record"""
+
+        return self.proposal.group
 
     def __str__(self) -> str:
         """Return a human-readable identifier for the proposal"""
