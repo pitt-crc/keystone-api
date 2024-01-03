@@ -124,7 +124,14 @@ class AllocationAdmin(admin.ModelAdmin):
 
         return f'{obj.sus:,}'
 
-    list_display = [group, 'proposal', 'cluster', service_units, proposal_approved]
+    @staticmethod
+    @admin.display
+    def final_usage(obj: Allocation) -> str:
+        """Return an allocation's final usage as a human friendly string"""
+
+        return f'{obj.final:,}' if obj.final else '--'
+
+    list_display = [group, 'proposal', 'cluster', service_units, final_usage, proposal_approved]
     list_display_links = list_display
     ordering = ['proposal__group__name', 'cluster']
     search_fields = ['proposal__group__name', 'proposal__title', 'cluster__name']
