@@ -103,9 +103,9 @@ TEMPLATES = [
 # Base styling for the Admin UI
 
 JAZZMIN_SETTINGS = {
-    "site_title": "CRC Self Service",
-    "site_header": "CRC Self Service",
-    "site_brand": "CRC Self Service",
+    "site_title": "Keystone",
+    "site_header": "Keystone",
+    "site_brand": "Keystone",
     "hide_apps": ["sites"],
     "order_with_respect_to": [
         "users",
@@ -114,8 +114,7 @@ JAZZMIN_SETTINGS = {
         "sites"
     ],
     "icons": {},
-    "site_logo": "theme/img/logo/Shield_White.png",
-    "login_logo": "theme/img/logo/Pitt_Primary_3Color_small.png",
+    "login_logo": "fake/file/path.jpg",
 }
 
 # REST API settings
