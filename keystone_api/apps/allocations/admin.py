@@ -126,7 +126,7 @@ class AllocationAdmin(admin.ModelAdmin):
     list_display_links = list_display
     ordering = ['proposal__group__name', 'cluster']
     search_fields = ['proposal__group__name', 'proposal__title', 'cluster__name']
-    list_filter = [
-        ('start', admin.DateFieldListFilter),
-        ('expire', admin.DateFieldListFilter),
-    ]
+
+
+
+

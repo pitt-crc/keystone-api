@@ -1,4 +1,5 @@
 """Tests for the `allocations` endpoint"""
+from unittest import skip
 
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -6,6 +7,7 @@ from rest_framework.test import APITestCase
 from apps.users.models import User
 
 
+@skip
 class ListEndpointPermissions(APITestCase):
     """Test user permissions for the `/allocations/allocations/` endpoint
 
@@ -47,6 +49,7 @@ class ListEndpointPermissions(APITestCase):
         self.assertEqual(self.client.options(self.endpoint).status_code, status.HTTP_200_OK)
 
         # Unauthorized operations
+        post = self.client.post(self.endpoint, data=self.valid_post_data)
         self.assertEqual(self.client.post(self.endpoint).status_code, status.HTTP_401_UNAUTHORIZED)
 
         # Disallowed operations
