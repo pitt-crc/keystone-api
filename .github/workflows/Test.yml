@@ -48,9 +48,10 @@ jobs:
           docker run --detach -p 8000:8000 keystone-api
           sleep 30  # Wait for API server to start
           
-          read -r status report <<<$(curl -sL -w "%{http_code} %{body}" "localhost:8000/health/")
-          echo $report | jq .
-          if [ "status" -ne 200 ]; then
+          curl -s -o response.txt -w "%{http_code}" localhost:8000/health/
+          jq . response.txt
+          if [ "$http_code" -ne 200 ]; then
+            echo $http_code
             exit 1
           fi
 
