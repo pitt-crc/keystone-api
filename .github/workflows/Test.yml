@@ -50,7 +50,7 @@ jobs:
           
           status=$(curl -s -o response.txt -w "%{http_code}" localhost:8000/health/)
           jq . response.txt
-          if [ "status" -ne 200 ]; then
+          if [ "$status" -ne 200 ]; then
             exit 1
           fi
 
