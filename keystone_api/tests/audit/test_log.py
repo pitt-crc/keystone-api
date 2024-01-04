@@ -6,7 +6,7 @@ from rest_framework.test import APITestCase
 from apps.users.models import User
 
 
-class ListEndpointPermissions(APITestCase):
+class EndpointPermissions(APITestCase):
     """Test user permissions for the `/audit/log/` endpoint
 
     Endpoint permissions are tested against the following matrix of HTTP responses.

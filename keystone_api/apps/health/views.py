@@ -4,10 +4,11 @@ View objects handle the processing of incoming HTTP requests and return the
 appropriately rendered HTML template or other HTTP response.
 """
 
-from django.core.handlers.wsgi import HttpRequest
 from django.http import JsonResponse
 from drf_spectacular.utils import inline_serializer, extend_schema
+from health_check.backends import BaseHealthCheckBackend
 from health_check.mixins import CheckMixin
+from rest_framework.request import Request
 from rest_framework.viewsets import ViewSet
 
 __all__ = ['HealthChecks']
@@ -18,21 +19,8 @@ class HealthChecks(ViewSet, CheckMixin):
 
     permission_classes = []
 
-    @extend_schema(responses={'2XX': inline_serializer('success', dict())})
-    def list(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
-        """Return a JSON response detailing system status checks.
-
-        The returned status code will be 200 if all checks pass. If any checks
-        fail, the status code will be 500.
-        """
-
-        # This method functions similarly to the overloaded parent method,
-        # except responses are forced to be JSON and never rendered HTML.
-
-        status_code = 500 if self.errors else 200
-        return self.render_to_response_json(self.plugins, status_code)
-
-    def render_to_response_json(self, plugins, status: int) -> JsonResponse:
+    @staticmethod
+    def render_to_response_json(plugins: list[BaseHealthCheckBackend], status: int) -> JsonResponse:
         """Render a JSON response summarizing the status for a list of plugins
 
         Args:
@@ -53,3 +41,17 @@ class HealthChecks(ViewSet, CheckMixin):
             }
 
         return JsonResponse(data=data, status=status)
+
+    @extend_schema(responses={'2XX': inline_serializer('success', dict())})
+    def list(self, request: Request, *args, **kwargs) -> JsonResponse:
+        """Return a JSON response detailing system status checks.
+
+        The returned status code will be 200 if all checks pass. If any checks
+        fail, the status code will be 500.
+        """
+
+        # This method functions similarly to the overloaded parent method,
+        # except responses are forced to be JSON and never rendered HTML.
+
+        status_code = 500 if self.errors else 200
+        return self.render_to_response_json(self.plugins, status_code)
