@@ -31,11 +31,6 @@ class UserAdmin(auth.admin.UserAdmin):
     """Admin interface for managing user accounts"""
 
 
-@admin.register(Group)
-class GroupAdmin(auth.admin.GroupAdmin):
-    """Admin interface for managing user groups"""
-
-
 @admin.register(ResearchGroup)
 class ResearchGroupAdmin(admin.ModelAdmin):
     """Admin interface for managing research group delegates"""

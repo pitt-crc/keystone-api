@@ -77,7 +77,7 @@ class ProposalAdmin(admin.ModelAdmin):
     def reviews(obj: Proposal) -> int:
         """Return the total number of proposal reviews"""
 
-        return sum(1 for review in obj.proposalreview_set.all())
+        return sum(1 for _ in obj.proposalreview_set.all())
 
     @staticmethod
     @admin.display
@@ -93,6 +93,8 @@ class ProposalAdmin(admin.ModelAdmin):
     list_filter = [
         ('submitted', admin.DateFieldListFilter),
         ('approved', admin.DateFieldListFilter),
+        ('active', admin.DateFieldListFilter),
+        ('expire', admin.DateFieldListFilter),
     ]
     inlines = [AllocationInline, ProposalReviewInline]
 
@@ -110,10 +112,10 @@ class AllocationAdmin(admin.ModelAdmin):
 
     @staticmethod
     @admin.display
-    def proposal_approved(obj: Allocation) -> bool:
+    def approved(obj: Allocation) -> bool:
         """Return whether the allocation proposal has been marked as approved"""
 
-        return obj.proposal.approved is not None
+        return obj.proposal.approved or '--'
 
     @staticmethod
     @admin.display
@@ -122,11 +124,17 @@ class AllocationAdmin(admin.ModelAdmin):
 
         return f'{obj.sus:,}'
 
-    list_display = [group, 'proposal', 'cluster', service_units, proposal_approved]
+    @staticmethod
+    @admin.display
+    def final_usage(obj: Allocation) -> str:
+        """Return an allocation's final usage as a human friendly string"""
+
+        return f'{obj.final:,}' if obj.final else '--'
+
+    list_display = [group, 'proposal', 'cluster', service_units, final_usage, approved]
     list_display_links = list_display
     ordering = ['proposal__group__name', 'cluster']
     search_fields = ['proposal__group__name', 'proposal__title', 'cluster__name']
     list_filter = [
-        ('start', admin.DateFieldListFilter),
-        ('expire', admin.DateFieldListFilter),
+        ('proposal__approved', admin.DateFieldListFilter)
     ]

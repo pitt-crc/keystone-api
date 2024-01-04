@@ -8,11 +8,9 @@ to handle database migrations, static file collection, and web server deployment
 
 | Argument   | Description                                                      |
 |------------|------------------------------------------------------------------|
-| --static   | Collect static files                                             |
 | --migrate  | Run database migrations                                          |
 | --celery   | Launch a Celery worker with a Redis backend                      |
 | --gunicorn | Run a web server using Gunicorn                                  |
-| --uvicorn  | Run a web server using Uvicorn                                   |
 | --no-input | Do not prompt for user input of any kind                         |
 """
 
@@ -36,14 +34,9 @@ class Command(BaseCommand):
           parser (ArgumentParser): The argument parser instance.
         """
 
-        parser.add_argument('--static', action='store_true', help='Collect static files.')
         parser.add_argument('--migrate', action='store_true', help='Run database migrations.')
         parser.add_argument('--celery', action='store_true', help='Launch a background Celery worker.')
-
-        server_type = parser.add_mutually_exclusive_group()
-        server_type.add_argument('--gunicorn', action='store_true', help='Run a web server using Gunicorn.')
-        server_type.add_argument('--uvicorn', action='store_true', help='Run a web server using Uvicorn.')
-
+        parser.add_argument('--gunicorn', action='store_true', help='Run a web server using Gunicorn.')
         parser.add_argument('--no-input', action='store_false', help='Do not prompt for user input of any kind.')
 
     def handle(self, *args, **options) -> None:
@@ -53,10 +46,6 @@ class Command(BaseCommand):
           *args: Additional positional arguments.
           **options: Additional keyword arguments.
         """
-
-        if options['static']:
-            self.stdout.write(self.style.SUCCESS('Collecting static files...'))
-            call_command('collectstatic', no_input=options['no_input'])
 
         if options['migrate']:
             self.stdout.write(self.style.SUCCESS('Running database migrations...'))
@@ -69,10 +58,6 @@ class Command(BaseCommand):
         if options['gunicorn']:
             self.stdout.write(self.style.SUCCESS('Starting Gunicorn server...'))
             self.run_gunicorn()
-
-        elif options['uvicorn']:
-            self.stdout.write(self.style.SUCCESS('Starting Uvicorn server...'))
-            self.run_uvicorn()
 
     @staticmethod
     def run_celery() -> None:
@@ -91,16 +76,4 @@ class Command(BaseCommand):
         """
 
         command = ['gunicorn', '--bind', f'{host}:{port}', 'keystone_api.main.wsgi:application']
-        subprocess.run(command, check=True)
-
-    @staticmethod
-    def run_uvicorn(host: str = '0.0.0.0', port: int = 8000) -> None:
-        """Start a Uvicorn server.
-
-        Args:
-          host: The host to bind to
-          port: The port to bind to
-        """
-
-        command = ['uvicorn', 'keystone_api.main.asgi:application', '--host', host, '--port', str(port)]
         subprocess.run(command, check=True)

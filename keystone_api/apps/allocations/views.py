@@ -4,9 +4,10 @@ View objects handle the processing of incoming HTTP requests and return the
 appropriately rendered HTML template or other HTTP response.
 """
 
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 
 from .models import *
+from .permissions import *
 from .serializers import *
 
 __all__ = ['AllocationViewSet', 'ClusterViewSet', 'ProposalViewSet', 'ProposalReviewViewSet']
@@ -15,6 +16,7 @@ __all__ = ['AllocationViewSet', 'ClusterViewSet', 'ProposalViewSet', 'ProposalRe
 class ClusterViewSet(viewsets.ModelViewSet):
     """System settings and configuration for managed Slurm clusters."""
 
+    permission_classes = [permissions.IsAuthenticated, StaffWriteAuthenticatedRead]
     queryset = Cluster.objects.all()
     serializer_class = ClusterSerializer
     filterset_fields = '__all__'
@@ -23,14 +25,12 @@ class ClusterViewSet(viewsets.ModelViewSet):
 class AllocationViewSet(viewsets.ModelViewSet):
     """Manage SU allocations for user research groups."""
 
+    permission_classes = [permissions.IsAuthenticated, StaffWriteGroupRead]
     serializer_class = AllocationSerializer
     filterset_fields = '__all__'
 
     def get_queryset(self) -> list[Allocation]:
-        """Return a list of allocations for the currently authenticated user
-
-        Admin users are returned a list of all allocations across all users.
-        """
+        """Return a list of allocations for the currently authenticated user"""
 
         if self.request.user.is_staff or self.request.user.is_superuser:
             return Allocation.objects.all()
@@ -45,10 +45,7 @@ class ProposalViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
 
     def get_queryset(self) -> list[Proposal]:
-        """Return a list of proposals for the currently authenticated user
-
-        Admin users are returned a list of all proposals across all users.
-        """
+        """Return a list of proposals for the currently authenticated user"""
 
         if self.request.user.is_staff or self.request.user.is_superuser:
             return Proposal.objects.all()
@@ -63,10 +60,7 @@ class ProposalReviewViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
 
     def get_queryset(self) -> list[Allocation]:
-        """Return a list of proposal reviews for the currently authenticated user
-
-        Admin users are returned a list of all records across all users.
-        """
+        """Return a list of proposal reviews for the currently authenticated user"""
 
         if self.request.user.is_staff or self.request.user.is_superuser:
             return ProposalReview.objects.all()
