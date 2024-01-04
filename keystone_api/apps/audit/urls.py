@@ -7,6 +7,6 @@ from .views import *
 app_name = 'audit'
 
 router = DefaultRouter()
-router.register('', LogEntryViewSet)
+router.register('log', LogEntryViewSet)
 
 urlpatterns = router.urls
