@@ -10,7 +10,6 @@ class ListEndpointPermissions(APITestCase):
     """Test user permissions for the `/allocations/clusters/` endpoint
 
     Endpoint permissions are tested against the following matrix of HTTP responses.
-    All listed responses assume the associated HTTP request is otherwise valid.
 
     | Authentication      | GET | HEAD | OPTIONS | POST | PUT | PATCH | DELETE | TRACE |
     |---------------------|-----|------|---------|------|-----|-------|--------|-------|
@@ -77,7 +76,6 @@ class RecordEndpointPermissions(APITestCase):
     """Test user permissions against the `/allocations/clusters/<pk>` endpoint
 
     Endpoint permissions are tested against the following matrix of HTTP responses.
-    All listed responses assume the associated HTTP request is otherwise valid.
 
     | Authentication      | GET | HEAD | OPTIONS | POST | PUT | PATCH | DELETE | TRACE |
     |---------------------|-----|------|---------|------|-----|-------|--------|-------|
