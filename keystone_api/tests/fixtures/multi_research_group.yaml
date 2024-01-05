@@ -1,11 +1,20 @@
-# This test fixture creates five user accounts spanning two research groups:
-#   - `super_user` is a super user account
-#   - `staff_user` is a staff user account
-#   - `user1` is a generic account and is PI of the `Research Group 1` group
-#   - `user2` is a generic account and is PI of the `Research Group 2` group
-#   - `common_user` is a generic account and is a member of both research groups
+# This test fixture creates two research groups on the same cluster.
+# Each group has a single proposal with a single allocation.
 #
-# Both research groups have a single proposal with a single allocation.
+# Research Group 1:
+#   - pi_1          (Research group PI)
+#   - group_admin_1 (Research group admin)
+#   - member_1      (Generic group member)
+#
+# Research Group 2:
+#   - pi_2          (Research group PI)
+#   - group_admin_2 (Research group admin)
+#   - member_2      (Generic group member)
+#
+# Accounts not affiliated with a group:
+#   - super_user  (Super user account)
+#   - staff_user  (Staff user account)
+#   - common_user (Generic user account)
 
 # Clusters
 - model: allocations.cluster
@@ -18,26 +27,46 @@
 - model: auth.user
   pk: 1
   fields:
-    username: user1
+    username: pi_1
     password: testpassword
 - model: auth.user
   pk: 2
   fields:
-    username: user2
+    username: group_admin_1
     password: testpassword
 - model: auth.user
   pk: 3
   fields:
-    username: common_user
+    username: member_1
     password: testpassword
 - model: auth.user
   pk: 4
+  fields:
+    username: pi_2
+    password: testpassword
+- model: auth.user
+  pk: 5
+  fields:
+    username: group_admin_2
+    password: testpassword
+- model: auth.user
+  pk: 6
+  fields:
+    username: member_2
+    password: testpassword
+- model: auth.user
+  pk: 7
+  fields:
+    username: generic_user
+    password: testpassword
+- model: auth.user
+  pk: 8
   fields:
     username: super_user
     password: testpassword
     is_superuser: true
 - model: auth.user
-  pk: 5
+  pk: 9
   fields:
     username: staff_user
     password: testpassword
@@ -49,13 +78,14 @@
   fields:
     name: Research Group 1
     pi: 1
+    admins: [ 2 ]
     members: [ 3 ]
 - model: users.researchgroup
   pk: 2
   fields:
     name: Research Group 2
-    pi: 2
-    members: [ 3 ]
+    pi: 4
+    members: [ 6 ]
 
 # Proposals
 - model: allocations.proposal
