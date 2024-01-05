@@ -8,6 +8,7 @@ predefined access rules.
 
 from rest_framework import permissions
 
+from apps.users.models import ResearchGroup
 from .models import RGAffiliatedModel
 
 __all__ = ['GroupAdminCreate', 'StaffWriteAuthenticatedRead', 'StaffWriteGroupRead']
@@ -53,17 +54,27 @@ class StaffWriteGroupRead(permissions.BasePermission):
 
 
 class GroupAdminCreate(permissions.BasePermission):
-    """Grant record creation permissions to users in to the same research group as the created object.
 
-    Staff users retain all read/write permissions.
-    """
+    def has_permission(self, request, view) -> bool:
+        """Return whether the request has permissions to access the requested resource"""
+
+        if request.user.is_staff or request.method in permissions.SAFE_METHODS:
+            return True
+
+        try:
+            group_id = request.data.get('group', None)
+            group = ResearchGroup.objects.get(pk=group_id)
+
+        except ResearchGroup.DoesNotExist:
+            return False
+
+        return request.user in group.get_privileged_members()
 
     def has_object_permission(self, request, view, obj: RGAffiliatedModel) -> bool:
-        """Return whether the request has permissions to access the requested resource"""
+        """Return whether the incoming HTTP request has permission to access a database record"""
 
         is_group_admin = request.user in obj.get_research_group().get_privileged_members()
         is_staff = request.user.is_staff
-
         if request.method in permissions.SAFE_METHODS or request.method == 'POST':
             return is_group_admin or is_staff
 
