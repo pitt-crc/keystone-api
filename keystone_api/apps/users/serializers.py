@@ -10,7 +10,7 @@ from rest_framework import serializers
 
 from .models import *
 
-__all__ = ['ResearchGroupSerializer', 'UserSerializer']
+__all__ = ['ResearchGroupSerializer', 'UsernameSerializer', 'UserSerializer']
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -18,7 +18,15 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = '__all__'
+        exclude = ('password',)
+
+
+class UsernameSerializer(serializers.ModelSerializer):
+    """Limited object serializer for the `User` class which returns the username online"""
+
+    class Meta:
+        model = User
+        fields = ('username',)
 
 
 class ResearchGroupSerializer(serializers.ModelSerializer):
