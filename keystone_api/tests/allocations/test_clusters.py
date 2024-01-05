@@ -20,7 +20,6 @@ class ListEndpointPermissions(APITestCase):
     """
 
     endpoint = '/allocations/clusters/'
-    valid_post_data = {'name': 'foo'}
     fixtures = ['multi_research_group.yaml']
 
     def test_anonymous_user_permissions(self) -> None:
@@ -38,7 +37,7 @@ class ListEndpointPermissions(APITestCase):
     def test_authenticated_user_permissions(self) -> None:
         """Test general authenticated users have read-only permissions"""
 
-        user = User.objects.get(username='common_user')
+        user = User.objects.get(username='generic_user')
         self.client.force_authenticate(user=user)
 
         # Allowed operations
@@ -63,7 +62,7 @@ class ListEndpointPermissions(APITestCase):
         self.assertEqual(self.client.head(self.endpoint).status_code, status.HTTP_200_OK)
         self.assertEqual(self.client.options(self.endpoint).status_code, status.HTTP_200_OK)
 
-        post = self.client.post(self.endpoint, data=self.valid_post_data)
+        post = self.client.post(self.endpoint, data={'name': 'foo'})
         self.assertEqual(post.status_code, status.HTTP_201_CREATED)
 
         # These operations are not supported by list endpoints
@@ -106,7 +105,7 @@ class RecordEndpointPermissions(APITestCase):
         """Test general authenticated users have read-only permissions"""
 
         endpoint = self.endpoint.format(pk=1)
-        user = User.objects.get(username='common_user')
+        user = User.objects.get(username='generic_user')
         self.client.force_authenticate(user=user)
 
         # All read operations are allowed
