@@ -8,7 +8,6 @@ to handle database migrations, static file collection, and web server deployment
 
 | Argument   | Description                                                      |
 |------------|------------------------------------------------------------------|
-| --static   | Collect static files                                             |
 | --migrate  | Run database migrations                                          |
 | --celery   | Launch a Celery worker with a Redis backend                      |
 | --gunicorn | Run a web server using Gunicorn                                  |
@@ -35,7 +34,6 @@ class Command(BaseCommand):
           parser (ArgumentParser): The argument parser instance.
         """
 
-        parser.add_argument('--static', action='store_true', help='Collect static files.')
         parser.add_argument('--migrate', action='store_true', help='Run database migrations.')
         parser.add_argument('--celery', action='store_true', help='Launch a background Celery worker.')
         parser.add_argument('--gunicorn', action='store_true', help='Run a web server using Gunicorn.')
@@ -48,10 +46,6 @@ class Command(BaseCommand):
           *args: Additional positional arguments.
           **options: Additional keyword arguments.
         """
-
-        if options['static']:
-            self.stdout.write(self.style.SUCCESS('Collecting static files...'))
-            call_command('collectstatic', no_input=options['no_input'])
 
         if options['migrate']:
             self.stdout.write(self.style.SUCCESS('Running database migrations...'))

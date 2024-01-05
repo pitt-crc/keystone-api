@@ -38,7 +38,7 @@ class ListEndpointPermissions(APITestCase):
     def test_authenticated_user_permissions(self) -> None:
         """Test general authenticated users have read-only permissions"""
 
-        user = User.objects.get(username='common_user')
+        user = User.objects.get(username='generic_user')
         self.client.force_authenticate(user=user)
 
         # Allowed operations
@@ -111,7 +111,7 @@ class RecordEndpointPermissions(APITestCase):
 
         # Define a user / record endpoint from the SAME research groups
         endpoint = self.endpoint.format(pk=1)
-        user = User.objects.get(username='user1')
+        user = User.objects.get(username='member_1')
         self.client.force_authenticate(user=user)
 
         self.assertEqual(self.client.get(endpoint).status_code, status.HTTP_200_OK)
@@ -130,7 +130,7 @@ class RecordEndpointPermissions(APITestCase):
 
         # Define a user  / record endpoint from DIFFERENT research groups
         endpoint = self.endpoint.format(pk=1)
-        user = User.objects.get(username='user2')
+        user = User.objects.get(username='member_2')
         self.client.force_authenticate(user=user)
 
         self.assertEqual(self.client.get(endpoint).status_code, status.HTTP_404_NOT_FOUND)
