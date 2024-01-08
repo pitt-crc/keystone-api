@@ -37,7 +37,7 @@ class ListEndpointPermissions(APITestCase):
         self.assertEqual(self.client.trace(self.endpoint).status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_non_group_member_permissions(self) -> None:
-        """Test authenticated users have read access but cannot create records for research groups they are not a part of"""
+        """Test users have read access but cannot create records for research groups where they are not members"""
 
         # Record data reflects a group ID for which the user is not a member
         self.client.force_authenticate(user=User.objects.get(username='generic_user'))
