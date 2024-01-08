@@ -41,6 +41,7 @@ class AllocationViewSet(viewsets.ModelViewSet):
 class ProposalViewSet(viewsets.ModelViewSet):
     """Manage project proposals submitted by users to request additional service unit allocations."""
 
+    permission_classes = [permissions.IsAuthenticated, GroupAdminCreate]
     serializer_class = ProposalSerializer
     filterset_fields = '__all__'
 
