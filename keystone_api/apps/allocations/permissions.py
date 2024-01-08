@@ -54,13 +54,20 @@ class StaffWriteGroupRead(permissions.BasePermission):
 
 
 class GroupAdminCreate(permissions.BasePermission):
+    """Grant record creation permissions to research group administrators and read permissions to all group members.
+
+    Staff users retain all read/write permissions.
+    """
 
     def has_permission(self, request, view) -> bool:
         """Return whether the request has permissions to access the requested resource"""
 
+        # Staff users are OK. Read operations are also OK.
         if request.user.is_staff or request.method in permissions.SAFE_METHODS:
             return True
 
+        # To check write permissions we need to know what research group the record
+        # belongs to. Deny permissions if the group is not provided or does not exist.
         try:
             group_id = request.data.get('group', None)
             group = ResearchGroup.objects.get(pk=group_id)
@@ -73,9 +80,10 @@ class GroupAdminCreate(permissions.BasePermission):
     def has_object_permission(self, request, view, obj: RGAffiliatedModel) -> bool:
         """Return whether the incoming HTTP request has permission to access a database record"""
 
-        is_group_admin = request.user in obj.get_research_group().get_privileged_members()
         is_staff = request.user.is_staff
-        if request.method in permissions.SAFE_METHODS or request.method == 'POST':
-            return is_group_admin or is_staff
+        is_group_member = request.user in obj.get_research_group().get_all_members()
+
+        if request.method in permissions.SAFE_METHODS:
+            return is_group_member or is_staff
 
         return is_staff
