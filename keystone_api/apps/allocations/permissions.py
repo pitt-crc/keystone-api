@@ -11,7 +11,7 @@ from rest_framework import permissions
 from apps.users.models import ResearchGroup
 from .models import RGAffiliatedModel
 
-__all__ = ['GroupAdminCreate', 'StaffWriteAuthenticatedRead', 'StaffWriteGroupRead']
+__all__ = ['GroupAdminCreateGroupRead', 'StaffWriteAuthenticatedRead', 'StaffWriteGroupRead']
 
 
 class StaffWriteAuthenticatedRead(permissions.BasePermission):
@@ -53,7 +53,7 @@ class StaffWriteGroupRead(permissions.BasePermission):
         return request.method in permissions.SAFE_METHODS and user_is_in_group
 
 
-class GroupAdminCreate(permissions.BasePermission):
+class GroupAdminCreateGroupRead(permissions.BasePermission):
     """Grant record creation permissions to research group administrators and read permissions to all group members.
 
     Staff users retain all read/write permissions.
