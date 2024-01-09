@@ -99,6 +99,15 @@
     group: 2
     submitted: "2023-01-01"
 
+# Proposal Reviews
+- model: allocations.proposalreview
+  pk: 1
+  fields:
+    approve: true
+    proposal: 1
+    reviewer: 9
+    date_modified: "2023-01-01"
+
 # Allocations
 - model: allocations.allocation
   pk: 1
