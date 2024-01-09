@@ -89,7 +89,6 @@ class ProposalReview(RGAffiliatedModel, models.Model):
     """Review feedback for a project proposal"""
 
     approve = models.BooleanField()
-    private_comments = models.CharField(max_length=500, null=True, blank=True)
     public_comments = models.CharField(max_length=500, null=True, blank=True)
     date_modified = models.DateTimeField(auto_now=True)
 
