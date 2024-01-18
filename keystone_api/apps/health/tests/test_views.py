@@ -40,8 +40,20 @@ class TestHealthChecks(TestCase):
         """Test the rendered response has a 500 status when a health check fails"""
 
         expected_data = {
-            'plugin1': {'identifier': 'plugin1', 'status': 200, 'pretty_status': 'OK', 'time_taken': 1.0, 'critical_service': True},
-            'plugin2': {'identifier': 'plugin2', 'status': 500, 'pretty_status': 'Error', 'time_taken': 2.0, 'critical_service': False}
+            'plugin1': {
+                'identifier': 'plugin1',
+                'status': 200,
+                'pretty_status': 'OK',
+                'time_taken': 1.0,
+                'critical_service': True
+            },
+            'plugin2': {
+                'identifier': 'plugin2',
+                'status': 500,
+                'pretty_status': 'Error',
+                'time_taken': 2.0,
+                'critical_service': False
+            }
         }
 
         health_checks = [
@@ -57,8 +69,20 @@ class TestHealthChecks(TestCase):
         """Test the rendered response has a 200 status when all health checks pass"""
 
         expected_data = {
-            'plugin1': {'identifier': 'plugin1', 'status': 200, 'pretty_status': 'OK', 'time_taken': 1.0, 'critical_service': True},
-            'plugin2': {'identifier': 'plugin2', 'status': 200, 'pretty_status': 'OK', 'time_taken': 2.0, 'critical_service': False}
+            'plugin1': {
+                'identifier': 'plugin1',
+                'status': 200,
+                'pretty_status': 'OK',
+                'time_taken': 1.0,
+                'critical_service': True
+            },
+            'plugin2': {
+                'identifier': 'plugin2',
+                'status': 200,
+                'pretty_status': 'OK',
+                'time_taken': 2.0,
+                'critical_service': False
+            }
         }
 
         health_checks = [
