@@ -25,7 +25,7 @@ class HealthChecks(ViewSet, CheckMixin):
 
         Args:
             plugins: A list of plugins to render the status for
-            status: THe overall system status
+            status: The overall system status
 
         Returns:
             A JSON HTTP response
