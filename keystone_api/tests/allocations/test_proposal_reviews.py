@@ -1,4 +1,4 @@
-"""Tests for the `allocations` endpoint"""
+"""Tests for the `proposal-reviews` endpoint"""
 
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -7,9 +7,10 @@ from apps.users.models import User
 
 
 class ListEndpointPermissions(APITestCase):
-    """Test user permissions for the `/allocations/allocations/` endpoint
+    """Test user permissions for the `/allocations/proposal-reviews/` endpoint
 
     Endpoint permissions are tested against the following matrix of HTTP responses.
+    All listed responses assume the associated HTTP request is otherwise valid.
 
     | Authentication      | GET | HEAD | OPTIONS | POST | PUT | PATCH | DELETE | TRACE |
     |---------------------|-----|------|---------|------|-----|-------|--------|-------|
@@ -18,8 +19,7 @@ class ListEndpointPermissions(APITestCase):
     | Staff User          | 200 | 200  | 200     | 201  | 405 | 405   | 405    | 405   |
     """
 
-    endpoint = '/allocations/allocations/'
-    valid_post_data = {'sus': 1000, 'cluster': 1, 'proposal': 1}
+    endpoint = '/allocations/proposal-reviews/'
     fixtures = ['multi_research_group.yaml']
 
     def test_anonymous_user_permissions(self) -> None:
@@ -63,7 +63,7 @@ class ListEndpointPermissions(APITestCase):
         self.assertEqual(self.client.head(self.endpoint).status_code, status.HTTP_200_OK)
         self.assertEqual(self.client.options(self.endpoint).status_code, status.HTTP_200_OK)
 
-        post = self.client.post(self.endpoint, data=self.valid_post_data)
+        post = self.client.post(self.endpoint, data={'approve': True, 'proposal': 1})
         self.assertEqual(post.status_code, status.HTTP_201_CREATED)
 
         # Disallowed operations
@@ -73,12 +73,14 @@ class ListEndpointPermissions(APITestCase):
         self.assertEqual(self.client.trace(self.endpoint).status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
+
 class RecordEndpointPermissions(APITestCase):
     """Test user permissions against the `/allocations/allocations/<pk>` endpoint
 
     Permissions depend on whether the user is a member of the record's associated research group.
 
     Endpoint permissions are tested against the following matrix of HTTP responses.
+    All listed responses assume the associated HTTP request is otherwise valid.
 
     | Authentication              | GET | HEAD | OPTIONS | POST | PUT | PATCH | DELETE | TRACE |
     |-----------------------------|-----|------|---------|------|-----|-------|--------|-------|
@@ -88,7 +90,7 @@ class RecordEndpointPermissions(APITestCase):
     | Staff User                  | 200 | 200  | 200     | 405  | 200 | 200   | 204    | 405   |
     """
 
-    endpoint = '/allocations/allocations/{pk}/'
+    endpoint = '/allocations/proposal-reviews/{pk}/'
     fixtures = ['multi_research_group.yaml']
 
     def test_anonymous_user_permissions(self) -> None:
@@ -156,10 +158,10 @@ class RecordEndpointPermissions(APITestCase):
 
         self.assertEqual(self.client.post(endpoint).status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
-        put = self.client.put(endpoint, data={'cluster': 1, 'proposal': 1, 'sus': 1000})
+        put = self.client.put(endpoint, data={'approve': 1, 'proposal': 1})
         self.assertEqual(put.status_code, status.HTTP_200_OK)
 
-        patch = self.client.patch(endpoint, data={'sus': 1000})
+        patch = self.client.patch(endpoint, data={'approve': True})
         self.assertEqual(patch.status_code, status.HTTP_200_OK)
 
         self.assertEqual(self.client.delete(endpoint).status_code, status.HTTP_204_NO_CONTENT)

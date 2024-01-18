@@ -8,6 +8,7 @@ creation.
 
 from rest_framework import serializers
 
+from apps.users.models import User
 from .models import *
 
 __all__ = ['AllocationSerializer', 'ClusterSerializer', 'ProposalSerializer', 'ProposalReviewSerializer']
@@ -18,7 +19,7 @@ class ClusterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cluster
-        fields = ('name', 'enabled', 'description')
+        fields = '__all__'
 
 
 class AllocationSerializer(serializers.ModelSerializer):
@@ -43,3 +44,12 @@ class ProposalReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProposalReview
         fields = '__all__'
+        extra_kwargs = {'reviewer': {'required': False}}
+
+    def validate_reviewer(self, value: User) -> User:
+        """Validate the reviewer matches the user submitting the request"""
+
+        if value != self.context['request'].user:
+            raise serializers.ValidationError("Reviewer cannot be set to a different user than the submitter")
+
+        return value

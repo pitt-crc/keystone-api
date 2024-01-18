@@ -36,7 +36,7 @@ class EndpointPermissions(APITestCase):
     def test_authenticated_user_permissions(self) -> None:
         """Test general authenticated users are returned a 403 status code for all request types"""
 
-        user = User.objects.get(username='common_user')
+        user = User.objects.get(username='generic_user')
         self.client.force_authenticate(user=user)
 
         self.assertEqual(self.client.get(self.endpoint).status_code, status.HTTP_403_FORBIDDEN)
