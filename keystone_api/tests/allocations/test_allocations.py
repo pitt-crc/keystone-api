@@ -10,7 +10,6 @@ class ListEndpointPermissions(APITestCase):
     """Test user permissions for the `/allocations/allocations/` endpoint
 
     Endpoint permissions are tested against the following matrix of HTTP responses.
-    All listed responses assume the associated HTTP request is otherwise valid.
 
     | Authentication      | GET | HEAD | OPTIONS | POST | PUT | PATCH | DELETE | TRACE |
     |---------------------|-----|------|---------|------|-----|-------|--------|-------|
@@ -80,7 +79,6 @@ class RecordEndpointPermissions(APITestCase):
     Permissions depend on whether the user is a member of the record's associated research group.
 
     Endpoint permissions are tested against the following matrix of HTTP responses.
-    All listed responses assume the associated HTTP request is otherwise valid.
 
     | Authentication              | GET | HEAD | OPTIONS | POST | PUT | PATCH | DELETE | TRACE |
     |-----------------------------|-----|------|---------|------|-----|-------|--------|-------|
