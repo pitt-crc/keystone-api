@@ -4,10 +4,10 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from apps.users.models import User
-from tests.utils import CustomHttpAsserts
+from tests.utils import CustomAsserts
 
 
-class EndpointPermissions(APITestCase, CustomHttpAsserts):
+class EndpointPermissions(APITestCase, CustomAsserts):
     """Test endpoint user permissions
 
     Permissions depend on whether the user is a member of the record's associated research group.
@@ -22,13 +22,13 @@ class EndpointPermissions(APITestCase, CustomHttpAsserts):
     | Staff User                  | 200 | 200  | 200     | 405  | 200 | 200   | 204    | 405   |
     """
 
-    endpoint = '/allocations/proposal-reviews/{pk}/'
+    endpoint_pattern = '/allocations/proposal-reviews/{pk}/'
     fixtures = ['multi_research_group.yaml']
 
     def test_anonymous_user_permissions(self) -> None:
         """Test unauthenticated users cannot access resources"""
 
-        endpoint = self.endpoint.format(pk=1)
+        endpoint = self.endpoint_pattern.format(pk=1)
         self.assert_http_responses(
             endpoint,
             get=status.HTTP_401_UNAUTHORIZED,
@@ -48,7 +48,7 @@ class EndpointPermissions(APITestCase, CustomHttpAsserts):
         user = User.objects.get(username='member_1')
         self.client.force_authenticate(user=user)
 
-        endpoint = self.endpoint.format(pk=1)
+        endpoint = self.endpoint_pattern.format(pk=1)
         self.assert_http_responses(
             endpoint,
             get=status.HTTP_200_OK,
@@ -68,7 +68,7 @@ class EndpointPermissions(APITestCase, CustomHttpAsserts):
         user = User.objects.get(username='member_2')
         self.client.force_authenticate(user=user)
 
-        endpoint = self.endpoint.format(pk=1)
+        endpoint = self.endpoint_pattern.format(pk=1)
         self.assert_http_responses(
             endpoint,
             get=status.HTTP_404_NOT_FOUND,
@@ -87,7 +87,7 @@ class EndpointPermissions(APITestCase, CustomHttpAsserts):
         user = User.objects.get(username='staff_user')
         self.client.force_authenticate(user=user)
 
-        endpoint = self.endpoint.format(pk=1)
+        endpoint = self.endpoint_pattern.format(pk=1)
         self.assert_http_responses(
             endpoint,
             get=status.HTTP_200_OK,

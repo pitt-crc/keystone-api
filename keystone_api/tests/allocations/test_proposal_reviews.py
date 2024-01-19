@@ -4,10 +4,10 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from apps.users.models import User
-from tests.utils import CustomHttpAsserts
+from tests.utils import CustomAsserts
 
 
-class EndpointPermissions(APITestCase, CustomHttpAsserts):
+class EndpointPermissions(APITestCase, CustomAsserts):
     """Test endpoint user permissions
 
     Endpoint permissions are tested against the following matrix of HTTP responses.
