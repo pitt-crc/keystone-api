@@ -8,7 +8,7 @@ from tests.utils import CustomHttpAsserts
 
 
 class EndpointPermissions(APITestCase, CustomHttpAsserts):
-    """Test user permissions against the `/allocations/allocations/<pk>` endpoint
+    """Test endpoint user permissions
 
     Permissions depend on whether the user is a member of the record's associated research group.
 

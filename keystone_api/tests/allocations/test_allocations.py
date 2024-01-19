@@ -8,7 +8,7 @@ from tests.utils import CustomHttpAsserts
 
 
 class EndpointPermissions(APITestCase, CustomHttpAsserts):
-    """Test user permissions for the `/allocations/allocations/` endpoint
+    """Test endpoint user permissions
 
     Endpoint permissions are tested against the following matrix of HTTP responses.
 

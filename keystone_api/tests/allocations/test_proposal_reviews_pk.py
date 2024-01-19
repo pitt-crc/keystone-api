@@ -1,4 +1,4 @@
-"""Tests for the `/allocations/clusters/<pk>/` endpoint"""
+"""Tests for the `/allocations/proposal-reviews/<pk>/` endpoint"""
 
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -10,16 +10,19 @@ from tests.utils import CustomHttpAsserts
 class EndpointPermissions(APITestCase, CustomHttpAsserts):
     """Test endpoint user permissions
 
+    Permissions depend on whether the user is a member of the record's associated research group.
+
     Endpoint permissions are tested against the following matrix of HTTP responses.
 
-    | Authentication      | GET | HEAD | OPTIONS | POST | PUT | PATCH | DELETE | TRACE |
-    |---------------------|-----|------|---------|------|-----|-------|--------|-------|
-    | Anonymous User      | 401 | 401  | 401     | 401  | 401 | 401   | 401    | 401   |
-    | Authenticated User  | 200 | 200  | 200     | 403  | 403 | 403   | 403    | 403   |
-    | Staff User          | 200 | 200  | 200     | 405  | 200 | 200   | 204    | 405   |
+    | Authentication              | GET | HEAD | OPTIONS | POST | PUT | PATCH | DELETE | TRACE |
+    |-----------------------------|-----|------|---------|------|-----|-------|--------|-------|
+    | Anonymous User              | 401 | 401  | 401     | 401  | 401 | 401   | 401    | 401   |
+    | User accessing own group    | 200 | 200  | 200     | 403  | 403 | 403   | 403    | 403   |
+    | User accessing other group  | 404 | 404  | 200     | 403  | 403 | 403   | 403    | 403   |
+    | Staff User                  | 200 | 200  | 200     | 405  | 200 | 200   | 204    | 405   |
     """
 
-    endpoint = '/allocations/clusters/{pk}/'
+    endpoint = '/allocations/proposal-reviews/{pk}/'
     fixtures = ['multi_research_group.yaml']
 
     def test_anonymous_user_permissions(self) -> None:
@@ -38,10 +41,11 @@ class EndpointPermissions(APITestCase, CustomHttpAsserts):
             trace=status.HTTP_401_UNAUTHORIZED
         )
 
-    def test_authenticated_user_permissions(self) -> None:
-        """Test general authenticated users have read-only permissions"""
+    def test_authenticated_user_same_group(self) -> None:
+        """Test permissions for authenticated users accessing records owned by their research group"""
 
-        user = User.objects.get(username='generic_user')
+        # Define a user / record endpoint from the SAME research groups
+        user = User.objects.get(username='member_1')
         self.client.force_authenticate(user=user)
 
         endpoint = self.endpoint.format(pk=1)
@@ -49,6 +53,26 @@ class EndpointPermissions(APITestCase, CustomHttpAsserts):
             endpoint,
             get=status.HTTP_200_OK,
             head=status.HTTP_200_OK,
+            options=status.HTTP_200_OK,
+            post=status.HTTP_403_FORBIDDEN,
+            put=status.HTTP_403_FORBIDDEN,
+            patch=status.HTTP_403_FORBIDDEN,
+            delete=status.HTTP_403_FORBIDDEN,
+            trace=status.HTTP_403_FORBIDDEN
+        )
+
+    def test_authenticated_user_different_group(self) -> None:
+        """Test permissions for authenticated users accessing records owned by someone else's research group"""
+
+        # Define a user / record endpoint from DIFFERENT research groups
+        user = User.objects.get(username='member_2')
+        self.client.force_authenticate(user=user)
+
+        endpoint = self.endpoint.format(pk=1)
+        self.assert_http_responses(
+            endpoint,
+            get=status.HTTP_404_NOT_FOUND,
+            head=status.HTTP_404_NOT_FOUND,
             options=status.HTTP_200_OK,
             post=status.HTTP_403_FORBIDDEN,
             put=status.HTTP_403_FORBIDDEN,
@@ -74,6 +98,6 @@ class EndpointPermissions(APITestCase, CustomHttpAsserts):
             patch=status.HTTP_200_OK,
             delete=status.HTTP_204_NO_CONTENT,
             trace=status.HTTP_405_METHOD_NOT_ALLOWED,
-            put_body={'name': 'foo'},
-            patch_body={'name': 'foo'}
+            put_body={'approve': 1, 'proposal': 1},
+            patch_body={'approve': True}
         )
