@@ -138,8 +138,8 @@ The PostgreSQL backend should always be used in production settings.
 |---------------------------|--------------------------|---------------------------------------------------------------|
 | `DB_POSTGRES_ENABLE`      | `False`                  | Use PostgreSQL instead of the default Sqlite driver.          |
 | `DB_NAME`                 | `keystone`               | The name of the application database.                         |
-| `DB_USER`                 | ``                       | Username for database authentication (PostgreSQL only).       |
-| `DB_PASSWORD`             | ``                       | Password for database authentication (PostgreSQL only).       |
+| `DB_USER`                 |                          | Username for database authentication (PostgreSQL only).       |
+| `DB_PASSWORD`             |                          | Password for database authentication (PostgreSQL only).       |
 | `DB_HOST`                 | `localhost`              | Database host address (PostgreSQL only).                      |
 | `DB_PORT`                 | `5432`                   | Database host port (PostgreSQL only).                         |
 
