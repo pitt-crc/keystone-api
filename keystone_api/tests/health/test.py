@@ -7,7 +7,7 @@ from apps.users.models import User
 
 
 class EndpointPermissions(TransactionTestCase):
-    """Test user permissions for the `/health/` endpoint
+    """Test endpoint user permissions
 
     Endpoint permissions are tested against the following matrix of HTTP responses.
 

@@ -72,7 +72,7 @@ class GroupAdminCreateGroupRead(permissions.BasePermission):
             group_id = request.data.get('group', None)
             group = ResearchGroup.objects.get(pk=group_id)
 
-        except ResearchGroup.DoesNotExist:
+        except (ResearchGroup.DoesNotExist, Exception):
             return False
 
         return request.user in group.get_privileged_members()
