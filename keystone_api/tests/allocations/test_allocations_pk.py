@@ -7,7 +7,7 @@ from apps.users.models import User
 from tests.utils import CustomHttpAsserts
 
 
-class RecordEndpointPermissions(APITestCase, CustomHttpAsserts):
+class EndpointPermissions(APITestCase, CustomHttpAsserts):
     """Test user permissions against the `/allocations/allocations/<pk>` endpoint
 
     Permissions depend on whether the user is a member of the record's associated research group.
@@ -30,7 +30,7 @@ class RecordEndpointPermissions(APITestCase, CustomHttpAsserts):
 
         endpoint = self.endpoint.format(pk=1)
         self.assert_http_responses(
-            endpoint=endpoint,
+            endpoint,
             get=status.HTTP_401_UNAUTHORIZED,
             head=status.HTTP_401_UNAUTHORIZED,
             options=status.HTTP_401_UNAUTHORIZED,
@@ -50,7 +50,7 @@ class RecordEndpointPermissions(APITestCase, CustomHttpAsserts):
         self.client.force_authenticate(user=user)
 
         self.assert_http_responses(
-            endpoint=endpoint,
+            endpoint,
             get=status.HTTP_200_OK,
             head=status.HTTP_200_OK,
             options=status.HTTP_200_OK,
@@ -64,13 +64,13 @@ class RecordEndpointPermissions(APITestCase, CustomHttpAsserts):
     def test_authenticated_user_different_group(self) -> None:
         """Test permissions for authenticated users accessing records owned by someone else's research group"""
 
-        # Define a user  / record endpoint from DIFFERENT research groups
+        # Define a user / record endpoint from DIFFERENT research groups
         endpoint = self.endpoint.format(pk=1)
         user = User.objects.get(username='member_2')
         self.client.force_authenticate(user=user)
 
         self.assert_http_responses(
-            endpoint=endpoint,
+            endpoint,
             get=status.HTTP_404_NOT_FOUND,
             head=status.HTTP_404_NOT_FOUND,
             options=status.HTTP_200_OK,
@@ -89,15 +89,15 @@ class RecordEndpointPermissions(APITestCase, CustomHttpAsserts):
         self.client.force_authenticate(user=user)
 
         self.assert_http_responses(
-            endpoint=endpoint,
+            endpoint,
             get=status.HTTP_200_OK,
             head=status.HTTP_200_OK,
             options=status.HTTP_200_OK,
             post=status.HTTP_405_METHOD_NOT_ALLOWED,
             put=status.HTTP_200_OK,
-            put_body={'cluster': 1, 'proposal': 1, 'sus': 1000},
             patch=status.HTTP_200_OK,
-            patch_body={'sus': 1000},
             delete=status.HTTP_204_NO_CONTENT,
-            trace=status.HTTP_405_METHOD_NOT_ALLOWED
+            trace=status.HTTP_405_METHOD_NOT_ALLOWED,
+            put_body={'cluster': 1, 'proposal': 1, 'sus': 1000},
+            patch_body={'sus': 1000}
         )
