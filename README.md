@@ -130,13 +130,18 @@ To enable LDAP, set the `AUTH_LDAP_SERVER_URI` value to the desired LDAP endpoin
 
 ### Database Connection
 
-Official support is included for both SQLite (`sqlite`) and PostgreSQL (`postgresql`) database protocols.
-However, the former is intended for development and demonstrative use-cases only.
+Official support is included for both SQLite and PostgreSQL database backends.
+However, SQLite is intended for development and demonstrative use-cases only.
 The PostgreSQL backend should always be used in production settings.
 
-| Setting Name   | Default Value                         | Description                                                 |
-|----------------|---------------------------------------|-------------------------------------------------------------|
-| `DATABASE_URL` | `sqlite:///<INSTALL_DIR>/keystone.db` | The database URL `protocol:///user:password@host:port/name` |
+| Setting Name              | Default Value            | Description                                                   |
+|---------------------------|--------------------------|---------------------------------------------------------------|
+| `DB_POSTGRES_ENABLE`      | `False`                  | Use PostgreSQL instead of the default Sqlite driver.          |
+| `DB_NAME`                 | `keystone`               | The name of the application database.                         |
+| `DB_USER`                 | ``                       | Username for database authentication (PostgreSQL only).       |
+| `DB_PASSWORD`             | ``                       | Password for database authentication (PostgreSQL only).       |
+| `DB_HOST`                 | `localhost`              | Database host address (PostgreSQL only).                      |
+| `DB_PORT`                 | `5432`                   | Database host port (PostgreSQL only).                         |
 
 ### Celery
 
@@ -152,9 +157,9 @@ Connection settings for Celery backend utilities.
 The following settings are intended exclusively for use in development settings.
 The `DEBUG` option is inherently insecure and should **never** be enabled in production settings.
 
-| Setting Name      | Default Value          | Description                                                                    |
-|-------------------|------------------------|--------------------------------------------------------------------------------|
-| `DEBUG`           | `False`                | Enable or disable debug mode.                                                  |
+| Setting Name              | Default Value            | Description                                                   |
+|---------------------------|--------------------------|---------------------------------------------------------------|
+| `DEBUG`                   | `False`                  | Enable or disable debug mode.                                 |
 
 ## Developer Notes
 
