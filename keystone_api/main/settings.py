@@ -168,10 +168,29 @@ CELERY_CACHE_BACKEND = 'django-cache'
 # Database
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-DEFAULT_DB_PATH = BASE_DIR / 'keystone.db'
-DATABASES = {
-    'default': env.db('DATABASE_URL', f'sqlite:///{DEFAULT_DB_PATH}')
+
+_DB_NAME = env.str('DB_NAME', 'keystone')
+_POSTGRES_CONFIG = {
+    'ENGINE': 'django.db.backends.postgresql',
+    'NAME': _DB_NAME,
+    'USER': env.str('DB_USER', ''),
+    'PASSWORD': env.str('DB_PASSWORD', ''),
+    'HOST': env.str('DB_HOST', 'localhost'),
+    'PORT': env.str('DB_PORT', '5432'),
 }
+
+_SQLITE_CONFIG = {
+    'ENGINE': 'django.db.backends.sqlite3',
+    'NAME': BASE_DIR / f'{_DB_NAME}.db',
+    'timeout': 30,
+}
+
+DATABASES = dict()
+if env.bool('DB_POSTGRES_ENABLE', False):
+    DATABASES['default'] = _POSTGRES_CONFIG
+
+else:
+    DATABASES['default'] = _SQLITE_CONFIG
 
 # Authentication
 
