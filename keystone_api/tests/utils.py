@@ -1,4 +1,4 @@
-"""General testing utilities."""
+"""Custom testing utilities used to streamline common tests."""
 
 from django.test import Client
 
@@ -22,7 +22,7 @@ class CustomAsserts:
         """
 
         arg_names = ('data', 'headers')
-        arg_values = (kwargs.get(f'{method}_body', None), kwargs.get(f'{method}_header', None))
+        arg_values = (kwargs.get(f'{method}_body', None), kwargs.get(f'{method}_headers', None))
         return {name: value for name, value in zip(arg_names, arg_values) if arg_values is not None}
 
     def assert_http_responses(self, endpoint: str, **kwargs) -> None:
@@ -32,6 +32,7 @@ class CustomAsserts:
             endpoint: The URL to perform requests against
             **<request>: The integer status code expected by the given request type (get, post, etc.)
             **<request>_body: The data to include in the request (get_body, post_body, etc.)
+            **<request>_headers: Header vaues to include in the request (get_headers, post_headers, etc.)
         """
 
         http_methods = ['get', 'head', 'options', 'post', 'put', 'patch', 'delete', 'trace']
