@@ -106,7 +106,7 @@ JAZZMIN_SETTINGS = {
     "site_title": "Keystone",
     "site_header": "Keystone",
     "site_brand": "Keystone",
-    "hide_apps": ["sites"],
+    "hide_apps": ["sites", "auth"],
     "order_with_respect_to": [
         "users",
         "allocations",
@@ -114,7 +114,7 @@ JAZZMIN_SETTINGS = {
         "sites"
     ],
     "icons": {},
-    "login_logo": "fake/file/path.jpg",
+    "login_logo": "fake/file/path.jpg",  # Missing file path hides the logo
 }
 
 # REST API settings
@@ -194,6 +194,7 @@ else:
 
 # Authentication
 
+AUTH_USER_MODEL = "users.User"
 AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.ModelBackend"]
 
 if AUTH_LDAP_SERVER_URI := env.url("AUTH_LDAP_SERVER_URI", "").geturl():

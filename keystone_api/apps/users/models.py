@@ -6,33 +6,20 @@ Each model reflects a different database and defines low-level defaults for how
 the associated table/fields/records are presented by parent interfaces.
 """
 
-from django.contrib.auth import models as auth_model
+from django.contrib.auth import models as auth_models
 from django.db import models
 
 from keystone_api.apps.users.managers import ResearchGroupManager
 
-__all__ = ['Group', 'Permission', 'ResearchGroup', 'User']
+__all__ = ['ResearchGroup', 'User']
 
 
-class User(auth_model.User):
+class User(auth_models.AbstractUser):
     """Proxy model for the built-in django `User` model"""
 
-    class Meta:
-        proxy = True
-
-
-class Group(auth_model.Group):
-    """Proxy model for the built-in django `Group` model"""
-
-    class Meta:
-        proxy = True
-
-
-class Permission(auth_model.Permission):
-    """Proxy model for the built-in django `Permission` model"""
-
-    class Meta:
-        proxy = True
+    first_name = models.CharField("first name", max_length=150)
+    last_name = models.CharField("last name", max_length=150)
+    email = models.EmailField("email address")
 
 
 class ResearchGroup(models.Model):
