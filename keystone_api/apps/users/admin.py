@@ -24,6 +24,23 @@ settings.JAZZMIN_SETTINGS['order_with_respect_to'].extend([
 class UserAdmin(auth.admin.UserAdmin):
     """Admin interface for managing user accounts"""
 
+    readonly_fields = ("last_login", "date_joined")
+    fieldsets = (
+        (None, {"fields": ("username", "password")}),
+        ("Personal info", {"fields": ("first_name", "last_name", "email")}),
+        (
+            "Permissions",
+            {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                ),
+            },
+        ),
+        ("Important dates", {"fields": ("last_login", "date_joined")}),
+    )
+
 
 @admin.register(ResearchGroup)
 class ResearchGroupAdmin(admin.ModelAdmin):
