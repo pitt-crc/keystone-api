@@ -3,7 +3,7 @@
 from django.test import TransactionTestCase
 from rest_framework import status
 
-from apps.users.models import User
+from apps.users.tests.utils import create_test_user
 
 
 class EndpointPermissions(TransactionTestCase):
@@ -43,13 +43,13 @@ class EndpointPermissions(TransactionTestCase):
     def test_authenticated_user_permissions(self) -> None:
         """Test general authenticated users are returned a 403 status code for all request types"""
 
-        User.objects.create_user(username='foo', password='bar')
+        create_test_user(username='foo', password='bar')
         self.assertTrue(self.client.login(username='foo', password='bar'))
         self.assert_read_only_responses()
 
     def test_staff_user_permissions(self) -> None:
         """Test staff users have read-only permissions"""
 
-        User.objects.create_superuser(username='foo', password='bar')
+        create_test_user(username='foo', password='bar')
         self.assertTrue(self.client.login(username='foo', password='bar'))
         self.assert_read_only_responses()

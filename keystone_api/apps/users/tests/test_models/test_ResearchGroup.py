@@ -2,7 +2,8 @@
 
 from django.test import TestCase
 
-from apps.users.models import ResearchGroup, User
+from apps.users.models import ResearchGroup
+from apps.users.tests.utils import create_test_user
 
 
 class GetAllMembers(TestCase):
@@ -11,11 +12,11 @@ class GetAllMembers(TestCase):
     def setUp(self):
         """Create temporary user accounts for use in tests"""
 
-        self.pi = User.objects.create_user(username='pi')
-        self.admin1 = User.objects.create_user(username='admin1')
-        self.admin2 = User.objects.create_user(username='admin2')
-        self.member1 = User.objects.create_user(username='unprivileged1')
-        self.member2 = User.objects.create_user(username='unprivileged2')
+        self.pi = create_test_user(username='pi')
+        self.admin1 = create_test_user(username='admin1')
+        self.admin2 = create_test_user(username='admin2')
+        self.member1 = create_test_user(username='unprivileged1')
+        self.member2 = create_test_user(username='unprivileged2')
 
     def test_all_accounts_returned(self) -> None:
         """Test all group members are included in the returned list"""
@@ -36,11 +37,11 @@ class GetPrivilegedMembers(TestCase):
     def setUp(self):
         """Create temporary user accounts for use in tests"""
 
-        self.pi = User.objects.create_user(username='pi')
-        self.admin1 = User.objects.create_user(username='admin1')
-        self.admin2 = User.objects.create_user(username='admin2')
-        self.member1 = User.objects.create_user(username='member1')
-        self.member2 = User.objects.create_user(username='member2')
+        self.pi = create_test_user(username='pi')
+        self.admin1 = create_test_user(username='admin1')
+        self.admin2 = create_test_user(username='admin2')
+        self.member1 = create_test_user(username='member1')
+        self.member2 = create_test_user(username='member2')
 
     def test_pi_only(self) -> None:
         """Test returned group members for a group with a PI only"""
