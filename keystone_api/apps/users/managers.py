@@ -6,9 +6,13 @@ every database model. Managers are commonly exposed as an attribute of the
 associated model class called `objects`.
 """
 
+from typing import TYPE_CHECKING
+
 from django.contrib.auth.base_user import BaseUserManager
-from django.contrib.auth.models import User
 from django.db import models
+
+if TYPE_CHECKING:
+    from apps.users.models import User
 
 __all__ = ['ResearchGroupManager', 'UserManager']
 
@@ -18,7 +22,7 @@ class UserManager(BaseUserManager):
 
     def create_user(
         self, username: str, first_name: str, last_name: str, email: str, password: str, **extra_fields
-    ) -> User:
+    ) -> 'User':
         """Create and a new user account
 
         Args:
@@ -42,7 +46,7 @@ class UserManager(BaseUserManager):
 
     def create_superuser(
         self, username: str, first_name: str, last_name: str, email: str, password: str, **extra_fields
-    ) -> User:
+    ) -> 'User':
         """Create and a new user account with superuser privileges
 
         Args:
@@ -73,7 +77,7 @@ class UserManager(BaseUserManager):
 class ResearchGroupManager(models.Manager):
     """Object manager for the `ResearchGroup` database model"""
 
-    def groups_for_user(self, user: User) -> models.QuerySet:
+    def groups_for_user(self, user: 'User') -> models.QuerySet:
         """Get all research groups the user is affiliated with.
 
         Args:

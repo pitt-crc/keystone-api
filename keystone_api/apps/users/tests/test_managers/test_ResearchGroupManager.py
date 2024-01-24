@@ -5,6 +5,7 @@ from django.test import TestCase
 from apps.users.models import User, ResearchGroup
 from apps.users.tests.utils import create_test_user
 
+
 class GroupsForUser(TestCase):
     """Test fetching group affiliations via the `groups_for_user` method"""
 
