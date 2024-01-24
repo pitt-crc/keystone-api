@@ -1,4 +1,4 @@
-"""Tests for the `/allocations/proposals/` endpoint"""
+"""Tests for the `/allocations/proposals/<pk>/` endpoint"""
 
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -15,21 +15,23 @@ class EndpointPermissions(APITestCase, CustomAsserts):
     | Authentication | GET | HEAD | OPTIONS | POST | PUT | PATCH | DELETE | TRACE |
     |----------------|-----|------|---------|------|-----|-------|--------|-------|
     | Anonymous User | 401 | 401  | 401     | 401  | 401 | 401   | 401    | 401   |
-    | Non-Member     | 200 | 200  | 200     | 403  | 403 | 403   | 403    | 403   |
+    | Non-Member     | 404 | 404  | 200     | 403  | 403 | 403   | 403    | 403   |
     | Group Member   | 200 | 200  | 200     | 403  | 403 | 403   | 403    | 403   |
-    | Group Admin    | 200 | 200  | 200     | 201  | 403 | 403   | 403    | 403   |
-    | Group PI       | 200 | 200  | 200     | 201  | 403 | 403   | 403    | 403   |
-    | Staff User     | 200 | 200  | 200     | 201  | 405 | 405   | 405    | 405   |
+    | Group Admin    | 200 | 200  | 200     | 403  | 403 | 403   | 403    | 403   |
+    | Group PI       | 200 | 200  | 200     | 403  | 403 | 403   | 403    | 403   |
+    | Staff User     | 200 | 200  | 200     | 405  | 200 | 200   | 204    | 405   |
     """
 
-    endpoint = '/allocations/proposals/'
+    endpoint = '/allocations/proposals/1/'
+    endpoint_pattern = '/allocations/proposals/{pk}/'
     fixtures = ['multi_research_group.yaml']
 
     def test_anonymous_user_permissions(self) -> None:
         """Test unauthenticated users cannot access resources"""
 
+        endpoint = self.endpoint.format(pk=1)
         self.assert_http_responses(
-            self.endpoint,
+            endpoint,
             get=status.HTTP_401_UNAUTHORIZED,
             head=status.HTTP_401_UNAUTHORIZED,
             options=status.HTTP_401_UNAUTHORIZED,
@@ -41,34 +43,67 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         )
 
     def test_non_group_member_permissions(self) -> None:
-        """Test users have read access but cannot create records for research groups where they are not members"""
+        """Test authenticated users cannot access records for research groups where they are not members"""
 
-        user = User.objects.get(username='generic_user')
-        self.client.force_authenticate(user=user)
+        self.client.force_authenticate(user=User.objects.get(username='generic_user'))
 
-        # Post data reflects a group ID for which the user is not a member
+        endpoint = self.endpoint_pattern.format(pk=1)
         self.assert_http_responses(
-            self.endpoint,
-            get=status.HTTP_200_OK,
-            head=status.HTTP_200_OK,
+            endpoint,
+            get=status.HTTP_404_NOT_FOUND,
+            head=status.HTTP_404_NOT_FOUND,
             options=status.HTTP_200_OK,
             post=status.HTTP_403_FORBIDDEN,
             put=status.HTTP_403_FORBIDDEN,
             patch=status.HTTP_403_FORBIDDEN,
             delete=status.HTTP_403_FORBIDDEN,
-            trace=status.HTTP_403_FORBIDDEN,
-            post_body={'title': 'foo', 'description': 'bar', 'group': 1}
+            trace=status.HTTP_403_FORBIDDEN
         )
 
     def test_group_member_permissions(self) -> None:
         """Test regular research group members have read-only access"""
 
-        user = User.objects.get(username='member_1')
-        self.client.force_authenticate(user=user)
+        self.client.force_authenticate(user=User.objects.get(username='member_1'))
 
-        # Post data reflects a group ID for which the user is a regular member
+        endpoint = self.endpoint_pattern.format(pk=1)
         self.assert_http_responses(
-            self.endpoint,
+            endpoint,
+            get=status.HTTP_200_OK,
+            head=status.HTTP_200_OK,
+            options=status.HTTP_200_OK,
+            post=status.HTTP_403_FORBIDDEN,
+            put=status.HTTP_403_FORBIDDEN,
+            patch=status.HTTP_403_FORBIDDEN,
+            delete=status.HTTP_403_FORBIDDEN,
+            trace=status.HTTP_403_FORBIDDEN
+        )
+
+    def test_group_admin_permissions(self) -> None:
+        """Test research group admins have read-only access"""
+
+        self.client.force_authenticate(user=User.objects.get(username='group_admin_1'))
+
+        endpoint = self.endpoint_pattern.format(pk=1)
+        self.assert_http_responses(
+            endpoint,
+            get=status.HTTP_200_OK,
+            head=status.HTTP_200_OK,
+            options=status.HTTP_200_OK,
+            post=status.HTTP_403_FORBIDDEN,
+            put=status.HTTP_403_FORBIDDEN,
+            patch=status.HTTP_403_FORBIDDEN,
+            delete=status.HTTP_403_FORBIDDEN,
+            trace=status.HTTP_403_FORBIDDEN
+        )
+
+    def test_group_pi_permissions(self) -> None:
+        """Test research group PIs have read-only access"""
+
+        self.client.force_authenticate(user=User.objects.get(username='pi_1'))
+
+        endpoint = self.endpoint_pattern.format(pk=1)
+        self.assert_http_responses(
+            endpoint,
             get=status.HTTP_200_OK,
             head=status.HTTP_200_OK,
             options=status.HTTP_200_OK,
@@ -77,47 +112,6 @@ class EndpointPermissions(APITestCase, CustomAsserts):
             patch=status.HTTP_403_FORBIDDEN,
             delete=status.HTTP_403_FORBIDDEN,
             trace=status.HTTP_403_FORBIDDEN,
-            post_body={'title': 'foo', 'description': 'bar', 'group': 1}
-        )
-
-    def test_group_admin_permissions(self) -> None:
-        """Test research group admins have read and write access"""
-
-        user = User.objects.get(username='group_admin_1')
-        self.client.force_authenticate(user=user)
-
-        # Post data reflects a group ID for which the user is an admin
-        self.assert_http_responses(
-            self.endpoint,
-            get=status.HTTP_200_OK,
-            head=status.HTTP_200_OK,
-            options=status.HTTP_200_OK,
-            post=status.HTTP_201_CREATED,
-            put=status.HTTP_403_FORBIDDEN,
-            patch=status.HTTP_403_FORBIDDEN,
-            delete=status.HTTP_403_FORBIDDEN,
-            trace=status.HTTP_403_FORBIDDEN,
-            post_body={'title': 'foo', 'description': 'bar', 'group': 1}
-        )
-
-    def test_group_pi_permissions(self) -> None:
-        """Test research group PIs have read and write access"""
-
-        user = User.objects.get(username='pi_1')
-        self.client.force_authenticate(user=user)
-
-        # Post data reflects a group ID for which the user is a PI
-        self.assert_http_responses(
-            self.endpoint,
-            get=status.HTTP_200_OK,
-            head=status.HTTP_200_OK,
-            options=status.HTTP_200_OK,
-            post=status.HTTP_201_CREATED,
-            put=status.HTTP_403_FORBIDDEN,
-            patch=status.HTTP_403_FORBIDDEN,
-            delete=status.HTTP_403_FORBIDDEN,
-            trace=status.HTTP_403_FORBIDDEN,
-            post_body={'title': 'foo', 'description': 'bar', 'group': 1}
         )
 
     def test_staff_user(self) -> None:
@@ -126,15 +120,18 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         user = User.objects.get(username='staff_user')
         self.client.force_authenticate(user=user)
 
+        record_data = {'title': 'foo', 'description': 'bar', 'group': 1}
+        endpoint = self.endpoint_pattern.format(pk=1)
         self.assert_http_responses(
-            self.endpoint,
+            endpoint,
             get=status.HTTP_200_OK,
             head=status.HTTP_200_OK,
             options=status.HTTP_200_OK,
-            post=status.HTTP_201_CREATED,
-            put=status.HTTP_405_METHOD_NOT_ALLOWED,
-            patch=status.HTTP_405_METHOD_NOT_ALLOWED,
-            delete=status.HTTP_405_METHOD_NOT_ALLOWED,
+            post=status.HTTP_405_METHOD_NOT_ALLOWED,
+            put=status.HTTP_200_OK,
+            patch=status.HTTP_200_OK,
+            delete=status.HTTP_204_NO_CONTENT,
             trace=status.HTTP_405_METHOD_NOT_ALLOWED,
-            post_body={'title': 'foo', 'description': 'bar', 'group': 1}
+            put_body=record_data,
+            patch_data=record_data
         )
