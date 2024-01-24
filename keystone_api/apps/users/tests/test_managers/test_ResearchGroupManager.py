@@ -2,7 +2,7 @@
 
 from django.test import TestCase
 
-from apps.users.models import User, ResearchGroup
+from apps.users.models import ResearchGroup
 from apps.users.tests.utils import create_test_user
 
 
@@ -27,7 +27,7 @@ class GroupsForUser(TestCase):
         self.group3.members.add(self.test_user)
 
         # Group where the test user has no role
-        self.group4 = ResearchGroup.objects.create(name='Group$', pi=other_user)
+        self.group4 = ResearchGroup.objects.create(name='Group4', pi=other_user)
 
     def test_groups_for_user(self) -> None:
         """Test all groups are returned for a test user"""
