@@ -28,32 +28,50 @@
   pk: 1
   fields:
     username: pi_1
-    password: testpassword
+    first_name: foo
+    last_name: bar
+    email: pi_1@domain.com
+    password: foobar123
 - model: users.user
   pk: 2
   fields:
     username: group_admin_1
-    password: testpassword
+    first_name: foo
+    last_name: bar
+    email: group_admin_1@domain.com
+    password: foobar123
 - model: users.user
   pk: 3
   fields:
     username: member_1
-    password: testpassword
+    first_name: foo
+    last_name: bar
+    email: member_1@domain.com
+    password: foobar123
 - model: users.user
   pk: 4
   fields:
     username: pi_2
-    password: testpassword
+    first_name: foo
+    last_name: bar
+    email: pi_2@domain.com
+    password: foobar123
 - model: users.user
   pk: 5
   fields:
     username: group_admin_2
-    password: testpassword
+    first_name: foo
+    last_name: bar
+    email: group_admin_2@domain.com
+    password: foobar123
 - model: users.user
   pk: 6
   fields:
     username: member_2
-    password: testpassword
+    first_name: foo
+    last_name: bar
+    email: member_2@domain.com
+    password: foobar123
 - model: users.user
   pk: 7
   fields:
@@ -63,13 +81,19 @@
   pk: 8
   fields:
     username: super_user
-    password: testpassword
+    first_name: foo
+    last_name: bar
+    email: super_user@domain.com
+    password: foobar123
     is_superuser: true
 - model: users.user
   pk: 9
   fields:
     username: staff_user
-    password: testpassword
+    first_name: foo
+    last_name: bar
+    email: staff_user@domain.com
+    password: foobar123
     is_staff: true
 
 # Research Groups
