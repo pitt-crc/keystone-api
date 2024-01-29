@@ -22,6 +22,8 @@
   fields:
     name: cluster
     enabled: true
+    api_url: localhost:6820
+    api_token: foobar123
 
 # Users
 - model: users.user
