@@ -31,6 +31,8 @@ class Cluster(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField(max_length=150, null=True, blank=True)
     enabled = models.BooleanField(default=True)
+    endpoint = models.CharField(max_length=500)
+    api_token = models.CharField(max_length=100)
 
     def __str__(self) -> str:
         """Return the cluster name as a string"""
