@@ -69,7 +69,8 @@ class Proposal(RGAffiliatedModel, models.Model):
 class Allocation(RGAffiliatedModel, models.Model):
     """User service unit allocation"""
 
-    sus = models.PositiveIntegerField('Service Units')
+    requested = models.PositiveIntegerField('Requested Service Units')
+    awarded = models.PositiveIntegerField('Awarded Service Units')
     final = models.PositiveIntegerField('Final Usage', null=True, blank=True)
 
     cluster: Cluster = models.ForeignKey(Cluster, on_delete=models.CASCADE)
