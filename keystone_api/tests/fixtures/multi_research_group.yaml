@@ -23,6 +23,7 @@
     name: cluster
     enabled: true
     api_url: localhost:6820
+    api_user: slurm
     api_token: foobar123
 
 # Users

@@ -74,7 +74,7 @@ class EndpointPermissions(APITestCase, CustomAsserts):
             patch=status.HTTP_200_OK,
             delete=status.HTTP_204_NO_CONTENT,
             trace=status.HTTP_405_METHOD_NOT_ALLOWED,
-            put_body={'name': 'foo', 'api_url': 'localhost:6820', 'api_token': 'foobar'},
+            put_body={'name': 'foo', 'api_url': 'localhost:6820', 'api_user': 'slurm', 'api_token': 'foobar'},
             patch_body={'name': 'foo'}
         )
 
