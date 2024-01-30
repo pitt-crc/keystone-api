@@ -71,17 +71,19 @@ Use the `--help` option to view the available commands.
 keystone-api --help
 ```
 
-When running the application for the first time, you will need to manually create the first user account.
-Use the following command to create a new user with admin privliges:
+The following example will setup the project database, create an admin user account, and launch the
+API server in debug mode. As a general rule, debug mode should **never** be enabled in production.
 
 ```bash
+keystone-api migrate
 keystone-api createsuperuser
+DEBUG=true keystone-api runserver
 ```
 
 ## Settings
 
 Application settings are configurable as environmental variables.
-Available settings are listed below by category and use case.
+Individual settings are listed below by category and use case.
 
 ### Security
 
