@@ -70,7 +70,7 @@ class Allocation(RGAffiliatedModel, models.Model):
     """User service unit allocation"""
 
     requested = models.PositiveIntegerField('Requested Service Units')
-    awarded = models.PositiveIntegerField('Awarded Service Units')
+    awarded = models.PositiveIntegerField('Awarded Service Units', null=True, blank=True)
     final = models.PositiveIntegerField('Final Usage', null=True, blank=True)
 
     cluster: Cluster = models.ForeignKey(Cluster, on_delete=models.CASCADE)
