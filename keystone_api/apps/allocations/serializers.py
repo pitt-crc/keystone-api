@@ -11,7 +11,13 @@ from rest_framework import serializers
 from apps.users.models import User
 from .models import *
 
-__all__ = ['AllocationSerializer', 'ClusterSerializer', 'ProposalSerializer', 'ProposalReviewSerializer']
+__all__ = [
+    'AllocationSerializer',
+    'ClusterSerializer',
+    'ProposalSerializer',
+    'ProposalReviewSerializer',
+    'SafeClusterSerializer'
+]
 
 
 class ClusterSerializer(serializers.ModelSerializer):
@@ -20,6 +26,14 @@ class ClusterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cluster
         fields = '__all__'
+
+
+class SafeClusterSerializer(serializers.ModelSerializer):
+    """Object serializer for the `Cluster` class that excludes sensitive fields"""
+
+    class Meta:
+        model = Cluster
+        fields = ('name', 'description', 'enabled')
 
 
 class AllocationSerializer(serializers.ModelSerializer):
@@ -44,7 +58,7 @@ class ProposalReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProposalReview
         fields = '__all__'
-        extra_kwargs = {'reviewer': {'required': False}}
+        extra_kwargs = {'reviewer': {'required': False}}  # Default reviewer value is set by the endpoint view
 
     def validate_reviewer(self, value: User) -> User:
         """Validate the reviewer matches the user submitting the request"""
