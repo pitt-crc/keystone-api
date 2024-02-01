@@ -2,7 +2,8 @@
 
 from django.test import TestCase
 
-from apps.users.models import User, ResearchGroup
+from apps.users.models import ResearchGroup
+from apps.users.tests.utils import create_test_user
 
 
 class GroupsForUser(TestCase):
@@ -11,8 +12,8 @@ class GroupsForUser(TestCase):
     def setUp(self):
         """Create temporary users and groups"""
 
-        self.test_user = User.objects.create_user(username='test_user', password='testpassword')
-        other_user = User.objects.create_user(username='other_user', password='testpassword')
+        self.test_user = create_test_user(username='test_user')
+        other_user = create_test_user(username='other_user')
 
         # Group where the test user is PI
         self.group1 = ResearchGroup.objects.create(name='Group1', pi=self.test_user)
@@ -26,7 +27,7 @@ class GroupsForUser(TestCase):
         self.group3.members.add(self.test_user)
 
         # Group where the test user has no role
-        self.group4 = ResearchGroup.objects.create(name='Group$', pi=other_user)
+        self.group4 = ResearchGroup.objects.create(name='Group4', pi=other_user)
 
     def test_groups_for_user(self) -> None:
         """Test all groups are returned for a test user"""

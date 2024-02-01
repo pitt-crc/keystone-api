@@ -1,4 +1,4 @@
-"""Tests for the `/allocations/clusters/` endpoint"""
+"""Tests for the `/allocations/clusters/<pk>/` endpoint"""
 
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -16,17 +16,18 @@ class EndpointPermissions(APITestCase, CustomAsserts):
     |---------------------|-----|------|---------|------|-----|-------|--------|-------|
     | Anonymous User      | 401 | 401  | 401     | 401  | 401 | 401   | 401    | 401   |
     | Authenticated User  | 200 | 200  | 200     | 403  | 403 | 403   | 403    | 403   |
-    | Staff User          | 200 | 200  | 200     | 201  | 405 | 405   | 405    | 405   |
+    | Staff User          | 200 | 200  | 200     | 405  | 200 | 200   | 204    | 405   |
     """
 
-    endpoint = '/allocations/clusters/'
+    endpoint_pattern = '/allocations/clusters/{pk}/'
     fixtures = ['multi_research_group.yaml']
 
     def test_anonymous_user_permissions(self) -> None:
         """Test unauthenticated users cannot access resources"""
 
+        endpoint = self.endpoint_pattern.format(pk=1)
         self.assert_http_responses(
-            self.endpoint,
+            endpoint,
             get=status.HTTP_401_UNAUTHORIZED,
             head=status.HTTP_401_UNAUTHORIZED,
             options=status.HTTP_401_UNAUTHORIZED,
@@ -43,8 +44,9 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         user = User.objects.get(username='generic_user')
         self.client.force_authenticate(user=user)
 
+        endpoint = self.endpoint_pattern.format(pk=1)
         self.assert_http_responses(
-            self.endpoint,
+            endpoint,
             get=status.HTTP_200_OK,
             head=status.HTTP_200_OK,
             options=status.HTTP_200_OK,
@@ -61,15 +63,48 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         user = User.objects.get(username='staff_user')
         self.client.force_authenticate(user=user)
 
+        endpoint = self.endpoint_pattern.format(pk=1)
         self.assert_http_responses(
-            self.endpoint,
+            endpoint,
             get=status.HTTP_200_OK,
             head=status.HTTP_200_OK,
             options=status.HTTP_200_OK,
-            post=status.HTTP_201_CREATED,
-            put=status.HTTP_405_METHOD_NOT_ALLOWED,
-            patch=status.HTTP_405_METHOD_NOT_ALLOWED,
-            delete=status.HTTP_405_METHOD_NOT_ALLOWED,
+            post=status.HTTP_405_METHOD_NOT_ALLOWED,
+            put=status.HTTP_200_OK,
+            patch=status.HTTP_200_OK,
+            delete=status.HTTP_204_NO_CONTENT,
             trace=status.HTTP_405_METHOD_NOT_ALLOWED,
-            post_body={'name': 'foo', 'api_url': 'localhost:6820', 'api_user': 'slurm', 'api_token': 'foobar'}
+            put_body={'name': 'foo', 'api_url': 'localhost:6820', 'api_user': 'slurm', 'api_token': 'foobar'},
+            patch_body={'name': 'foo'}
         )
+
+
+class ReturnedFields(APITestCase):
+    """Test the (in)exclusion of returned fields based on user permissions"""
+
+    endpoint_pattern = '/allocations/clusters/{pk}/'
+    fixtures = ['multi_research_group.yaml']
+
+    def test_general_user(self) -> None:
+        """Test secure fields are not exposed to general users"""
+
+        user = User.objects.get(username='generic_user')
+        self.client.force_authenticate(user=user)
+
+        endpoint = self.endpoint_pattern.format(pk=1)
+        response = self.client.get(endpoint)
+
+        self.assertNotIn('api_url', response.json().keys())
+        self.assertNotIn('api_token', response.json().keys())
+
+    def test_staff_user(self) -> None:
+        """Test secure fields are accessible to staff users"""
+
+        user = User.objects.get(username='staff_user')
+        self.client.force_authenticate(user=user)
+
+        endpoint = self.endpoint_pattern.format(pk=1)
+        response = self.client.get(endpoint)
+
+        self.assertIn('api_url', response.json().keys())
+        self.assertIn('api_token', response.json().keys())

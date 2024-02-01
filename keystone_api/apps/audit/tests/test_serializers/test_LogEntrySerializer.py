@@ -1,4 +1,4 @@
-"""Tests for the `serializers` module."""
+"""Tests for the `LogEntrySerializer` class."""
 
 from auditlog.models import LogEntry
 from django.test import TestCase
@@ -6,7 +6,7 @@ from django.test import TestCase
 from apps.audit.serializers import LogEntrySerializer
 
 
-class LogEntrySerialization(TestCase):
+class RecordSerialization(TestCase):
     """Test the serialization of `LogEntry` records by the `LogEntrySerializer` class
 
     These tests focus on record fields for which custom serialization logic has been

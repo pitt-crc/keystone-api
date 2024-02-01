@@ -24,7 +24,7 @@ FIXTURE_DIRS = [BASE_DIR / 'tests' / 'fixtures']
 
 # Core security settings
 
-SECRET_KEY = env.str('SECURE_SECRET_KEY', get_random_secret_key())
+SECRET_KEY = env.str('SECURE_SECRET_KEY', 'key-' + get_random_secret_key())
 ALLOWED_HOSTS = env.list("SECURE_ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
 
 _SECURE_SESSION_TOKENS = env.bool("SECURE_SESSION_TOKENS", default=False)
@@ -107,7 +107,7 @@ JAZZMIN_SETTINGS = {
     "site_title": "Keystone",
     "site_header": "Keystone",
     "site_brand": "Keystone",
-    "hide_apps": ["sites"],
+    "hide_apps": ["sites", "auth"],
     "order_with_respect_to": [
         "users",
         "allocations",
@@ -115,7 +115,7 @@ JAZZMIN_SETTINGS = {
         "sites"
     ],
     "icons": {},
-    "login_logo": "fake/file/path.jpg",
+    "login_logo": "fake/file/path.jpg",  # Missing file path hides the logo
 }
 
 # REST API settings
@@ -169,13 +169,33 @@ CELERY_CACHE_BACKEND = 'django-cache'
 # Database
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-DEFAULT_DB_PATH = BASE_DIR / 'keystone.db'
-DATABASES = {
-    'default': env.db('DATABASE_URL', f'sqlite:///{DEFAULT_DB_PATH}')
+
+_DB_NAME = env.str('DB_NAME', 'keystone')
+_POSTGRES_CONFIG = {
+    'ENGINE': 'django.db.backends.postgresql',
+    'NAME': _DB_NAME,
+    'USER': env.str('DB_USER', ''),
+    'PASSWORD': env.str('DB_PASSWORD', ''),
+    'HOST': env.str('DB_HOST', 'localhost'),
+    'PORT': env.str('DB_PORT', '5432'),
 }
+
+_SQLITE_CONFIG = {
+    'ENGINE': 'django.db.backends.sqlite3',
+    'NAME': BASE_DIR / f'{_DB_NAME}.db',
+    'timeout': 30,
+}
+
+DATABASES = dict()
+if env.bool('DB_POSTGRES_ENABLE', False):
+    DATABASES['default'] = _POSTGRES_CONFIG
+
+else:
+    DATABASES['default'] = _SQLITE_CONFIG
 
 # Authentication
 
+AUTH_USER_MODEL = "users.User"
 AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.ModelBackend"]
 
 if AUTH_LDAP_SERVER_URI := env.url("AUTH_LDAP_SERVER_URI", "").geturl():
