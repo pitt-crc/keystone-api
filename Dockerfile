@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
-# Copy only the files needed to build the application
+# Copy application build files
 WORKDIR /app
 COPY keystone_api keystone_api
 COPY pyproject.toml pyproject.toml
