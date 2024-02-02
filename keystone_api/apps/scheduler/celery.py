@@ -7,8 +7,7 @@ with the Celery application instance for all applications defined in the
 """
 
 from celery import Celery
-from django.conf import settings
 
 celery_app = Celery("scheduler")
 celery_app.config_from_object("django.conf:settings", namespace="CELERY")
-celery_app.autodiscover_tasks(settings.INSTALLED_APPS, force=True)
+celery_app.autodiscover_tasks()
