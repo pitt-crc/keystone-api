@@ -145,14 +145,15 @@ The PostgreSQL backend should always be used in production settings.
 | `DB_HOST`                 | `localhost`              | Database host address (PostgreSQL only).                      |
 | `DB_PORT`                 | `5432`                   | Database host port (PostgreSQL only).                         |
 
-### Celery
+### Redis Connection
 
-Connection settings for Celery backend utilities.
+Connection settings for the Redis backend.
 
-| Setting Name              | Default Value              | Description                                                 |
-|---------------------------|----------------------------|-------------------------------------------------------------|
-| `CELERY_BROKER_URL`       | `redis://127.0.0.1:6379/0` | URL for the Celery message broker.                          |
-| `CELERY_RESULT_BACKEND`   | `redis://127.0.0.1:6379/0` | URL for the Celery result backend.                          |
+| Setting Name              | Default Value            | Description                                                   |
+|---------------------------|--------------------------|---------------------------------------------------------------|
+| `REDIS_HOST`              | `redis://127.0.0.1`      | URL for the Redis message cache.                              |
+| `REDIS_PORT`              | `6379`                   | URL for the Redis message cache.                              |
+| `REDIS_DB`                | `0`                      | The Redis database number to use.                             |
 
 ### Developer Settings
 
