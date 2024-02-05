@@ -154,6 +154,7 @@ Connection settings for the Redis backend.
 | `REDIS_HOST`              | `redis://127.0.0.1`      | URL for the Redis message cache.                              |
 | `REDIS_PORT`              | `6379`                   | Port number for the Redis message cache.                      |
 | `REDIS_DB`                | `0`                      | The Redis database number to use.                             |
+| `REDIS_PASSWORD`          |                          | Optionally connect using the given password.                  |
 
 ### Developer Settings
 
