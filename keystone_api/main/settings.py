@@ -162,11 +162,11 @@ AUDITLOG_INCLUDE_ALL_MODELS = True
 
 # Redis backend and Celery scheduler
 
-_redis_host = env.url('REDIS_HOST', 'redis://127.0.0.1').geturl()
+_redis_host = env.url('REDIS_HOST', '127.0.0.1').geturl()
 _redis_port = env.int('REDIS_PORT', 6379)
 _redis_db = env.int('REDIS_DB', 0)
 
-REDIS_URL = f'{_redis_host}:{_redis_port}'
+REDIS_URL = f'redis://{_redis_host}:{_redis_port}'
 CELERY_BROKER_URL = REDIS_URL.rstrip('/') + f'/{_redis_db}'
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 CELERY_CACHE_BACKEND = 'django-cache'
