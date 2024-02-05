@@ -147,13 +147,15 @@ The PostgreSQL backend should always be used in production settings.
 
 ### Redis Connection
 
-Connection settings for the Redis backend.
+Redis settings define the network location and connection information for the Redis backend.
+Enabling password authentication is suggested when deploying Redis in a production environment.
 
 | Setting Name              | Default Value            | Description                                                   |
 |---------------------------|--------------------------|---------------------------------------------------------------|
-| `REDIS_HOST`              | `redis://127.0.0.1`      | URL for the Redis message cache.                              |
+| `REDIS_HOST`              | `127.0.0.1`              | URL for the Redis message cache.                              |
 | `REDIS_PORT`              | `6379`                   | Port number for the Redis message cache.                      |
 | `REDIS_DB`                | `0`                      | The Redis database number to use.                             |
+| `REDIS_PASSWORD`          |                          | Optionally connect using the given password.                  |
 
 ### Developer Settings
 
