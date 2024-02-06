@@ -119,10 +119,16 @@ class AllocationAdmin(admin.ModelAdmin):
 
     @staticmethod
     @admin.display
-    def service_units(obj: Allocation) -> str:
+    def requested(obj: Allocation) -> str:
         """Return an allocation's service units formatted as a human friendly string"""
 
-        return f'{obj.sus:,}'
+        return f'{obj.requested:,}'
+    @staticmethod
+    @admin.display
+    def awarded(obj: Allocation) -> str:
+        """Return an allocation's service units formatted as a human friendly string"""
+
+        return f'{obj.awarded:,}' if obj.awarded else '--'
 
     @staticmethod
     @admin.display
@@ -131,7 +137,7 @@ class AllocationAdmin(admin.ModelAdmin):
 
         return f'{obj.final:,}' if obj.final else '--'
 
-    list_display = [group, 'proposal', 'cluster', service_units, final_usage, approved]
+    list_display = [group, 'proposal', 'cluster', requested, awarded, final_usage, approved]
     list_display_links = list_display
     ordering = ['proposal__group__name', 'cluster']
     search_fields = ['proposal__group__name', 'proposal__title', 'cluster__name']

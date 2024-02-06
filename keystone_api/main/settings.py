@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'health_check.db',
     'health_check.storage',
     'health_check.contrib.migrations',
+    'health_check.contrib.celery',
     'health_check.contrib.celery_ping',
     'health_check.contrib.redis',
     'rest_framework',
@@ -159,10 +160,16 @@ SPECTACULAR_SETTINGS = {
 
 AUDITLOG_INCLUDE_ALL_MODELS = True
 
-# Celery scheduler
+# Redis backend and Celery scheduler
 
-CELERY_BROKER_URL = env.url('CELERY_BROKER_URL', "redis://127.0.0.1:6379/0").geturl()
-CELERY_RESULT_BACKEND = env.url('CELERY_RESULT_BACKEND', "redis://127.0.0.1:6379/0").geturl()
+_redis_host = env.url('REDIS_HOST', '127.0.0.1').geturl()
+_redis_port = env.int('REDIS_PORT', 6379)
+_redis_db = env.int('REDIS_DB', 0)
+_redis_pass = env.str('REDIS_PASSWORD', '')
+
+REDIS_URL = f'redis://:{_redis_pass}@{_redis_host}:{_redis_port}'
+CELERY_BROKER_URL = REDIS_URL.rstrip('/') + f'/{_redis_db}'
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 CELERY_CACHE_BACKEND = 'django-cache'
 
 # Database
