@@ -1,5 +1,6 @@
 """Schedule tasks executed in parallel by Celery."""
 import subprocess
+from typing import List
 from datetime import date
 
 from celery import shared_task
@@ -20,19 +21,15 @@ def update_status() -> None:
 def update_status_for_cluster(cluster: Cluster) -> None:
     """Update the status of each account on a given cluster"""
 
-    # Gather all user account information
-    cmd = "sacctmgr show -nP account format=Account"
-    out = subprocess.check_output(cmd, shell=True)
-    accounts = out.decode("utf-8").strip()
-    accounts = accounts.split()
-
     # Update status for each individual account
-    for account_name in accounts:
+    for account_name in get_account_names():
         update_status_for_account(cluster.name, account_name)
 
 
 def update_status_for_account(cluster: Cluster, account_name: str) -> None:
     """Check an accounts resource limits in SLURM against their usage, locking on the cluster if necessary"""
+
+    # TODO: Logging?
 
     # Lock account if it does not exist
     try:
@@ -40,54 +37,76 @@ def update_status_for_account(cluster: Cluster, account_name: str) -> None:
     except ResearchGroup.DoesNotExist:
         # Lock the account on this cluster
         set_lock_state(cluster.name, account_name)
-        # TODO: Logging
         return
 
-    # Pull the required values from the account entry
-    # Pull usage values from db
+    # TODO: Should there be a check here for Allocations that expire today? Need to set final usage on those...
+    #  attribute as much of the current day's usage to the expiring allocation if so?
 
-    current_tres_limit = association['max']['tres']['group']['active']
-
-
-    total_usage = association['usage']
-
-    active_sus = Allocation.objects.filter(proposal__group=account,
-                                           cluster=cluster,
-                                           proposal__approved=True,
-                                           proposal__active__lte=date.today(),
-                                           proposal__expire__gt=date.today()).aggregate(Sum("awarded"))
-
-    historical_usage = Allocation.objects.filter(proposal__group=account,
-                                                 cluster=cluster,
-                                                 proposal__approved=True,
-                                                 proposal__expire__lte=date.today()).aggregate(Sum("final"))
-
+    # Determine the earliest start date across proposals containing active allocations on the cluster
+    end = date.today()
+    active_allocations = Allocation.objects.filter(proposal__group=account,
+                                                   cluster=cluster,
+                                                   proposal__approved=True,
+                                                   proposal__active__lte=date.today(),
+                                                   proposal__expire__gt=date.today()).all()
     # TODO: double check cluster=cluster works, also make sure we handle when it comes back as None
 
-    # Proposals must be approved and active
+    # Use the start date of the oldest non-expired proposal
+    start = min(alloc.proposal.active for alloc in active_allocations)
 
-    calculate_new_limit(active_sus, historical_usage, initial_usage, total_usage, current_tres_limit)
+    total_cluster_usage = get_cluster_usage(account_name, cluster.name, start, end)
 
-    # Insert new limits into dictionary item
-    # association['max']['tres']['group']['active'] =
+    # Determine the total SUs available on the cluster across the active allocations
+    total_cluster_sus = active_allocations.aggregate(Sum("awarded"))
 
-    # PATCH (ideally, may have to POST) updated dictionary item for the account
+    if total_cluster_usage >= total_cluster_sus:
 
+        # All allocations are exhausted by current usage, set final usage and lock
+        for alloc in active_allocations:
+            alloc.final = alloc.awarded
 
-def calculate_new_limit(active_sus: int, historical_usage: int, initial_usage: int, total_usage: int,
-                        current_tres_limit: int) -> int:
-    """Compute the new tres limit"""
-
-    # TODO: We don't have any mechanism to increase the limit yet
-    return current_tres_limit - min(0, active_sus + historical_usage + initial_usage - total_usage)
+        set_lock_state(True, cluster.name, account_name)
 
 
 def set_lock_state(lock_state: bool, cluster: str, account: str) -> None:
     """Update the locked/unlocked state for the given account, on a given cluster"""
 
     lock_state_int = 0 if lock_state else -1
+
+    # Lock/Unlock CPU resources on the cluster
     cmd = (f'sacctmgr -i modify account where account={account} cluster={cluster} '
            f'set GrpTresRunMins=cpu={lock_state_int}')
+    subprocess.run(cmd)
 
+    # Lock/Unlock GPU resources on the cluster
     cmd = (f'sacctmgr -i modify account where account={account} cluster={cluster} '
            f'set GrpTresRunMins=gres/gpu={lock_state_int}')
+    subprocess.run(cmd)
+
+
+def get_account_names() -> List[str]:
+    """Get a list of account names for a given cluster"""
+
+    # Gather all user account information
+    cmd = "sacctmgr show -nP account format=Account"
+    out = subprocess.check_output(cmd, shell=True)
+    accounts = out.decode("utf-8").strip()
+    accounts = accounts.split()
+
+    return accounts
+
+
+def get_cluster_usage(account_name: str, cluster_name: str, start: date, end: date) -> int:
+    """Get the total usage on a given cluster for a given account between a given start and end date"""
+
+    # Run sreport to get the account's usage on the cluster
+    # TODO: by using f"format=Proper,Used") we can get usage per user for crc-usage type display
+    cmd = (f"sreport cluster AccountUtilizationByUser -Pn -T Billing -t Hours cluster={cluster_name} "
+           f"Account={account_name} start={start.strftime('%Y-%m-%d')} end={end.strftime('%Y-%m-%d')} "
+           f"format=Used")
+    out = subprocess.check_output(cmd, shell=True)
+
+    # The first value is a sum across users in the account for the cluster
+    usage = int(out.decode("utf-8").split()[0])
+
+    return usage
