@@ -141,10 +141,12 @@
   fields:
     proposal: 1
     cluster: 1
-    sus: 10000
+    requested: 10000
+    awarded: 10000
 - model: allocations.allocation
   pk: 2
   fields:
     proposal: 2
     cluster: 1
-    sus: 10000
+    requested: 10000
+    awarded: 10000
