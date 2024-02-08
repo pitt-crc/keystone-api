@@ -40,7 +40,12 @@ def update_status_for_cluster(cluster: Cluster) -> None:
 
 
 def update_status_for_account(cluster: Cluster, association: dict) -> None:
-    """Update the resource limit in SLURM for the given account"""
+    """Update the resource limit in SLURM for the given account
+
+    Args:
+        cluster: A Cluster database record
+        association: Slurm association dictionary as returned by he Slurm API
+    """
 
     # Get account information from Slurm API response
     account_name = association['account']
