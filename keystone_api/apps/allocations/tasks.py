@@ -1,18 +1,20 @@
 """Schedule tasks executed in parallel by Celery."""
 
-from celery import shared_task
+from datetime import date
+
 import requests
+from django.db.models import Sum
+
 from apps.allocations.models import *
 from apps.users.models import *
-from datetime import date
-from django.db.models import Sum
+
 
 def update_status() -> None:
     """Update the account status on all clusters"""
 
-    # Update account status on each cluster
     for cluster in Cluster.objects.filter(enabled=True).all():
         update_status_for_cluster(cluster)
+
 
 def update_status_for_cluster(cluster: Cluster) -> None:
     """Using a URL and Token from a specific cluster's slurmrestd, update the status of each account on that cluster"""
@@ -28,6 +30,7 @@ def update_status_for_cluster(cluster: Cluster) -> None:
 
     # TODO: if full associations json posted back to slurm, POST here
 
+
 def update_status_for_account(cluster: Cluster, association: dict) -> None:
     """Update the resource limit in SLURM for the given account"""
 
@@ -36,8 +39,8 @@ def update_status_for_account(cluster: Cluster, association: dict) -> None:
     try:
         account = ResearchGroup.objects.get(name=account_name)
     except ResearchGroup.DoesNotExist:
-        # Lock the account
-        # Logging
+    # Lock the account
+    # Logging
 
     # Pull the required values from the account entry
     # Pull usage values from db
@@ -49,16 +52,15 @@ def update_status_for_account(cluster: Cluster, association: dict) -> None:
     initial_usage = 0
 
     active_sus = Allocation.objects.filter(proposal__group=account,
-                                             cluster=cluster,
-                                             proposal__approved=True,
-                                             proposal__active__lte=date.today(),
-                                             proposal__expire__gt=date.today()).aggregate(Sum("sus"))
-
+                                           cluster=cluster,
+                                           proposal__approved=True,
+                                           proposal__active__lte=date.today(),
+                                           proposal__expire__gt=date.today()).aggregate(Sum("sus"))
 
     historical_usage = Allocation.objects.filter(proposal__group=account,
-                                             cluster=cluster,
-                                             proposal__approved=True,
-                                             proposal__expire__lte=date.today()).aggregate(Sum("final"))
+                                                 cluster=cluster,
+                                                 proposal__approved=True,
+                                                 proposal__expire__lte=date.today()).aggregate(Sum("final"))
 
     # TODO: double check cluster=cluster works, also make sure we handle when it comes back as None
 
@@ -67,9 +69,10 @@ def update_status_for_account(cluster: Cluster, association: dict) -> None:
     calculate_new_limit(active_sus, historical_usage, initial_usage, total_usage, current_tres_limit)
 
     # Insert new limits into dictionary item
-    #association['max']['tres']['group']['active'] =
+    # association['max']['tres']['group']['active'] =
 
     # PATCH (ideally, may have to POST) updated dictionary item for the account
+
 
 def calculate_new_limit(active_sus: int, historical_usage: int, initial_usage: int, total_usage: int, current_tres_limit: int) -> int:
     """Compute the new tres limit"""
