@@ -12,7 +12,6 @@ urlpatterns = [
     path('audit/', include('apps.audit.urls', namespace='audit')),
     path('authentication/', include('apps.authentication.urls', namespace='authentication')),
     path('health/', include('apps.health.urls', namespace='health')),
-    path('research-products/', include('apps.research_products.urls', namespace='research_products')),
 ]
 
 if settings.DEBUG:
