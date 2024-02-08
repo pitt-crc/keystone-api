@@ -3,10 +3,14 @@
 from datetime import date
 
 import requests
+from django.conf import settings
 from django.db.models import Sum
 
 from apps.allocations.models import *
 from apps.users.models import *
+
+SLURM_DB_PATH = f'/slurmdb/{settings.SLURM_API_VERSION}'
+SLURM_API_PATH = f'/slurm/{settings.SLURM_API_VERSION}'
 
 
 def update_status() -> None:
@@ -17,18 +21,22 @@ def update_status() -> None:
 
 
 def update_status_for_cluster(cluster: Cluster) -> None:
-    """Using a URL and Token from a specific cluster's slurmrestd, update the status of each account on that cluster"""
+    """Update the status of all accounts on a given cluster
 
-    # Gather all user account information
-    header_values = {'X-SLURM-USER-TOKEN': cluster.api_token, 'X-SLURM-USER-NAME': cluster.api_user}
-    response = requests.get(f'{SLURM_DB_URL}/associations', headers=header_values)
-    response_dict = response.json()
+    Args:
+        cluster: A Cluster database record
+    """
+
+    api_headers = {'X-SLURM-USER-TOKEN': cluster.api_token, 'X-SLURM-USER-NAME': cluster.api_user}
+    api_url = cluster.api_url.rstrip('/') + SLURM_DB_PATH + '/associations'
+
+    # Fetch account information for all users
+    response = requests.get(api_url, headers=api_headers)
+    response.raise_for_status()
 
     # Update status for each individual account
-    for association in response_dict['associations']:
+    for association in response.json()['associations']:
         update_status_for_account(cluster.name, association)
-
-    # TODO: if full associations json posted back to slurm, POST here
 
 
 def update_status_for_account(cluster: Cluster, association: dict) -> None:
@@ -38,9 +46,11 @@ def update_status_for_account(cluster: Cluster, association: dict) -> None:
     account_name = association['account']
     try:
         account = ResearchGroup.objects.get(name=account_name)
+
     except ResearchGroup.DoesNotExist:
-    # Lock the account
-    # Logging
+        pass
+        # Lock the account
+        # Logging
 
     # Pull the required values from the account entry
     # Pull usage values from db
