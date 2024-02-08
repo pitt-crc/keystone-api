@@ -1,3 +1,5 @@
+"""The backend REST API for the Keystone web platform."""
+
 import os
 
 from .apps.scheduler.celery import celery_app
