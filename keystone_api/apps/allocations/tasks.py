@@ -42,46 +42,36 @@ def update_status_for_cluster(cluster: Cluster) -> None:
 def update_status_for_account(cluster: Cluster, association: dict) -> None:
     """Update the resource limit in SLURM for the given account"""
 
-    # Lock account if it does not exist
+    # Get account information from Slurm API response
     account_name = association['account']
-    try:
-        account = ResearchGroup.objects.get(name=account_name)
-
-    except ResearchGroup.DoesNotExist:
-        pass
-        # Lock the account
-        # Logging
-
-    # Pull the required values from the account entry
-    # Pull usage values from db
-
     current_tres_limit = association['max']['tres']['group']['active']
     total_usage = association['usage']
 
-    # TODO: initial_usage value not yet kept track of in db
-    initial_usage = 0
+    try:
+        research_group = ResearchGroup.objects.get(name=account_name)
 
-    active_sus = Allocation.objects.filter(proposal__group=account,
-                                           cluster=cluster,
-                                           proposal__approved=True,
-                                           proposal__active__lte=date.today(),
-                                           proposal__expire__gt=date.today()).aggregate(Sum("sus"))
+    except ResearchGroup.DoesNotExist:
+        return  # TODO: Lock account if it does not exist
 
-    historical_usage = Allocation.objects.filter(proposal__group=account,
-                                                 cluster=cluster,
-                                                 proposal__approved=True,
-                                                 proposal__expire__lte=date.today()).aggregate(Sum("final"))
+    # Get research group information from application database
+    initial_usage = InitialUsage.objects.get(group=research_group).usage
 
-    # TODO: double check cluster=cluster works, also make sure we handle when it comes back as None
+    approved_proposal_query = Allocation.objects.filter(
+        proposal__group=research_group,
+        proposal__approved=True,
+        cluster=cluster)
 
-    # Proposals must be approved and active
+    active_sus = approved_proposal_query.filter(
+        proposal__active__lte=date.today(),
+        proposal__expire__gt=date.today()
+    ).aggregate(Sum("sus"))['sus_sum']
 
-    calculate_new_limit(active_sus, historical_usage, initial_usage, total_usage, current_tres_limit)
+    historical_usage = approved_proposal_query.filter(
+        proposal__expire__lte=date.today()
+    ).aggregate(Sum("final"))['final_sum']
 
-    # Insert new limits into dictionary item
-    # association['max']['tres']['group']['active'] =
-
-    # PATCH (ideally, may have to POST) updated dictionary item for the account
+    new_limit = calculate_new_limit(active_sus, historical_usage, initial_usage, total_usage, current_tres_limit)
+    # TOD: PATCH (or POST) updated account limits
 
 
 def calculate_new_limit(active_sus: int, historical_usage: int, initial_usage: int, total_usage: int, current_tres_limit: int) -> int:
