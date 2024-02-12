@@ -27,6 +27,7 @@ COPY README.md README.md
 ENV PIP_ROOT_USER_ACTION=ignore
 RUN pip install -e . && pip cache purge
 
+# Add and unprivliged user for running services
 RUN groupadd --gid 900 keystone && \
     useradd -m -u 999 -g keystone keystone && \
     chown keystone:keystone /app
