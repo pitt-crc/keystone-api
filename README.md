@@ -93,8 +93,11 @@ Administrators should adhere to the following general guidelines:
 - Ensure your deployment is isolated behind a web proxy with proper HTTPS handling
 - Always define the `SECURE_ALLOWED_HOSTS` list using a restrictive collection of domain patterns
 - Avoid issuing session/CSRF tokens over unsecured connections by enabling `SECURE_SESSION_TOKENS`
-- HTTP Strict Transport Security (HSTS) should be used to enforce the use of HTTPS
-- Use a fixed (and secure) `SECURE_SECRET_KEY` value to ensure consistent request signing across application instances/restarts
+- Always use a secure `SECURE_SECRET_KEY` value to ensure proper request signing across application instances/restarts
+- Consider using HTTP Strict Transport Security (HSTS) to enforce the use of HTTPS
+
+The `SECURE_SECRET_KEY` value may be changed at any given time. However, doing so may invalidate any active user
+sessions and require users to reauthenticate.
 
 | Setting Name              | Default Value            | Description                                                   |
 |---------------------------|--------------------------|---------------------------------------------------------------|
