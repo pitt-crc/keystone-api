@@ -31,6 +31,6 @@ RUN groupadd --gid 900 keystone && \
     useradd -m -u 999 -g keystone keystone && \
     chown keystone:keystone /app
 
-# Setup and laundch the application
+# Setup and launch the application
 ENTRYPOINT ["keystone-api"]
 CMD ["quickstart", "--migrate", "--celery", "--gunicorn", "--no-input"]
