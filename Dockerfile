@@ -15,7 +15,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     libldap2-dev \
     # Required for celery
     redis \
-  && apt-get clean
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
 
 # Copy application build files
 WORKDIR /app
