@@ -1,118 +1,106 @@
 """Schedule tasks executed in parallel by Celery."""
-import subprocess
-from typing import List
+
 from datetime import date
+import re
+import subprocess
 
 from celery import shared_task
 from django.db.models import Sum
 
 from apps.allocations.models import *
-from apps.users.models import *
 
 
-#TODO: Upon creation of a new allocation, update the GrpTresRunMinutes Limit
+# TODO: upon creation of a new research group, set up it's initial usage from Slurm
 
-@shared_task()
-def update_status() -> None:
-    """Update the account status on all clusters"""
-
-    # Update account status on each cluster
-    for cluster in Cluster.objects.filter(enabled=True).all():
-        update_status_for_cluster(cluster)
+# TODO: Upon creation of a new allocation, update the GrpTresRunMinutes Limit
+def update_limits_new_allocation(allocation: Allocation, sender, **kwargs) -> None:
+    """Update the usage limits to include a new allocation's contributions expiring today (runs on new allocation
+    creation)"""
+    # TODO: use django signaling for this?
+    update_limit_for_account(allocation)
 
 
 @shared_task()
-def update_status_for_cluster(cluster: Cluster) -> None:
-    """Update the status of each account on a given cluster"""
+def update_limits_expired_allocation() -> None:
+    """Reduce usage limits for all allocations expiring today (runs daily)"""
 
-    # Update status for each individual account
-    for account_name in get_account_names():
-        update_status_for_account(cluster, account_name)
+    # Gather all allocations that expired today
+    expired_allocations = Allocation.objects.filter(proposal__approved=True,
+                                                    proposal__active__lt=date.today(),
+                                                    proposal__expire=date.today()).sort_by("proposal__active")
+
+    # Update the usage limits for expired allocations
+    for allocation in expired_allocations:
+        update_limit_for_account(allocation)
 
 
-def update_status_for_account(cluster: Cluster, account_name: str) -> None:
+def update_limit_for_account(allocation: Allocation) -> None:
     """Check an accounts resource limits in SLURM against their usage, locking on the cluster if necessary"""
 
     # TODO: Logging?
-    # TODO: Need to make sure investment partitions are not locked for relevant slurm accounts
-    # Lock account if it does not exist
-    try:
-        account = ResearchGroup.objects.get(name=account_name)
-    except ResearchGroup.DoesNotExist:
-        # Lock the account on this cluster
-        lock_account_on_cluster(cluster.name, account_name)
-        return
 
-    # TODO: Should there be a check here for Allocations that expire today? Need to set final usage on those...
-    #  attribute as much of the current day's usage to the expiring allocation if so?
+    group = allocation.get_research_group()
+    account_name = group.name
+    cluster_name = allocation.cluster.name
 
-    # Determine the earliest start date across proposals containing active allocations on the cluster
-    end = date.today()
-    active_allocations_query = Allocation.objects.filter(proposal__group=account,
-                                                         cluster=cluster,
-                                                         proposal__approved=True,
-                                                         proposal__active__lte=date.today(),
-                                                         proposal__expire__gt=date.today()).order_by("proposal__expire")
+    # New allocation starting, add it to existing limits
+    if allocation.proposal.active == date.today():
+        # Calculate the new limit and set it
+        current_usage_limit = get_cluster_limit(account_name, cluster_name)
+        new_allocation_contribution = allocation.awarded
+        new_limit = current_usage_limit + new_allocation_contribution
+        set_cluster_limit(account_name, cluster_name, new_limit)
 
-    # TODO: compare rawusage against limit
+    # Old allocation ending, remove it from existing limits
+    elif allocation.proposal.expire == date.today():
 
-    # TODO: double check cluster=cluster works, also make sure we handle when it comes back as None
-    start = active_allocations_query
+        # Gather Usage values to compute current usage
+        historical_usage = Allocation.objects.filter(proposal__group=account_name,
+                                                     cluster=cluster_name,
+                                                     proposal__approved=True,
+                                                     proposal__active__lte=date.today(),
+                                                     proposal__expire__lte=date.today()).aggregate(Sum("final"))
 
-    total_cluster_usage = get_cluster_usage(account_name, cluster.name, start, end)
-    # Determine the total SUs available on the cluster across the active allocations
-    total_cluster_sus = active_allocations_query.aggregate(Sum("awarded"))
+        initial_usage = 0 # TODO: get this from db, initialized upon research group creation (ping sshare in migration, 0 for new slurm accounts)
+        total_cluster_usage = get_cluster_usage(account_name, cluster_name)
+        current_usage = total_cluster_usage - historical_usage - initial_usage
 
+        # Set the final usage for the expired allocation
+        if current_usage < allocation.awarded:
+            # Close out the allocation
+            allocation.final = current_usage
+        else:
+            allocation.final = allocation.awarded
 
-
-    if total_cluster_usage >= total_cluster_sus:
-
-        # All allocations are exhausted by current usage, set final usage and lock
-        for alloc in active_allocations:
-            alloc.final = alloc.awarded
-
-        set_lock_state(True, cluster.name, account_name)
-
-
-def lock_account_on_cluster(cluster: str, account: str) -> None:
-    """Lock the given account, on a given cluster"""
-    cmd = (f'sshare -nP -A {account} -M {cluster} --format=RawUsage')
-
-    # Lock/Unlock CPU resources on the cluster
-    cmd = (f'sacctmgr -i modify account where account={account} cluster={cluster} '
-           f'set GrpTresRunMins=cpu={lock_state_int}')
-    subprocess.run(cmd)
-
-    # Lock/Unlock GPU resources on the cluster
-    cmd = (f'sacctmgr -i modify account where account={account} cluster={cluster} '
-           f'set GrpTresRunMins=gres/gpu={lock_state_int}')
-    subprocess.run(cmd)
+        # Calculate the new limit and set it
+        current_usage_limit = get_cluster_limit(account_name, cluster_name)
+        expired_allocation_contribution = allocation.awarded - allocation.final
+        new_limit = current_usage_limit - expired_allocation_contribution
+        set_cluster_limit(account_name, cluster_name, new_limit)
 
 
-def get_account_names() -> List[str]:
-    """Get a list of account names for a given cluster"""
+def set_cluster_limit(account_name: str, cluster_name: str, limit: int) -> None:
+    """Update the current usage limit (in minutes) to the provided limit on a given cluster for a given account"""
 
-    # Gather all user account information
-    # For sacctmgr, "n" corresponds to no header rows, P is parsable
-    # TODO: Should this pull info at the per cluster level?
-    cmd = "sacctmgr show -nP account format=Account"
-    out = subprocess.check_output(cmd, shell=True)
-    accounts = out.decode("utf-8").strip()
-
-    return accounts.split()
+    # TODO: Does this need to be run as root?
+    cmd = (f"sacctmgr modify account where account={account_name} cluster={cluster_name} set "
+           f"GrpTresRunMins=billing={limit}")
+    subprocess.run(cmd, shell=True)
 
 
-def get_cluster_usage(account_name: str, cluster_name: str, start: date, end: date) -> int:
-    """Get the total usage on a given cluster for a given account between a given start and end date"""
+def get_cluster_limit(account_name: str, cluster_name: str) -> int:
+    """Get the current usage limit (in minutes) on a given cluster for a given account"""
 
-    # Run sreport to get the account's usage on the cluster
-    # TODO: by using f"format=Proper,Used") we can get usage per user for crc-usage type display
-    cmd = (f"sreport cluster AccountUtilizationByUser -Pn -T Billing -t Hours cluster={cluster_name} "
-           f"Account={account_name} start={start.strftime('%Y-%m-%d')} end={end.strftime('%Y-%m-%d')} "
-           f"format=Used")
-    out = subprocess.check_output(cmd, shell=True)
+    cmd = f"sacctmgr show -nP association where account={account_name} cluster={cluster_name} format=GrpTRESRunMin"
+    out = subprocess.check_output(cmd, shell=True).decode("utf-8")
 
-    # The first value is a sum across users in the account for the cluster
-    usage = int(out.decode("utf-8").split()[0])
+    return int(re.findall(r'billing=(.*)\n', out)[0])
 
-    return usage
+
+def get_cluster_usage(account_name: str, cluster_name: str) -> int:
+    """Get the total billable usage in minutes on a given cluster for a given account"""
+
+    cmd = f"sshare -nP -A {account_name} -M {cluster_name} --format=GrpTRESRaw"
+    out = subprocess.check_output(cmd, shell=True).decode("utf-8")
+
+    return int(re.findall(r'billing=(.*),fs', out)[0])
