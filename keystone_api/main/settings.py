@@ -198,6 +198,10 @@ if env.bool('DB_POSTGRES_ENABLE', False):
 else:
     DATABASES['default'] = _SQLITE_CONFIG
 
+# Slurm API settings
+
+SLURM_API_VERSION = '0.0.38'
+
 # Authentication
 
 AUTH_USER_MODEL = "users.User"

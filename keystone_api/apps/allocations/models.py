@@ -14,7 +14,7 @@ from django.template.defaultfilters import truncatechars
 from apps.users.models import ResearchGroup, User
 from .managers import *
 
-__all__ = ['Allocation', 'Cluster', 'Proposal', 'ProposalReview', 'RGAffiliatedModel']
+__all__ = ['Allocation', 'Cluster', 'InitialUsage', 'Proposal', 'ProposalReview', 'RGAffiliatedModel']
 
 
 class RGAffiliatedModel:
@@ -110,3 +110,10 @@ class ProposalReview(RGAffiliatedModel, models.Model):
         """Return a human-readable identifier for the proposal"""
 
         return f'{self.reviewer} review for \"{self.proposal.title}\"'
+
+
+class InitialUsage(models.Model):
+    """The initial service unit usage for a research group at the time of application install"""
+
+    usage = models.IntegerField()
+    group = models.OneToOneField(ResearchGroup, on_delete=models.CASCADE)
