@@ -72,6 +72,7 @@ class Allocation(RGAffiliatedModel, models.Model):
     requested = models.PositiveIntegerField('Requested Service Units')
     awarded = models.PositiveIntegerField('Awarded Service Units', null=True, blank=True)
     final = models.PositiveIntegerField('Final Usage', null=True, blank=True)
+    is_contributing = models.BooleanField('Included in Current Usage Limit', default=False)
 
     cluster: Cluster = models.ForeignKey(Cluster, on_delete=models.CASCADE)
     proposal: Proposal = models.ForeignKey(Proposal, on_delete=models.CASCADE)
