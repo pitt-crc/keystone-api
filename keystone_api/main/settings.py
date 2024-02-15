@@ -173,30 +173,26 @@ CELERY_CACHE_BACKEND = 'django-cache'
 
 # Database
 
+DATABASES = dict()
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-_DB_NAME = env.str('DB_NAME', 'keystone')
-_POSTGRES_CONFIG = {
-    'ENGINE': 'django.db.backends.postgresql',
-    'NAME': _DB_NAME,
-    'USER': env.str('DB_USER', ''),
-    'PASSWORD': env.str('DB_PASSWORD', ''),
-    'HOST': env.str('DB_HOST', 'localhost'),
-    'PORT': env.str('DB_PORT', '5432'),
-}
-
-_SQLITE_CONFIG = {
-    'ENGINE': 'django.db.backends.sqlite3',
-    'NAME': BASE_DIR / f'{_DB_NAME}.db',
-    'timeout': 30,
-}
-
-DATABASES = dict()
+_db_name = env.str('DB_NAME', 'keystone')
 if env.bool('DB_POSTGRES_ENABLE', False):
-    DATABASES['default'] = _POSTGRES_CONFIG
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': _db_name,
+        'USER': env.str('DB_USER', ''),
+        'PASSWORD': env.str('DB_PASSWORD', ''),
+        'HOST': env.str('DB_HOST', 'localhost'),
+        'PORT': env.str('DB_PORT', '5432'),
+    }
 
 else:
-    DATABASES['default'] = _SQLITE_CONFIG
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / f'{_db_name}.db',
+        'timeout': 30,
+    }
 
 # Authentication
 
@@ -220,7 +216,7 @@ if AUTH_LDAP_SERVER_URI := env.url("AUTH_LDAP_SERVER_URI", "").geturl():
         "(uid=%(user)s)"
     )
 
-    if env.bool('AUTH_LDAP_REQUIRE_CERT', True):
+    if env.bool('AUTH_LDAP_REQUIRE_CERT', False):
         AUTH_LDAP_GLOBAL_OPTIONS = {ldap.OPT_X_TLS_REQUIRE_CERT: ldap.OPT_X_TLS_NEVER}
 
 AUTH_PASSWORD_VALIDATORS = [
