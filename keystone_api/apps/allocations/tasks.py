@@ -9,8 +9,8 @@ from django.db.models import Sum
 
 from apps.allocations.models import *
 
-
-def update_limits_new_allocation(allocation: Allocation, sender, **kwargs) -> None:
+@receiver
+def update_limits_new_allocation(sender, **kwargs) -> None:
     """Update the usage limits to include a new allocation's contributions if it starts today (signaled by new allocation
     creation)"""
     # TODO: use django signaling for this?
