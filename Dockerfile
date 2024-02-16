@@ -35,4 +35,4 @@ RUN groupadd --gid 900 keystone && \
 
 # Setup and launch the application
 ENTRYPOINT ["keystone-api"]
-CMD ["quickstart", "--migrate", "--celery", "--gunicorn", "--no-input"]
+CMD ["quickstart", "--migrate", "--static", "--celery", "--gunicorn", "--no-input"]
