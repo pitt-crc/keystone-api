@@ -24,7 +24,7 @@ FIXTURE_DIRS = [BASE_DIR / 'tests' / 'fixtures']
 
 # Core security settings
 
-SECRET_KEY = env.str('SECURE_SECRET_KEY', 'key-' + get_random_secret_key())
+SECRET_KEY = 'key-' + env.str('SECURE_SECRET_KEY', get_random_secret_key())
 ALLOWED_HOSTS = env.list("SECURE_ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
 
 _SECURE_SESSION_TOKENS = env.bool("SECURE_SESSION_TOKENS", default=False)
