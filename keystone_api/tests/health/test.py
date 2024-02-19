@@ -54,13 +54,13 @@ class EndpointPermissions(TransactionTestCase):
     def test_authenticated_user_permissions(self) -> None:
         """Test general authenticated users are returned a 403 status code for all request types"""
 
-        create_test_user(username='foo', password='bar')
-        self.assertTrue(self.client.login(username='foo', password='bar'))
+        create_test_user(username='foo', password='foobar123!')
+        self.assertTrue(self.client.login(username='foo', password='foobar123!'))
         self.assert_read_only_responses()
 
     def test_staff_user_permissions(self) -> None:
         """Test staff users have read-only permissions"""
 
-        create_test_user(username='foo', password='bar')
-        self.assertTrue(self.client.login(username='foo', password='bar'))
+        create_test_user(username='foo', password='foobar123!')
+        self.assertTrue(self.client.login(username='foo', password='foobar123!'))
         self.assert_read_only_responses()
