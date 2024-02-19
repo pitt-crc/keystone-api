@@ -1,5 +1,7 @@
 """Tests for the `/health/` endpoint"""
 
+import logging
+
 from django.test import TransactionTestCase
 from rest_framework import status
 
@@ -25,6 +27,12 @@ class EndpointPermissions(TransactionTestCase):
     def assert_read_only_responses(self) -> None:
         """Assert the currently authenticated user has read only permissions"""
 
+        # Temporarily disable health check logging
+        # Avoids spamming the console with health check messages
+        health_check_log = logging.getLogger('health-check')
+        log_level = health_check_log.level
+        health_check_log.setLevel(1000)
+
         self.assertIn(self.client.get(self.endpoint).status_code, self.valid_responses)
         self.assertIn(self.client.head(self.endpoint).status_code, self.valid_responses)
         self.assertIn(self.client.options(self.endpoint).status_code, self.valid_responses)
@@ -34,6 +42,9 @@ class EndpointPermissions(TransactionTestCase):
         self.assertEqual(self.client.patch(self.endpoint).status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
         self.assertEqual(self.client.delete(self.endpoint).status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
         self.assertEqual(self.client.trace(self.endpoint).status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+        # Restore the health chck logger
+        health_check_log.setLevel(log_level)
 
     def test_anonymous_user_permissions(self) -> None:
         """Test unauthenticated users have read-only access"""
