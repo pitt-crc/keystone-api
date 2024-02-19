@@ -9,6 +9,7 @@ associated model class called `objects`.
 from typing import TYPE_CHECKING
 
 from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.password_validation import validate_password
 from django.db import models
 
 if TYPE_CHECKING:
@@ -39,6 +40,7 @@ class UserManager(BaseUserManager):
 
         email = self.normalize_email(email)
         user = self.model(username=username, first_name=first_name, last_name=last_name, email=email, **extra_fields)
+        validate_password(password)
         user.set_password(password)
         user.save()
 
