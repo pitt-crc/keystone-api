@@ -1,5 +1,5 @@
 """Tests for the `UserManager` class"""
-
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from apps.users.models import User
@@ -71,7 +71,7 @@ class UserCreation(TestCase):
     def test_passwords_are_validated(self) -> None:
         """Test passwords are required to meet security criteria"""
 
-        with self.assertRaisesRegex(ValueError, 'This password is too short.'):
+        with self.assertRaisesRegex(ValidationError, 'This password is too short'):
             User.objects.create_user(
                 username='foobar',
                 first_name='foo',
