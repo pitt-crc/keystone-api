@@ -47,7 +47,7 @@ class UserCreation(TestCase):
     def test_superusers_must_be_staff(self) -> None:
         """Test superusers are required to be staff users"""
 
-        with self.assertRaises(ValueError):
+        with self.assertRaisesRegex(ValueError, 'must set `is_staff=True`.'):
             User.objects.create_superuser(
                 username='foobar',
                 first_name='foo',
@@ -59,7 +59,7 @@ class UserCreation(TestCase):
     def test_superusers_must_be_superusers(self) -> None:
         """Test superusers are required to have superuser permissions"""
 
-        with self.assertRaises(ValueError):
+        with self.assertRaisesRegex(ValueError, 'must set  `is_superuser=True`'):
             User.objects.create_superuser(
                 username='foobar',
                 first_name='foo',
@@ -67,3 +67,14 @@ class UserCreation(TestCase):
                 email="foo@bar.com",
                 password="foobar123",
                 is_superuser=False)
+
+    def test_passwords_are_validated(self) -> None:
+        """Test passwords are required to meet security criteria"""
+
+        with self.assertRaisesRegex(ValueError, 'This password is too short.'):
+            User.objects.create_user(
+                username='foobar',
+                first_name='foo',
+                last_name='bar',
+                email="foo@bar.com",
+                password="foo")
