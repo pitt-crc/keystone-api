@@ -6,7 +6,9 @@ from django.http import HttpResponse
 from django.urls import path, include
 
 urlpatterns = [
-    path('', lambda *args: HttpResponse(f"Service Portal API Version {settings.VERSION}"), name='home'),
+    path('', lambda *args: HttpResponse(f"Keystone API Version {settings.VERSION}"), name='home'),
+    path('version', lambda *args: HttpResponse(settings.VERSION), name='version'),
+
     path('admin/', admin.site.urls),
     path('allocations/', include('apps.allocations.urls', namespace='alloc')),
     path('audit/', include('apps.audit.urls', namespace='audit')),
