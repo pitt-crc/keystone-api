@@ -3,90 +3,60 @@
 from datetime import date
 import re
 import subprocess
+from typing import List
 
 from celery import shared_task
-from django.core.signals import request_finished
 from django.db.models import Sum
 
 from apps.allocations.models import *
-
-
-@reciever()
-def update_limits_new_allocation(sender, **kwargs) -> None:
-    """Update the usage limits to include a new allocation's contributions if it starts today (signaled by new allocation
-    creation)"""
-    # TODO: use django signaling for this? Use viewset method that creates record for allocation table
-    # overload viewsets.ModelViewSet,CreateModelMixin create function,
-    # will need to consider edge cases (updating an allocation, etc.)
-
-    if allocation.proposal.active == date.today():
-        update_limit_for_account(allocation)
+from apps.users.models import *
 
 
 @shared_task()
-def update_limits_allocation() -> None:
-    """Reduce or increase usage limits for all allocations that are expiring or starting today (runs daily)"""
-    #TODO: Make sure situation where this tool misses a day is handled (inequalites on dates instead of equals)
+def update_limits() -> None:
+    """Adjust per Slurm account usage limits on all enabled clusters"""
 
-    # Gather all allocations that expired today
-    expired_allocations = Allocation.objects.filter(proposal__approved=True,
-                                                    proposal__active__lt=date.today(),
-                                                    proposal__expire=date.today()).sort_by("proposal__active")
-
-    # Update the usage limits due to any expired allocations
-    for allocation in expired_allocations:
-        update_limit_for_account(allocation)
-
-    # Gather all allocations that start today
-    starting_allocations = Allocation.objects.filter(propsal__approved=True,
-                                                     proposal__active=date.today(),
-                                                     proposal__expired__gt=date.today()).all()
-
-    # Update the usage limits due to any starting allocations
-    for allocation in starting_allocations:
-        update_limit_for_account(allocation)
+    for cluster in Cluster.objects.filter(enabled=True).all():
+        update_limits_for_cluster(cluster)
 
 
-def update_limit_for_account(allocation: Allocation) -> None:
-    """Check an accounts resource limits in SLURM against their usage, locking on the cluster if necessary"""
+@shared_task()
+def update_limits_for_cluster(cluster: Cluster) -> None:
+    """Update the usage limits of each account on a given cluster"""
 
-    # TODO: Logging?
+    for account_name in get_accounts_on_cluster(cluster.name):
+        update_limit_for_account(account_name, cluster.name)
 
-    group = allocation.get_research_group()
-    account_name = group.name
-    cluster_name = allocation.cluster.name
 
-    # New allocation starting, add it to existing limits
-    if allocation.proposal.active == date.today():
+@shared_task()
+def update_limit_for_account(account_name: str, cluster_name: str) -> None:
+    """Update the usage limits for an individual Slurm account"""
 
-        # Skip if the allocation is already represented in the current limit:
-        if allocation.is_contributing:
-            return
+    # TODO: Check that the Slurm account has an entry in the keystone database
+    try:
+        account = ResearchGroup.objects.get(name=account_name)
+    except ResearchGroup.DoesNotExist:
+        # TODO: create research group for this slurm account and let the rest of the function run?
+        #  or just set usage limit to zero (lock on this cluster) and continue?
+        return
 
-        # Set initial usage for the Slurm Account if this is their first allocation on the cluster
-        if not group.initial_usage:
-            group.initial_usage = get_cluster_usage(group.name, cluster_name)
+    # Set initial usage for the Slurm Account. If this is their first allocation on the cluster,
+    # set it to their current usage
+    if not account.initial_usage:
+        account.initial_usage = get_cluster_usage(account.name, cluster_name)
+    initial_usage = account.initial_usage
 
-        # Calculate the new limit and set it
-        current_usage_limit = get_cluster_limit(account_name, cluster_name)
-        new_allocation_contribution = allocation.awarded
-        new_limit = current_usage_limit + new_allocation_contribution
-        set_cluster_limit(account_name, cluster_name, new_limit)
+    # TODO: Close out any allocations have ended?
+    close_out_allocations = Allocation.objects.filter(proposal__group=account,
+                                                      cluster=cluster_name,
+                                                      proposal_approved=True,
+                                                      final=None,
+                                                      proposal__expire__lte=date.today()).order_by("proposal__expire")
 
-        allocation.is_contributing = True
-
-    # Old allocation ending, remove it from existing limits
-    elif allocation.proposal.expire == date.today():
-
-        # Gather Usage values to compute current usage
-        historical_usage = Allocation.objects.filter(proposal__group=account_name,
-                                                     cluster=cluster_name,
-                                                     proposal__approved=True,
-                                                     proposal__active__lte=date.today(),
-                                                     proposal__expire__lte=date.today()).aggregate(Sum("final"))
-
-        total_cluster_usage = get_cluster_usage(account_name, cluster_name)
-        current_usage = total_cluster_usage - historical_usage - group.initial_usage
+    # Cover as much of the current usage as possible with expired allocations that have not yet been closed out
+    for allocation in close_out_allocations:
+        # TODO: fill out this calculation
+        current_usage = total_cluster_usage - historical_usage - initial_usage
 
         # Set the final usage for the expired allocation
         if current_usage < allocation.awarded:
@@ -94,13 +64,50 @@ def update_limit_for_account(allocation: Allocation) -> None:
         else:
             allocation.final = allocation.awarded
 
-        # Calculate the new limit and set it
-        current_usage_limit = get_cluster_limit(account_name, cluster_name)
-        expired_allocation_contribution = allocation.awarded - allocation.final
-        new_limit = current_usage_limit - expired_allocation_contribution
-        set_cluster_limit(account_name, cluster_name, new_limit)
+    # Gather all allocations belonging to active proposals for the account
+    active_allocations_query = Allocation.objects.filter(proposal__group=account,
+                                                         cluster=cluster_name,
+                                                         proposal_approved=True,
+                                                         proposal__active__lte=date.today(),
+                                                         final=None,
+                                                         proposal__expire__gt=date.today()).order_by("proposal__expire")
 
-        allocation.is_contributing = False
+    # Gather the historical usage from expired proposal allocations
+    historical_usage = Allocation.objects.filter(proposal__group=account_name,
+                                                 cluster=cluster_name,
+                                                 proposal__approved=True,
+                                                 proposal__active__lte=date.today(),
+                                                 proposal__expire__lte=date.today()).aggregate(Sum("final"))
+
+    # Gather total service units available from active proposal allocations
+    proposal_sus = active_allocations_query.aggregate(Sum("awarded"))
+
+    # Get the usage total on the cluster for the account from Slurm
+    total_usage = get_cluster_usage(account_name, cluster_name)
+
+    # Get the current limit
+    current_limit = get_cluster_limit(account_name, cluster_name)
+
+    # Calculate the new limit for the account given the current usage and state of their allocations
+    new_limit = calculate_new_limit(current_limit, proposal_sus, historical_usage, initial_usage, total_usage)
+
+    # Set the new limit to the calculated limit
+    set_cluster_limit(account_name, cluster_name, new_limit)
+
+
+def calculate_new_limit(current_limit: int, proposal_sus: int, historical_usage: int, initial_usage: int, total_usage: int) -> int:
+    """Calculate the new usage limits given the current state of an account's usage and allocations"""
+
+    return current_limit - min(0, proposal_sus + historical_usage + initial_usage - total_usage)
+
+
+def get_accounts_on_cluster(cluster_name: str) -> List[str]:
+    """Return a list of account names for a given cluster"""
+
+    cmd = "sacctmgr show -nP account withassoc where parents=root cluster={cluster_name} format=Account"
+    out = subprocess.check_output(cmd,shell=True)
+
+    return out.decode("utf-8").strip().split()
 
 
 def set_cluster_limit(account_name: str, cluster_name: str, limit: int) -> None:
