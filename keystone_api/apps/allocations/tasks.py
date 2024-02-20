@@ -5,15 +5,19 @@ import re
 import subprocess
 
 from celery import shared_task
+from django.core.signals import request_finished
 from django.db.models import Sum
 
 from apps.allocations.models import *
 
-@receiver
+
+@reciever()
 def update_limits_new_allocation(sender, **kwargs) -> None:
     """Update the usage limits to include a new allocation's contributions if it starts today (signaled by new allocation
     creation)"""
-    # TODO: use django signaling for this?
+    # TODO: use django signaling for this? Use viewset method that creates record for allocation table
+    # overload viewsets.ModelViewSet,CreateModelMixin create function,
+    # will need to consider edge cases (updating an allocation, etc.)
 
     if allocation.proposal.active == date.today():
         update_limit_for_account(allocation)
@@ -22,6 +26,7 @@ def update_limits_new_allocation(sender, **kwargs) -> None:
 @shared_task()
 def update_limits_allocation() -> None:
     """Reduce or increase usage limits for all allocations that are expiring or starting today (runs daily)"""
+    #TODO: Make sure situation where this tool misses a day is handled (inequalites on dates instead of equals)
 
     # Gather all allocations that expired today
     expired_allocations = Allocation.objects.filter(proposal__approved=True,
@@ -110,6 +115,7 @@ def set_cluster_limit(account_name: str, cluster_name: str, limit: int) -> None:
 def get_cluster_limit(account_name: str, cluster_name: str) -> int:
     """Get the current usage limit (in minutes) on a given cluster for a given account"""
 
+    # TODO: reintroduce popen/PIPE format to manage security risk of escalating commands with shell=True
     cmd = f"sacctmgr show -nP association where account={account_name} cluster={cluster_name} format=GrpTRESRunMin"
     out = subprocess.check_output(cmd, shell=True).decode("utf-8")
     limit = re.findall(r'billing=(.*)\n', out)[0]
