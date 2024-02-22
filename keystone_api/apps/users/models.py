@@ -42,7 +42,6 @@ class ResearchGroup(models.Model):
     pi = models.ForeignKey(User, on_delete=models.CASCADE, related_name='research_group_pi')
     admins = models.ManyToManyField(User, related_name='research_group_admins', blank=True)
     members = models.ManyToManyField(User, related_name='research_group_unprivileged', blank=True)
-    initial_usage = models.PositiveIntegerField('Slurm Usage Before Keystone', null=True, blank=True)
 
     objects = ResearchGroupManager()
 

@@ -45,14 +45,8 @@ def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
         log.info()
         return
 
-    # Set initial usage for the Slurm Account. If this is their first allocation on the cluster,
-    # set it to their current usage
-    # TODO: plan to perform a reset of rawusage before deployment?
-    #  Resetting rawusage part of install procedure for us and others
-    #  Pull initial usage
-    if not account.initial_usage:
-        account.initial_usage = get_cluster_usage(account.name, cluster.name)
-    initial_usage = account.initial_usage
+    # TODO: plan to perform a reset of rawusage before deployment.
+    #  Resetting rawusage will be part of the install procedure for us and others
 
     # Gather the historical usage from expired proposal allocations
     historical_usage = (Allocation.objects.filter(proposal__group=account,
@@ -76,7 +70,7 @@ def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
     # Cover as much of the current usage as possible with expired allocations that have not yet been closed out
     # TODO: move up before querying, have closed values contribute to historical before storing them
     for allocation in allocations_to_close:
-        current_usage = total_usage - historical_usage - initial_usage
+        current_usage = total_usage - historical_usage
 
         # Set the final usage for the expired allocation
         if current_usage < allocation.awarded:
@@ -98,19 +92,18 @@ def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
     new_limit = calculate_new_limit(current_limit=get_cluster_limit(account_name, cluster.name),
                                     proposal_sus=active_allocations_query.aggregate(Sum("awarded")),
                                     historical_usage=historical_usage,
-                                    initial_usage=initial_usage,
                                     total_usage=total_usage)
 
     # Set the new limit to the calculated limit
     set_cluster_limit(account_name, cluster.name, new_limit)
 
 
-def calculate_new_limit(current_limit: int, proposal_sus: int, historical_usage: int, initial_usage: int, total_usage: int) -> int:
+def calculate_new_limit(current_limit: int, proposal_sus: int, historical_usage: int, total_usage: int) -> int:
     """Calculate the new usage limits given the current state of an account's usage and allocations"""
 
     # TODO: Need to consider addition of new allocations and the corresponding limit change
     #  What should the new limit be independent of current_limit
-    return current_limit - min(0, proposal_sus + historical_usage + initial_usage - total_usage)
+    return current_limit - min(0, proposal_sus + historical_usage - total_usage)
 
 
 def get_accounts_on_cluster(cluster_name: str) -> List[str]:
