@@ -1,6 +1,7 @@
 """Schedule tasks executed in parallel by Celery."""
 
 from datetime import date
+import logging
 import re
 from shlex import split
 from subprocess import PIPE, Popen
@@ -11,6 +12,8 @@ from django.db.models import Sum
 
 from apps.allocations.models import *
 from apps.users.models import *
+
+log = logging.getLogger(__name__)
 
 
 @shared_task()
@@ -25,6 +28,7 @@ def update_limits() -> None:
 def update_limits_for_cluster(cluster: Cluster) -> None:
     """Update the usage limits of each account on a given cluster"""
 
+    # TODO: root should not be in this list of accounts, if account_name=root continue
     for account_name in get_accounts_on_cluster(cluster.name):
         update_limit_for_account(account_name, cluster.name)
 
@@ -37,12 +41,15 @@ def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
     try:
         account = ResearchGroup.objects.get(name=account_name)
     except ResearchGroup.DoesNotExist:
-        # TODO: create research group for this slurm account and let the rest of the function run?
-        #  or just set usage limit to zero (lock on this cluster) and continue?
+        #  TODO: just set usage limit to zero (lock on this cluster) and continue
+        log.info()
         return
 
     # Set initial usage for the Slurm Account. If this is their first allocation on the cluster,
     # set it to their current usage
+    # TODO: plan to perform a reset of rawusage before deployment?
+    #  Resetting rawusage part of install procedure for us and others
+    #  Pull initial usage
     if not account.initial_usage:
         account.initial_usage = get_cluster_usage(account.name, cluster.name)
     initial_usage = account.initial_usage
@@ -67,6 +74,7 @@ def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
                                                      proposal__expire__lte=date.today()).order_by("proposal__expire")
 
     # Cover as much of the current usage as possible with expired allocations that have not yet been closed out
+    # TODO: move up before querying, have closed values contribute to historical before storing them
     for allocation in allocations_to_close:
         current_usage = total_usage - historical_usage - initial_usage
 
@@ -84,7 +92,6 @@ def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
                                                          cluster=cluster,
                                                          proposal_approved=True,
                                                          proposal__active__lte=date.today(),
-                                                         final=None,
                                                          proposal__expire__gt=date.today()).order_by("proposal__expire")
 
     # Calculate the new limit for the account given the current usage and state of their allocations
@@ -101,18 +108,21 @@ def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
 def calculate_new_limit(current_limit: int, proposal_sus: int, historical_usage: int, initial_usage: int, total_usage: int) -> int:
     """Calculate the new usage limits given the current state of an account's usage and allocations"""
 
+    # TODO: Need to consider addition of new allocations and the corresponding limit change
+    #  What should the new limit be independent of current_limit
     return current_limit - min(0, proposal_sus + historical_usage + initial_usage - total_usage)
 
 
 def get_accounts_on_cluster(cluster_name: str) -> List[str]:
     """Return a list of account names for a given cluster"""
 
+    # TODO: can we assume Slurm installations will have root as parent for child slurm accounts
     cmd = f"sacctmgr show -nP account withassoc where parents=root cluster={cluster_name} format=Account"
     out, err = Popen(split(cmd), stdout=PIPE, stderr=PIPE).communicate()
 
     if err:
         pass
-        # TODO: log and raise an error
+        # TODO: log and raise a runtime error
 
     return out.decode("utf-8").strip().split()
 
@@ -120,10 +130,8 @@ def get_accounts_on_cluster(cluster_name: str) -> List[str]:
 def set_cluster_limit(account_name: str, cluster_name: str, limit: int) -> None:
     """Update the current usage limit (in minutes) to the provided limit on a given cluster for a given account"""
 
-    # TODO: This needs to be run as root... use slurm user?
-    # [nlc60@login0 ~] : sacctmgr -i modify account where account=test cluster=htc set GrpTresMins=billing=0
-    # sacctmgr: error: Your user doesn't have privilege to perform this action
-    #  Error with request: Access/permission denied
+    # TODO: This needs to be run as slurm user
+
     cmd = (f"sacctmgr modify account where account={account_name} cluster={cluster_name} set "
            f"GrpTresRunMins=billing={limit}")
     out, err = Popen(split(cmd), stdout=PIPE, stderr=PIPE).communicate()
