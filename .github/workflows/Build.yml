@@ -2,6 +2,12 @@ name: 🤖 Build
 
 on:
   workflow_call:
+    inputs:
+      version:
+        description: 'Set the version number of the compiled application.'
+        default: '0.0.0'
+        required: false
+        type: string
 
 jobs:
   build-image:
@@ -11,6 +17,14 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: false
+
+      - name: Set package version
+        run: poetry version "${{ inputs.username }}"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
