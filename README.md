@@ -160,9 +160,18 @@ Enabling password authentication is suggested when deploying Redis in a producti
 | `REDIS_DB`                | `0`                      | The Redis database number to use.                             |
 | `REDIS_PASSWORD`          |                          | Optionally connect using the given password.                  |
 
+### Static File Storage
+
+Keystone uses various static files to facilitate operation and support user requests.
+By default, these files are stored in subdirectories of the installed application directory (`<app>`).
+
+| Setting Name              | Default Value        | Description                                                       |
+|---------------------------|----------------------|-------------------------------------------------------------------|
+| `STATIC_FILE_DIR`         | `<app>/static_files` | Where to store internal static files required by the application. |
+
 ### Developer Settings
 
-The following settings are intended exclusively for use in development settings.
+The following settings are intended exclusively for use in development.
 The `DEBUG` option is inherently insecure and should **never** be enabled in production settings.
 
 | Setting Name              | Default Value            | Description                                                   |
