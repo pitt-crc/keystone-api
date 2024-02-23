@@ -4,8 +4,8 @@ from datetime import date
 import logging
 import re
 from shlex import split
-from subprocess import PIPE, Popen
-from typing import List
+from subprocess import PIPE, Popen, CalledProcessError
+from typing import List, Tuple
 
 from celery import shared_task
 from django.db.models import Sum
@@ -21,16 +21,21 @@ def update_limits() -> None:
     """Adjust per Slurm account usage limits on all enabled clusters"""
 
     for cluster in Cluster.objects.filter(enabled=True).all():
+        log.info(f"Updating limits for cluster {cluster.name}...")
         update_limits_for_cluster(cluster)
+        log.info(f"Updating limits for cluster {cluster.name}... DONE")
 
 
 @shared_task()
 def update_limits_for_cluster(cluster: Cluster) -> None:
-    """Update the usage limits of each account on a given cluster"""
+    """Update the usage limits of each account on a given cluster, excluding the root account"""
 
-    # TODO: root should not be in this list of accounts, if account_name=root continue
     for account_name in get_accounts_on_cluster(cluster.name):
+        if account_name in ['root']:
+            continue
+        log.info(f"Updating limits for account {account_name}...")
         update_limit_for_account(account_name, cluster.name)
+        log.info(f"Updating limits for account {account_name}... DONE")
 
 
 @shared_task()
@@ -41,8 +46,9 @@ def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
     try:
         account = ResearchGroup.objects.get(name=account_name)
     except ResearchGroup.DoesNotExist:
-        #  TODO: just set usage limit to zero (lock on this cluster) and continue
-        log.info()
+        #  Set the usage limit to zero (lock on this cluster) and continue
+        log.warning(f"No existing ResearchGroup for account {account_name}, locking {account_name} on {cluster.name}")
+        set_cluster_limit(account_name, cluster.name, 0)
         return
 
     # TODO: plan to perform a reset of rawusage before deployment.
@@ -73,6 +79,7 @@ def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
         current_usage = total_usage - historical_usage
 
         # Set the final usage for the expired allocation
+        # TODO: make sure to not double count usage if there are multiple allocations being checked here
         if current_usage < allocation.awarded:
             allocation.final = current_usage
         else:
@@ -110,14 +117,11 @@ def get_accounts_on_cluster(cluster_name: str) -> List[str]:
     """Return a list of account names for a given cluster"""
 
     # TODO: can we assume Slurm installations will have root as parent for child slurm accounts
-    cmd = f"sacctmgr show -nP account withassoc where parents=root cluster={cluster_name} format=Account"
-    out, err = Popen(split(cmd), stdout=PIPE, stderr=PIPE).communicate()
+    cmd = split(f"sacctmgr show -nP account withassoc where parents=root cluster={cluster_name} format=Account")
 
-    if err:
-        pass
-        # TODO: log and raise a runtime error
+    out = subprocess_call(cmd)
 
-    return out.decode("utf-8").strip().split()
+    return out.split()
 
 
 def set_cluster_limit(account_name: str, cluster_name: str, limit: int) -> None:
@@ -125,27 +129,19 @@ def set_cluster_limit(account_name: str, cluster_name: str, limit: int) -> None:
 
     # TODO: This needs to be run as slurm user
 
-    cmd = (f"sacctmgr modify account where account={account_name} cluster={cluster_name} set "
-           f"GrpTresRunMins=billing={limit}")
-    out, err = Popen(split(cmd), stdout=PIPE, stderr=PIPE).communicate()
+    cmd = split(f"sacctmgr modify account where account={account_name} cluster={cluster_name} set "
+                f"GrpTresRunMins=billing={limit}")
 
-    if err:
-        pass
-        # TODO: log and raise an error
+    subprocess_call(cmd)
 
 
 def get_cluster_limit(account_name: str, cluster_name: str) -> int:
     """Get the current usage limit (in minutes) on a given cluster for a given account"""
 
-    # TODO: reintroduce popen/PIPE format to manage security risk of escalating commands with shell=True
-    cmd = f"sacctmgr show -nP association where account={account_name} cluster={cluster_name} format=GrpTRESRunMin"
-    out, err = Popen(split(cmd), stdout=PIPE, stderr=PIPE).communicate()
+    cmd = split(f"sacctmgr show -nP association where account={account_name} cluster={cluster_name} "
+                f"format=GrpTRESRunMin")
 
-    if err:
-        pass
-        # TODO: log and raise an error
-
-    limit = re.findall(r'billing=(.*)\n', out.decode("utf-8"))[0]
+    limit = re.findall(r'billing=(.*)\n', subprocess_call(cmd))[0]
 
     return int(limit) if limit.isnumeric() else 0
 
@@ -153,13 +149,29 @@ def get_cluster_limit(account_name: str, cluster_name: str) -> int:
 def get_cluster_usage(account_name: str, cluster_name: str) -> int:
     """Get the total billable usage in minutes on a given cluster for a given account"""
 
-    cmd = f"sshare -nP -A {account_name} -M {cluster_name} --format=GrpTRESRaw"
-    out, err = Popen(split(cmd), stdout=PIPE, stderr=PIPE).communicate()
+    cmd = split(f"sshare -nP -A {account_name} -M {cluster_name} --format=GrpTRESRaw")
 
-    if err:
-        pass
-        # TODO: log and raise an error
-
-    usage = re.findall(r'billing=(.*),fs', out.decode("utf-8"))[0]
+    usage = re.findall(r'billing=(.*),fs', subprocess_call(cmd))[0]
 
     return int(usage) if usage.isnumeric() else 0
+
+
+def subprocess_call(args: List[str]) -> str:
+    """Wrapper method for executing shell commands via ``Popen.communicate``
+
+    Args:
+        args: A sequence of program arguments
+
+    Returns:
+        The piped output to STDOUT and STDERR as strings
+    """
+
+    process = Popen(args, stdout=PIPE, stderr=PIPE)
+    out, err = process.communicate()
+
+    if process.returncode != 0:
+        message = f"Error executing shell command: {' '.join(args)} \n {err.decode('utf-8').strip()}"
+        log.error(message)
+        raise RuntimeError(message)
+
+    return out.decode("utf-8").strip()
