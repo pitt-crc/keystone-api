@@ -3,14 +3,13 @@ name: 🎯 Release
 on:
   release:
     types: [ "released" ]
-  push:
 
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/keystone-api
 
 jobs:
   version:
-    name: Determine Version
+    name: Get Release Version
     runs-on: ubuntu-latest
     outputs:
         version: ${{ steps.get_version.outputs.version }}
@@ -35,7 +34,7 @@ jobs:
     needs: build
     uses: ./.github/workflows/Test.yml
   
-  # docker:
-  #   name: Docker
-  #   needs: test
-  #   uses: ./.github/workflows/Publish.yml
+  docker:
+    name: Docker
+    needs: test
+    uses: ./.github/workflows/Publish.yml
