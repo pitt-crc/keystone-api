@@ -11,7 +11,7 @@ from .models import *
 from .permissions import *
 from .serializers import *
 
-__all__ = ['AllocationViewSet', 'ClusterViewSet', 'AllocationRequestViewSet', 'ProposalReviewViewSet']
+__all__ = ['AllocationViewSet', 'ClusterViewSet', 'AllocationRequestViewSet', 'AllocationRequestReviewViewSet']
 
 
 class ClusterViewSet(viewsets.ModelViewSet):
@@ -51,7 +51,7 @@ class AllocationRequestViewSet(viewsets.ModelViewSet):
     """Manage allocation requests submitted by users to request additional service unit allocations."""
 
     permission_classes = [permissions.IsAuthenticated, GroupAdminCreateGroupRead]
-    serializer_class = ProposalSerializer
+    serializer_class = AllocationRequestSerializer
     filterset_fields = '__all__'
 
     def get_queryset(self) -> list[AllocationRequest]:
@@ -63,11 +63,11 @@ class AllocationRequestViewSet(viewsets.ModelViewSet):
         return AllocationRequest.objects.affiliated_with_user(self.request.user).all()
 
 
-class ProposalReviewViewSet(viewsets.ModelViewSet):
+class AllocationRequestReviewViewSet(viewsets.ModelViewSet):
     """Manage allocation reviews submitted by administrators."""
 
     permission_classes = [permissions.IsAuthenticated, StaffWriteGroupRead]
-    serializer_class = ProposalReviewSerializer
+    serializer_class = AllocationRequestReviewSerializer
     filterset_fields = '__all__'
 
     def get_queryset(self) -> list[Allocation]:
@@ -79,7 +79,7 @@ class ProposalReviewViewSet(viewsets.ModelViewSet):
         return AllocationRequestReview.objects.affiliated_with_user(self.request.user).all()
 
     def create(self, request, *args, **kwargs) -> Response:
-        """Create a new `ProposalReview` object"""
+        """Create a new `AllocationRequestReview` object"""
 
         data = request.data.copy()
         data.setdefault('reviewer', request.user.pk)

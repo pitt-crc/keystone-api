@@ -49,7 +49,7 @@ class AllocationRequestManager(models.Manager):
 
 
 class AllocationRequestReviewManager(models.Manager):
-    """Object manager for the `ProposalReview` database model"""
+    """Object manager for the `AllocationRequestReview` database model"""
 
     def affiliated_with_user(self, user: User) -> models.QuerySet:
         """Get all allocation reviews affiliated with the given user

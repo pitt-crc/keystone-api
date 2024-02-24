@@ -14,8 +14,8 @@ from .models import *
 __all__ = [
     'AllocationSerializer',
     'ClusterSerializer',
-    'ProposalSerializer',
-    'ProposalReviewSerializer',
+    'AllocationRequestSerializer',
+    'AllocationRequestReviewSerializer',
     'SafeClusterSerializer'
 ]
 
@@ -44,7 +44,7 @@ class AllocationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ProposalSerializer(serializers.ModelSerializer):
+class AllocationRequestSerializer(serializers.ModelSerializer):
     """Object serializer for the `AllocationRequest` class"""
 
     class Meta:
@@ -52,8 +52,8 @@ class ProposalSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ProposalReviewSerializer(serializers.ModelSerializer):
-    """Object serializer for the `ProposalReview` class"""
+class AllocationRequestReviewSerializer(serializers.ModelSerializer):
+    """Object serializer for the `AllocationRequestReview` class"""
 
     class Meta:
         model = AllocationRequestReview
