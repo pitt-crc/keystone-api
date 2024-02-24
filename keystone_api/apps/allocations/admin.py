@@ -47,7 +47,7 @@ class ClusterAdmin(admin.ModelAdmin):
 class allocationreviewInline(admin.StackedInline):
     """Inline admin interface for the `allocationreview` model"""
 
-    model = AllocationReview
+    model = AllocationRequestReview
     show_change_link = True
     readonly_fields = ('date_modified',)
     extra = 0

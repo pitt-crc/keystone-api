@@ -14,7 +14,7 @@ from django.template.defaultfilters import truncatechars
 from apps.users.models import ResearchGroup, User
 from .managers import *
 
-__all__ = ['Allocation', 'Cluster', 'AllocationRequest', 'AllocationReview', 'RGAffiliatedModel']
+__all__ = ['Allocation', 'Cluster', 'AllocationRequest', 'AllocationRequestReview', 'RGAffiliatedModel']
 
 
 class RGAffiliatedModel:
@@ -89,7 +89,7 @@ class Allocation(RGAffiliatedModel, models.Model):
         return f'{self.cluster} allocation for {self.request.group}'
 
 
-class AllocationReview(RGAffiliatedModel, models.Model):
+class AllocationRequestReview(RGAffiliatedModel, models.Model):
     """Reviewer feedback for an allocation request"""
 
     approve = models.BooleanField()
@@ -100,7 +100,7 @@ class AllocationReview(RGAffiliatedModel, models.Model):
     request: AllocationRequest = models.ForeignKey(AllocationRequest, on_delete=models.CASCADE)
     reviewer: User = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    objects = ProposalReviewManager()
+    objects = AllocationRequestReviewManager()
 
     def get_research_group(self) -> ResearchGroup:
         """Return the research group tied to the current record"""

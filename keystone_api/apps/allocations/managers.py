@@ -11,7 +11,7 @@ from django.db import models
 
 from apps.users.models import ResearchGroup
 
-__all__ = ['AllocationManager', 'AllocationRequestManager', 'ProposalReviewManager']
+__all__ = ['AllocationManager', 'AllocationRequestManager', 'AllocationRequestReviewManager']
 
 
 class AllocationManager(models.Manager):
@@ -28,7 +28,7 @@ class AllocationManager(models.Manager):
         """
 
         research_groups = ResearchGroup.objects.groups_for_user(user)
-        return self.get_queryset().filter(allocationrequest__group__in=research_groups)
+        return self.get_queryset().filter(request__group__in=research_groups)
 
 
 class AllocationRequestManager(models.Manager):
@@ -48,7 +48,7 @@ class AllocationRequestManager(models.Manager):
         return self.get_queryset().filter(group__in=research_groups)
 
 
-class ProposalReviewManager(models.Manager):
+class AllocationRequestReviewManager(models.Manager):
     """Object manager for the `ProposalReview` database model"""
 
     def affiliated_with_user(self, user: User) -> models.QuerySet:
@@ -62,4 +62,4 @@ class ProposalReviewManager(models.Manager):
         """
 
         research_groups = ResearchGroup.objects.groups_for_user(user)
-        return self.get_queryset().filter(allocationrequest__group__in=research_groups)
+        return self.get_queryset().filter(request__group__in=research_groups)

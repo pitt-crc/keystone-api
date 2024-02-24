@@ -56,7 +56,7 @@ class ProposalReviewSerializer(serializers.ModelSerializer):
     """Object serializer for the `ProposalReview` class"""
 
     class Meta:
-        model = AllocationReview
+        model = AllocationRequestReview
         fields = '__all__'
         extra_kwargs = {'reviewer': {'required': False}}  # Default reviewer value is set by the endpoint view
 

@@ -74,9 +74,9 @@ class ProposalReviewViewSet(viewsets.ModelViewSet):
         """Return a list of allocation reviews for the currently authenticated user"""
 
         if self.request.user.is_staff or self.request.user.is_superuser:
-            return AllocationReview.objects.all()
+            return AllocationRequestReview.objects.all()
 
-        return AllocationReview.objects.affiliated_with_user(self.request.user).all()
+        return AllocationRequestReview.objects.affiliated_with_user(self.request.user).all()
 
     def create(self, request, *args, **kwargs) -> Response:
         """Create a new `ProposalReview` object"""
