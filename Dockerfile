@@ -23,10 +23,10 @@ RUN groupadd --gid 900 keystone && useradd -m -u 999 -g keystone keystone \
 
 USER keystone
 WORKDIR /app
+ENV PATH="${PATH}:/home/keystone/.local/bin"
 
 COPY --chown=keystone . src
-RUN pip install ./src && rm -rf src && mkdir static
-ENV PATH="${PATH}:/home/keystone/.local/bin"
+RUN pip install ./src && rm -rf src
 
 # Setup and launch the application
 ENTRYPOINT ["keystone-api"]
