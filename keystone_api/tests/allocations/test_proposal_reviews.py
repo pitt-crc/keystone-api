@@ -1,4 +1,4 @@
-"""Tests for the `/allocations/proposal-reviews/` endpoint"""
+"""Tests for the `/allocations/reviews/` endpoint"""
 
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -19,7 +19,7 @@ class EndpointPermissions(APITestCase, CustomAsserts):
     | Staff User          | 200 | 200  | 200     | 201  | 405 | 405   | 405    | 405   |
     """
 
-    endpoint = '/allocations/proposal-reviews/'
+    endpoint = '/allocations/reviews/'
     fixtures = ['multi_research_group.yaml']
 
     def test_anonymous_user_permissions(self) -> None:
@@ -71,5 +71,5 @@ class EndpointPermissions(APITestCase, CustomAsserts):
             patch=status.HTTP_405_METHOD_NOT_ALLOWED,
             delete=status.HTTP_405_METHOD_NOT_ALLOWED,
             trace=status.HTTP_405_METHOD_NOT_ALLOWED,
-            post_body={'approve': True, 'proposal': 1}
+            post_body={'approve': True, 'request': 1}
         )

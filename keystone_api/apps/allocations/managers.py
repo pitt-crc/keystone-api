@@ -11,7 +11,7 @@ from django.db import models
 
 from apps.users.models import ResearchGroup
 
-__all__ = ['AllocationManager', 'ProposalManager', 'ProposalReviewManager']
+__all__ = ['AllocationManager', 'AllocationRequestManager', 'ProposalReviewManager']
 
 
 class AllocationManager(models.Manager):
@@ -28,14 +28,14 @@ class AllocationManager(models.Manager):
         """
 
         research_groups = ResearchGroup.objects.groups_for_user(user)
-        return self.get_queryset().filter(proposal__group__in=research_groups)
+        return self.get_queryset().filter(allocationrequest__group__in=research_groups)
 
 
-class ProposalManager(models.Manager):
-    """Object manager for the `Proposal` database model"""
+class AllocationRequestManager(models.Manager):
+    """Object manager for the `AllocationRequest` database model"""
 
     def affiliated_with_user(self, user: User) -> models.QuerySet:
-        """Get all proposals the user is affiliated with
+        """Get all allocation requests affiliated with the given user
 
         Args:
             user: The user to return affiliated records for
@@ -52,7 +52,7 @@ class ProposalReviewManager(models.Manager):
     """Object manager for the `ProposalReview` database model"""
 
     def affiliated_with_user(self, user: User) -> models.QuerySet:
-        """Get all proposal reviews for proposals the user is affiliated with
+        """Get all allocation reviews affiliated with the given user
 
         Args:
             user: The user to return affiliated records for
@@ -62,4 +62,4 @@ class ProposalReviewManager(models.Manager):
         """
 
         research_groups = ResearchGroup.objects.groups_for_user(user)
-        return self.get_queryset().filter(proposal__group__in=research_groups)
+        return self.get_queryset().filter(allocationrequest__group__in=research_groups)

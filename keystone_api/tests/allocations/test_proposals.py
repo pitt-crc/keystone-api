@@ -1,4 +1,4 @@
-"""Tests for the `/allocations/proposals/` endpoint"""
+"""Tests for the `/allocations/requests/` endpoint"""
 
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -22,7 +22,7 @@ class EndpointPermissions(APITestCase, CustomAsserts):
     | Staff User     | 200 | 200  | 200     | 201  | 405 | 405   | 405    | 405   |
     """
 
-    endpoint = '/allocations/proposals/'
+    endpoint = '/allocations/requests/'
     fixtures = ['multi_research_group.yaml']
 
     def test_anonymous_user_permissions(self) -> None:

@@ -11,7 +11,7 @@ from .models import *
 from .permissions import *
 from .serializers import *
 
-__all__ = ['AllocationViewSet', 'ClusterViewSet', 'ProposalViewSet', 'ProposalReviewViewSet']
+__all__ = ['AllocationViewSet', 'ClusterViewSet', 'AllocationRequestViewSet', 'ProposalReviewViewSet']
 
 
 class ClusterViewSet(viewsets.ModelViewSet):
@@ -47,36 +47,36 @@ class AllocationViewSet(viewsets.ModelViewSet):
         return Allocation.objects.affiliated_with_user(self.request.user).all()
 
 
-class ProposalViewSet(viewsets.ModelViewSet):
-    """Manage project proposals submitted by users to request additional service unit allocations."""
+class AllocationRequestViewSet(viewsets.ModelViewSet):
+    """Manage allocation requests submitted by users to request additional service unit allocations."""
 
     permission_classes = [permissions.IsAuthenticated, GroupAdminCreateGroupRead]
     serializer_class = ProposalSerializer
     filterset_fields = '__all__'
 
-    def get_queryset(self) -> list[Proposal]:
-        """Return a list of proposals for the currently authenticated user"""
+    def get_queryset(self) -> list[AllocationRequest]:
+        """Return a list of allocation requests for the currently authenticated user"""
 
         if self.request.user.is_staff or self.request.user.is_superuser:
-            return Proposal.objects.all()
+            return AllocationRequest.objects.all()
 
-        return Proposal.objects.affiliated_with_user(self.request.user).all()
+        return AllocationRequest.objects.affiliated_with_user(self.request.user).all()
 
 
 class ProposalReviewViewSet(viewsets.ModelViewSet):
-    """Manage project proposal reviews submitted by administrators."""
+    """Manage allocation reviews submitted by administrators."""
 
     permission_classes = [permissions.IsAuthenticated, StaffWriteGroupRead]
     serializer_class = ProposalReviewSerializer
     filterset_fields = '__all__'
 
     def get_queryset(self) -> list[Allocation]:
-        """Return a list of proposal reviews for the currently authenticated user"""
+        """Return a list of allocation reviews for the currently authenticated user"""
 
         if self.request.user.is_staff or self.request.user.is_superuser:
-            return ProposalReview.objects.all()
+            return AllocationReview.objects.all()
 
-        return ProposalReview.objects.affiliated_with_user(self.request.user).all()
+        return AllocationReview.objects.affiliated_with_user(self.request.user).all()
 
     def create(self, request, *args, **kwargs) -> Response:
         """Create a new `ProposalReview` object"""

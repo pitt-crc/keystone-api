@@ -1,5 +1,5 @@
 # This test fixture creates two research groups on the same cluster.
-# Each group has a single proposal with a single allocation.
+# Each group has a single allocation request with a single allocation.
 #
 # Research Group 1:
 #   - pi_1          (Research group PI)
@@ -115,23 +115,23 @@
     members: [ 6 ]
 
 # Proposals
-- model: allocations.proposal
+- model: allocations.requestreview
   pk: 1
   fields:
     group: 1
     submitted: "2023-01-01"
-- model: allocations.proposal
+- model: allocations.requestreview
   pk: 2
   fields:
     group: 2
     submitted: "2023-01-01"
 
-# Proposal Reviews
-- model: allocations.proposalreview
+# AllocationRequest Reviews
+- model: allocations.requestreview
   pk: 1
   fields:
     approve: true
-    proposal: 1
+    request: 1
     reviewer: 9
     date_modified: "2023-01-01"
 
@@ -139,14 +139,14 @@
 - model: allocations.allocation
   pk: 1
   fields:
-    proposal: 1
+    request: 1
     cluster: 1
     requested: 10000
     awarded: 10000
 - model: allocations.allocation
   pk: 2
   fields:
-    proposal: 2
+    request: 2
     cluster: 1
     requested: 10000
     awarded: 10000

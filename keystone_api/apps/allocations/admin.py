@@ -12,11 +12,11 @@ from .models import *
 settings.JAZZMIN_SETTINGS['icons'].update({
     'allocations.Cluster': 'fa fa-server',
     'allocations.Allocation': 'fas fa-coins',
-    'allocations.Proposal': 'fa fa-file-alt',
+    'allocations.AllocationRequest': 'fa fa-file-alt',
 })
 
 settings.JAZZMIN_SETTINGS['order_with_respect_to'].extend([
-    'allocations.Cluster', 'allocations.Proposal', 'allocations.allocation'
+    'allocations.Cluster', 'allocations.AllocationRequest', 'allocations.allocation'
 ])
 
 
@@ -44,10 +44,10 @@ class ClusterAdmin(admin.ModelAdmin):
     actions = [enable_selected_clusters, disable_selected_clusters]
 
 
-class ProposalReviewInline(admin.StackedInline):
-    """Inline admin interface for the `ProposalReview` model"""
+class allocationreviewInline(admin.StackedInline):
+    """Inline admin interface for the `allocationreview` model"""
 
-    model = ProposalReview
+    model = AllocationReview
     show_change_link = True
     readonly_fields = ('date_modified',)
     extra = 0
@@ -61,30 +61,30 @@ class AllocationInline(admin.TabularInline):
     extra = 0
 
 
-@admin.register(Proposal)
-class ProposalAdmin(admin.ModelAdmin):
-    """Admin interface for the `Proposal` model"""
+@admin.register(AllocationRequest)
+class AllocationRequestAdmin(admin.ModelAdmin):
+    """Admin interface for the `AllocationRequest` model"""
 
     @staticmethod
     @admin.display
-    def title(obj: Proposal) -> str:
-        """Return a proposal's title as a human/table friendly string"""
+    def title(obj: AllocationRequest) -> str:
+        """Return a request's title as a human/table friendly string"""
 
         return str(obj)
 
     @staticmethod
     @admin.display
-    def reviews(obj: Proposal) -> int:
-        """Return the total number of proposal reviews"""
+    def reviews(obj: AllocationRequest) -> int:
+        """Return the total number of request reviews"""
 
-        return sum(1 for _ in obj.proposalreview_set.all())
+        return sum(1 for _ in obj.allocationreview_set.all())
 
     @staticmethod
     @admin.display
-    def approvals(obj: Proposal) -> int:
-        """Return the number of approving proposal reviews"""
+    def approvals(obj: AllocationRequest) -> int:
+        """Return the number of approving request reviews"""
 
-        return sum(1 for review in obj.proposalreview_set.all() if review.approve)
+        return sum(1 for review in obj.allocationreview_set.all() if review.approve)
 
     list_display = ['group', title, 'submitted', 'approved', 'active', 'expire', 'reviews', 'approvals']
     list_display_links = list_display
@@ -96,7 +96,7 @@ class ProposalAdmin(admin.ModelAdmin):
         ('active', admin.DateFieldListFilter),
         ('expire', admin.DateFieldListFilter),
     ]
-    inlines = [AllocationInline, ProposalReviewInline]
+    inlines = [AllocationInline, allocationreviewInline]
 
 
 @admin.register(Allocation)
@@ -106,16 +106,16 @@ class AllocationAdmin(admin.ModelAdmin):
     @staticmethod
     @admin.display
     def group(obj: Allocation) -> str:
-        """Return the username of the PI for the associated proposal"""
+        """Return the name of the group the allocation is assigned to"""
 
-        return obj.proposal.group.name
+        return obj.request.group.name
 
     @staticmethod
     @admin.display
     def approved(obj: Allocation) -> bool:
-        """Return whether the allocation proposal has been marked as approved"""
+        """Return whether the request for the allocation has been marked as approved"""
 
-        return obj.proposal.approved or '--'
+        return obj.request.approved or '--'
 
     @staticmethod
     @admin.display
@@ -137,10 +137,10 @@ class AllocationAdmin(admin.ModelAdmin):
 
         return f'{obj.final:,}' if obj.final else '--'
 
-    list_display = [group, 'proposal', 'cluster', requested, awarded, final_usage, approved]
+    list_display = [group, 'request', 'cluster', requested, awarded, final_usage, approved]
     list_display_links = list_display
-    ordering = ['proposal__group__name', 'cluster']
-    search_fields = ['proposal__group__name', 'proposal__title', 'cluster__name']
+    ordering = ['request__group__name', 'cluster']
+    search_fields = ['request__group__name', 'request__title', 'cluster__name']
     list_filter = [
-        ('proposal__approved', admin.DateFieldListFilter)
+        ('request__approved', admin.DateFieldListFilter)
     ]
