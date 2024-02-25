@@ -231,5 +231,5 @@ AUTH_PASSWORD_VALIDATORS = [
 STATIC_URL = 'static/'
 STATIC_ROOT = env.path('STORAGE_STATIC_DIR', BASE_DIR / 'static_files')
 
-MEDIA_URL = 'uploaded/'
+MEDIA_URL = 'uploads/'
 MEDIA_ROOT = env.path('STORAGE_UPLOAD_DIR', BASE_DIR / 'upload_files')

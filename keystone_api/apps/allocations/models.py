@@ -14,7 +14,13 @@ from django.template.defaultfilters import truncatechars
 from apps.users.models import ResearchGroup, User
 from .managers import *
 
-__all__ = ['Allocation', 'AllocationRequest', 'AllocationRequestReview', 'Cluster', 'RGModelInterface']
+__all__ = [
+    'Allocation',
+    'AllocationRequest',
+    'AllocationRequestReview',
+    'Cluster',
+    'FileUpload',
+    'RGModelInterface']
 
 
 class RGModelInterface:
@@ -39,6 +45,15 @@ class Cluster(models.Model):
         """Return the cluster name as a string"""
 
         return str(self.name)
+
+
+class FileUpload(models.Model):
+    """File data uploaded by users"""
+
+    file_data = models.FileField()
+    uploaded = models.DateTimeField(auto_now=True)
+
+    request = models.ForeignKey('AllocationRequest', on_delete=models.CASCADE)
 
 
 class AllocationRequest(RGModelInterface, models.Model):
