@@ -14,10 +14,10 @@ from django.template.defaultfilters import truncatechars
 from apps.users.models import ResearchGroup, User
 from .managers import *
 
-__all__ = ['Allocation', 'Cluster', 'Proposal', 'ProposalReview', 'RGAffiliatedModel']
+__all__ = ['Allocation', 'AllocationRequest', 'AllocationRequestReview', 'Cluster', 'RGModelInterface']
 
 
-class RGAffiliatedModel:
+class RGModelInterface:
     """Interface class for database models affiliated with a research group"""
 
     @abc.abstractmethod
@@ -41,8 +41,8 @@ class Cluster(models.Model):
         return str(self.name)
 
 
-class Proposal(RGAffiliatedModel, models.Model):
-    """Project proposal requesting service unit allocations on one or more clusters"""
+class AllocationRequest(RGModelInterface, models.Model):
+    """User request for additional service units on one or more clusters"""
 
     title = models.CharField(max_length=250)
     description = models.TextField(max_length=1600)
@@ -53,7 +53,7 @@ class Proposal(RGAffiliatedModel, models.Model):
 
     group: ResearchGroup = models.ForeignKey(ResearchGroup, on_delete=models.CASCADE)
 
-    objects = ProposalManager()
+    objects = AllocationRequestManager()
 
     def get_research_group(self) -> ResearchGroup:
         """Return the research group tied to the current record"""
@@ -61,12 +61,12 @@ class Proposal(RGAffiliatedModel, models.Model):
         return self.group
 
     def __str__(self) -> str:
-        """Return the proposal title as a string"""
+        """Return the request title as a string"""
 
         return truncatechars(self.title, 100)
 
 
-class Allocation(RGAffiliatedModel, models.Model):
+class Allocation(RGModelInterface, models.Model):
     """User service unit allocation"""
 
     requested = models.PositiveIntegerField('Requested Service Units')
@@ -74,40 +74,40 @@ class Allocation(RGAffiliatedModel, models.Model):
     final = models.PositiveIntegerField('Final Usage', null=True, blank=True)
 
     cluster: Cluster = models.ForeignKey(Cluster, on_delete=models.CASCADE)
-    proposal: Proposal = models.ForeignKey(Proposal, on_delete=models.CASCADE)
+    request: AllocationRequest = models.ForeignKey(AllocationRequest, on_delete=models.CASCADE)
 
     objects = AllocationManager()
 
     def get_research_group(self) -> ResearchGroup:
         """Return the research group tied to the current record"""
 
-        return self.proposal.group
+        return self.request.group
 
     def __str__(self) -> str:
         """Return a human-readable summary of the allocation"""
 
-        return f'{self.cluster} allocation for {self.proposal.group}'
+        return f'{self.cluster} allocation for {self.request.group}'
 
 
-class ProposalReview(RGAffiliatedModel, models.Model):
-    """Review feedback for a project proposal"""
+class AllocationRequestReview(RGModelInterface, models.Model):
+    """Reviewer feedback for an allocation request"""
 
     approve = models.BooleanField()
     public_comments = models.TextField(max_length=1600, null=True, blank=True)
     private_comments = models.TextField(max_length=1600, null=True, blank=True)
     date_modified = models.DateTimeField(auto_now=True)
 
-    proposal: Proposal = models.ForeignKey(Proposal, on_delete=models.CASCADE)
+    request: AllocationRequest = models.ForeignKey(AllocationRequest, on_delete=models.CASCADE)
     reviewer: User = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    objects = ProposalReviewManager()
+    objects = AllocationRequestReviewManager()
 
     def get_research_group(self) -> ResearchGroup:
         """Return the research group tied to the current record"""
 
-        return self.proposal.group
+        return self.request.group
 
     def __str__(self) -> str:
-        """Return a human-readable identifier for the proposal"""
+        """Return a human-readable identifier for the allocation request"""
 
-        return f'{self.reviewer} review for \"{self.proposal.title}\"'
+        return f'{self.reviewer} review for \"{self.request.title}\"'

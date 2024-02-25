@@ -9,7 +9,7 @@ predefined access rules.
 from rest_framework import permissions
 
 from apps.users.models import ResearchGroup
-from .models import RGAffiliatedModel
+from .models import RGModelInterface
 
 __all__ = ['GroupAdminCreateGroupRead', 'StaffWriteAuthenticatedRead', 'StaffWriteGroupRead']
 
@@ -43,7 +43,7 @@ class StaffWriteGroupRead(permissions.BasePermission):
 
         return request.user.is_staff
 
-    def has_object_permission(self, request, view, obj: RGAffiliatedModel) -> bool:
+    def has_object_permission(self, request, view, obj: RGModelInterface) -> bool:
         """Return whether the incoming HTTP request has permission to access a database record"""
 
         if request.user.is_staff:
@@ -77,7 +77,7 @@ class GroupAdminCreateGroupRead(permissions.BasePermission):
 
         return request.user in group.get_privileged_members()
 
-    def has_object_permission(self, request, view, obj: RGAffiliatedModel) -> bool:
+    def has_object_permission(self, request, view, obj: RGModelInterface) -> bool:
         """Return whether the incoming HTTP request has permission to access a database record"""
 
         is_staff = request.user.is_staff

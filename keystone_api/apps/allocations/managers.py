@@ -11,14 +11,14 @@ from django.db import models
 
 from apps.users.models import ResearchGroup
 
-__all__ = ['AllocationManager', 'ProposalManager', 'ProposalReviewManager']
+__all__ = ['AllocationManager', 'AllocationRequestManager', 'AllocationRequestReviewManager']
 
 
 class AllocationManager(models.Manager):
     """Object manager for the `Allocation` database model"""
 
     def affiliated_with_user(self, user: User) -> models.QuerySet:
-        """Get all allocations the user is affiliated with
+        """Get all allocations affiliated with the given user
 
         Args:
             user: The user to return affiliated records for
@@ -28,14 +28,14 @@ class AllocationManager(models.Manager):
         """
 
         research_groups = ResearchGroup.objects.groups_for_user(user)
-        return self.get_queryset().filter(proposal__group__in=research_groups)
+        return self.get_queryset().filter(request__group__in=research_groups)
 
 
-class ProposalManager(models.Manager):
-    """Object manager for the `Proposal` database model"""
+class AllocationRequestManager(models.Manager):
+    """Object manager for the `AllocationRequest` database model"""
 
     def affiliated_with_user(self, user: User) -> models.QuerySet:
-        """Get all proposals the user is affiliated with
+        """Get all allocation requests affiliated with the given user
 
         Args:
             user: The user to return affiliated records for
@@ -48,11 +48,11 @@ class ProposalManager(models.Manager):
         return self.get_queryset().filter(group__in=research_groups)
 
 
-class ProposalReviewManager(models.Manager):
-    """Object manager for the `ProposalReview` database model"""
+class AllocationRequestReviewManager(models.Manager):
+    """Object manager for the `AllocationRequestReview` database model"""
 
     def affiliated_with_user(self, user: User) -> models.QuerySet:
-        """Get all proposal reviews for proposals the user is affiliated with
+        """Get all allocation request reviews affiliated with the given user
 
         Args:
             user: The user to return affiliated records for
@@ -62,4 +62,4 @@ class ProposalReviewManager(models.Manager):
         """
 
         research_groups = ResearchGroup.objects.groups_for_user(user)
-        return self.get_queryset().filter(proposal__group__in=research_groups)
+        return self.get_queryset().filter(request__group__in=research_groups)
