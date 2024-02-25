@@ -16,7 +16,9 @@ settings.JAZZMIN_SETTINGS['icons'].update({
 })
 
 settings.JAZZMIN_SETTINGS['order_with_respect_to'].extend([
-    'allocations.Cluster', 'allocations.AllocationRequest', 'allocations.allocation'
+    'allocations.Cluster',
+    'allocations.AllocationRequest',
+    'allocations.Allocation'
 ])
 
 
@@ -44,8 +46,8 @@ class ClusterAdmin(admin.ModelAdmin):
     actions = [enable_selected_clusters, disable_selected_clusters]
 
 
-class allocationreviewInline(admin.StackedInline):
-    """Inline admin interface for the `allocationreview` model"""
+class AllocationRequestReviewInline(admin.StackedInline):
+    """Inline admin interface for the `AllocationRequestReview` model"""
 
     model = AllocationRequestReview
     show_change_link = True
@@ -68,7 +70,7 @@ class AllocationRequestAdmin(admin.ModelAdmin):
     @staticmethod
     @admin.display
     def title(obj: AllocationRequest) -> str:
-        """Return a request's title as a human/table friendly string"""
+        """Return a request's title as a human friendly string"""
 
         return str(obj)
 
@@ -96,7 +98,7 @@ class AllocationRequestAdmin(admin.ModelAdmin):
         ('active', admin.DateFieldListFilter),
         ('expire', admin.DateFieldListFilter),
     ]
-    inlines = [AllocationInline, allocationreviewInline]
+    inlines = [AllocationInline, AllocationRequestReviewInline]
 
 
 @admin.register(Allocation)
@@ -120,20 +122,21 @@ class AllocationAdmin(admin.ModelAdmin):
     @staticmethod
     @admin.display
     def requested(obj: Allocation) -> str:
-        """Return an allocation's service units formatted as a human friendly string"""
+        """Return the allocation's service units as a human friendly string"""
 
         return f'{obj.requested:,}'
+
     @staticmethod
     @admin.display
     def awarded(obj: Allocation) -> str:
-        """Return an allocation's service units formatted as a human friendly string"""
+        """Return the allocation's service units as a human friendly string"""
 
         return f'{obj.awarded:,}' if obj.awarded else '--'
 
     @staticmethod
     @admin.display
     def final_usage(obj: Allocation) -> str:
-        """Return an allocation's final usage as a human friendly string"""
+        """Return the allocation's final usage as a human friendly string"""
 
         return f'{obj.final:,}' if obj.final else '--'
 

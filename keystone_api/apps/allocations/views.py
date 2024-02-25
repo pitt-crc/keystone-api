@@ -15,7 +15,7 @@ __all__ = ['AllocationViewSet', 'ClusterViewSet', 'AllocationRequestViewSet', 'A
 
 
 class ClusterViewSet(viewsets.ModelViewSet):
-    """System settings and configuration for managed Slurm clusters."""
+    """Configuration settings for managed Slurm clusters."""
 
     permission_classes = [permissions.IsAuthenticated, StaffWriteAuthenticatedRead]
     queryset = Cluster.objects.all()
@@ -32,7 +32,7 @@ class ClusterViewSet(viewsets.ModelViewSet):
 
 
 class AllocationViewSet(viewsets.ModelViewSet):
-    """Manage SU allocations for user research groups."""
+    """Manage allocations for user research groups."""
 
     permission_classes = [permissions.IsAuthenticated, StaffWriteGroupRead]
     serializer_class = AllocationSerializer
@@ -48,7 +48,7 @@ class AllocationViewSet(viewsets.ModelViewSet):
 
 
 class AllocationRequestViewSet(viewsets.ModelViewSet):
-    """Manage allocation requests submitted by users to request additional service unit allocations."""
+    """Manage allocation requests submitted by user research groups."""
 
     permission_classes = [permissions.IsAuthenticated, GroupAdminCreateGroupRead]
     serializer_class = AllocationRequestSerializer
@@ -64,7 +64,7 @@ class AllocationRequestViewSet(viewsets.ModelViewSet):
 
 
 class AllocationRequestReviewViewSet(viewsets.ModelViewSet):
-    """Manage allocation reviews submitted by administrators."""
+    """Manage reviews of allocation request submitted by administrators."""
 
     permission_classes = [permissions.IsAuthenticated, StaffWriteGroupRead]
     serializer_class = AllocationRequestReviewSerializer

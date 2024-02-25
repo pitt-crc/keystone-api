@@ -18,7 +18,7 @@ class AllocationManager(models.Manager):
     """Object manager for the `Allocation` database model"""
 
     def affiliated_with_user(self, user: User) -> models.QuerySet:
-        """Get all allocations the user is affiliated with
+        """Get all allocations affiliated with the given user
 
         Args:
             user: The user to return affiliated records for
@@ -52,7 +52,7 @@ class AllocationRequestReviewManager(models.Manager):
     """Object manager for the `AllocationRequestReview` database model"""
 
     def affiliated_with_user(self, user: User) -> models.QuerySet:
-        """Get all allocation reviews affiliated with the given user
+        """Get all allocation request reviews affiliated with the given user
 
         Args:
             user: The user to return affiliated records for

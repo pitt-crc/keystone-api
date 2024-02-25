@@ -58,7 +58,7 @@ class AllocationRequestReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = AllocationRequestReview
         fields = '__all__'
-        extra_kwargs = {'reviewer': {'required': False}}  # Default reviewer value is set by the endpoint view
+        extra_kwargs = {'reviewer': {'required': False}}  # Default reviewer value is set by the view class
 
     def validate_reviewer(self, value: User) -> User:
         """Validate the reviewer matches the user submitting the request"""

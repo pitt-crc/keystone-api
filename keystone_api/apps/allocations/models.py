@@ -14,10 +14,10 @@ from django.template.defaultfilters import truncatechars
 from apps.users.models import ResearchGroup, User
 from .managers import *
 
-__all__ = ['Allocation', 'Cluster', 'AllocationRequest', 'AllocationRequestReview', 'RGAffiliatedModel']
+__all__ = ['Allocation', 'AllocationRequest', 'AllocationRequestReview', 'Cluster', 'RGModelInterface']
 
 
-class RGAffiliatedModel:
+class RGModelInterface:
     """Interface class for database models affiliated with a research group"""
 
     @abc.abstractmethod
@@ -41,8 +41,8 @@ class Cluster(models.Model):
         return str(self.name)
 
 
-class AllocationRequest(RGAffiliatedModel, models.Model):
-    """Allocation request requesting service unit allocations on one or more clusters"""
+class AllocationRequest(RGModelInterface, models.Model):
+    """User request for additional service units on one or more clusters"""
 
     title = models.CharField(max_length=250)
     description = models.TextField(max_length=1600)
@@ -66,7 +66,7 @@ class AllocationRequest(RGAffiliatedModel, models.Model):
         return truncatechars(self.title, 100)
 
 
-class Allocation(RGAffiliatedModel, models.Model):
+class Allocation(RGModelInterface, models.Model):
     """User service unit allocation"""
 
     requested = models.PositiveIntegerField('Requested Service Units')
@@ -89,7 +89,7 @@ class Allocation(RGAffiliatedModel, models.Model):
         return f'{self.cluster} allocation for {self.request.group}'
 
 
-class AllocationRequestReview(RGAffiliatedModel, models.Model):
+class AllocationRequestReview(RGModelInterface, models.Model):
     """Reviewer feedback for an allocation request"""
 
     approve = models.BooleanField()
