@@ -45,6 +45,7 @@ coverage.xml
 *.sqlite3-journal
 keystone_api/email/
 keystone_api/static_root/
+keystone_api/upload_files/
 health  # API health checks
 
 # Pycharm stuff
