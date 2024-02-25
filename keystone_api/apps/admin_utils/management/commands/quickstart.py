@@ -25,14 +25,13 @@ from django.core.management.base import BaseCommand
 class Command(BaseCommand):
     """A helper utility that wraps other common Django commands for easier development"""
 
-    help = 'A helper utility for common deployment tasks'
+    help = 'A helper utility that wraps other common Django commands for easier development'
 
     def add_arguments(self, parser: ArgumentParser) -> None:
-        """
-        Add command-line arguments to the parser.
+        """Add command-line arguments to the parser
 
         Args:
-          parser (ArgumentParser): The argument parser instance.
+          parser: The argument parser instance
         """
 
         parser.add_argument('--static', action='store_true', help='Collect static files.')
@@ -42,11 +41,11 @@ class Command(BaseCommand):
         parser.add_argument('--no-input', action='store_false', help='Do not prompt for user input of any kind.')
 
     def handle(self, *args, **options) -> None:
-        """Handle the command execution.
+        """Handle the command execution
 
         Args:
-          *args: Additional positional arguments.
-          **options: Additional keyword arguments.
+          *args: Additional positional arguments
+          **options: Additional keyword arguments
         """
 
         if options['migrate']:
@@ -67,7 +66,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def run_celery() -> None:
-        """Start a Celery worker."""
+        """Start a Celery worker"""
 
         subprocess.Popen(['redis-server'])
         subprocess.Popen(['celery', '-A', 'keystone_api', 'beat'])
@@ -75,7 +74,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def run_gunicorn(host: str = '0.0.0.0', port: int = 8000) -> None:
-        """Start a Gunicorn server.
+        """Start a Gunicorn server
 
         Args:
           host: The host to bind to
