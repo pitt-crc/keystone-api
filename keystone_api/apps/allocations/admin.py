@@ -40,10 +40,10 @@ class AllocationRequestReviewInline(admin.StackedInline):
     extra = 1
 
 
-class FileUploadInline(admin.TabularInline):
-    """Inline interface for the `FileUpload` model"""
+class AttachmentInline(admin.TabularInline):
+    """Inline interface for the `Attachment` model"""
 
-    model = FileUpload
+    model = Attachment
     show_change_link = True
     extra = 1
 
@@ -155,4 +155,4 @@ class AllocationRequestAdmin(admin.ModelAdmin):
         ('active', admin.DateFieldListFilter),
         ('expire', admin.DateFieldListFilter),
     ]
-    inlines = [AllocationInline, AllocationRequestReviewInline, FileUploadInline]
+    inlines = [AllocationInline, AllocationRequestReviewInline, AttachmentInline]

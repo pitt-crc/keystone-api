@@ -19,7 +19,7 @@ __all__ = [
     'AllocationRequest',
     'AllocationRequestReview',
     'Cluster',
-    'FileUpload',
+    'Attachment',
     'RGModelInterface']
 
 
@@ -47,7 +47,7 @@ class Cluster(models.Model):
         return str(self.name)
 
 
-class FileUpload(models.Model):
+class Attachment(models.Model):
     """File data uploaded by users"""
 
     file_data = models.FileField()
