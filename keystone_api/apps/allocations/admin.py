@@ -79,18 +79,18 @@ class AllocationRequestAdmin(admin.ModelAdmin):
     def reviews(obj: AllocationRequest) -> int:
         """Return the total number of request reviews"""
 
-        return sum(1 for _ in obj.allocationreview_set.all())
+        return sum(1 for _ in obj.allocationrequestreview_set.all())
 
     @staticmethod
     @admin.display
     def approvals(obj: AllocationRequest) -> int:
         """Return the number of approving request reviews"""
 
-        return sum(1 for review in obj.allocationreview_set.all() if review.approve)
+        return sum(1 for review in obj.allocationrequestreview_set.all() if review.approve)
 
     list_display = ['group', title, 'submitted', 'approved', 'active', 'expire', 'reviews', 'approvals']
     list_display_links = list_display
-    search_fields = ['title', 'description', 'group__acc_name']
+    search_fields = ['title', 'description', 'group__name']
     ordering = ['submitted']
     list_filter = [
         ('submitted', admin.DateFieldListFilter),
