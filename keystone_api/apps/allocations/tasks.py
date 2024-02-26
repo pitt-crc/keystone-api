@@ -56,7 +56,7 @@ def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
     closing_allocations_query = (Allocation.objects.filter(request__group=account,
                                                            cluster=cluster,
                                                            request__approved=True,
-                                                           final=None,  # TODO: will this work?
+                                                           final=None,
                                                            request__expire__lte=date.today())
                                                    .order_by("request__expire"))
 
