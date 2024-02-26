@@ -77,7 +77,12 @@ def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
 
 
 def close_expired_allocations(closing_allocations: Collection[Allocation], current_usage: int) -> None:
-    """Set the final usage for expired allocations that have not yet been closed out"""
+    """Set the final usage for expired allocations that have not yet been closed out
+
+    Args:
+        closing_allocations: list of Allocations to set final usage for
+        current_usage: TRES billing hour usage to apply to allocations being closed out
+    """
 
     for allocation in closing_allocations:
         log.debug(f"Closing allocation {allocation.request.group}:{allocation.request.title}")
