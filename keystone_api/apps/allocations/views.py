@@ -84,14 +84,5 @@ class ClusterViewSet(viewsets.ModelViewSet):
     """Configuration settings for managed Slurm clusters."""
 
     permission_classes = [permissions.IsAuthenticated, StaffWriteAuthenticatedRead]
-    queryset = Cluster.objects.all()
+    serializer_class = ClusterSerializer
     filterset_fields = '__all__'
-
-    def get_serializer_class(self) -> type[serializers.Serializer]:
-        """Return the class to use for the serializer"""
-
-        user = self.request.user
-        if user.is_staff or user.is_superuser:
-            return ClusterSerializer
-
-        return SafeClusterSerializer
