@@ -1,3 +1,3 @@
 keystone_api/keystone.db
-keystone_api/email
 keystone_api/static_root
+keystone_api/email

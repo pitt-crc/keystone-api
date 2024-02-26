@@ -13,27 +13,10 @@ from .models import *
 
 __all__ = [
     'AllocationSerializer',
+    'AllocationRequestSerializer',
+    'AllocationRequestReviewSerializer',
     'ClusterSerializer',
-    'ProposalSerializer',
-    'ProposalReviewSerializer',
-    'SafeClusterSerializer'
 ]
-
-
-class ClusterSerializer(serializers.ModelSerializer):
-    """Object serializer for the `Cluster` class"""
-
-    class Meta:
-        model = Cluster
-        fields = '__all__'
-
-
-class SafeClusterSerializer(serializers.ModelSerializer):
-    """Object serializer for the `Cluster` class that excludes sensitive fields"""
-
-    class Meta:
-        model = Cluster
-        fields = ('name', 'description', 'enabled')
 
 
 class AllocationSerializer(serializers.ModelSerializer):
@@ -44,21 +27,21 @@ class AllocationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ProposalSerializer(serializers.ModelSerializer):
-    """Object serializer for the `Proposal` class"""
+class AllocationRequestSerializer(serializers.ModelSerializer):
+    """Object serializer for the `AllocationRequest` class"""
 
     class Meta:
-        model = Proposal
+        model = AllocationRequest
         fields = '__all__'
 
 
-class ProposalReviewSerializer(serializers.ModelSerializer):
-    """Object serializer for the `ProposalReview` class"""
+class AllocationRequestReviewSerializer(serializers.ModelSerializer):
+    """Object serializer for the `AllocationRequestReview` class"""
 
     class Meta:
-        model = ProposalReview
+        model = AllocationRequestReview
         fields = '__all__'
-        extra_kwargs = {'reviewer': {'required': False}}  # Default reviewer value is set by the endpoint view
+        extra_kwargs = {'reviewer': {'required': False}}  # Default reviewer value is set by the view class
 
     def validate_reviewer(self, value: User) -> User:
         """Validate the reviewer matches the user submitting the request"""
@@ -67,3 +50,11 @@ class ProposalReviewSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Reviewer cannot be set to a different user than the submitter")
 
         return value
+
+
+class ClusterSerializer(serializers.ModelSerializer):
+    """Object serializer for the `Cluster` class"""
+
+    class Meta:
+        model = Cluster
+        fields = '__all__'

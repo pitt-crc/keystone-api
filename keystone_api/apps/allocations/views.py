@@ -11,28 +11,16 @@ from .models import *
 from .permissions import *
 from .serializers import *
 
-__all__ = ['AllocationViewSet', 'ClusterViewSet', 'ProposalViewSet', 'ProposalReviewViewSet']
-
-
-class ClusterViewSet(viewsets.ModelViewSet):
-    """System settings and configuration for managed Slurm clusters."""
-
-    permission_classes = [permissions.IsAuthenticated, StaffWriteAuthenticatedRead]
-    queryset = Cluster.objects.all()
-    filterset_fields = '__all__'
-
-    def get_serializer_class(self) -> type[serializers.Serializer]:
-        """Return the class to use for the serializer"""
-
-        user = self.request.user
-        if user.is_staff or user.is_superuser:
-            return ClusterSerializer
-
-        return SafeClusterSerializer
+__all__ = [
+    'AllocationViewSet',
+    'AllocationRequestViewSet',
+    'AllocationRequestReviewViewSet',
+    'ClusterViewSet'
+]
 
 
 class AllocationViewSet(viewsets.ModelViewSet):
-    """Manage SU allocations for user research groups."""
+    """Manage allocations for user research groups."""
 
     permission_classes = [permissions.IsAuthenticated, StaffWriteGroupRead]
     serializer_class = AllocationSerializer
@@ -47,39 +35,39 @@ class AllocationViewSet(viewsets.ModelViewSet):
         return Allocation.objects.affiliated_with_user(self.request.user).all()
 
 
-class ProposalViewSet(viewsets.ModelViewSet):
-    """Manage project proposals submitted by users to request additional service unit allocations."""
+class AllocationRequestViewSet(viewsets.ModelViewSet):
+    """Manage allocation requests submitted by user research groups."""
 
     permission_classes = [permissions.IsAuthenticated, GroupAdminCreateGroupRead]
-    serializer_class = ProposalSerializer
+    serializer_class = AllocationRequestSerializer
     filterset_fields = '__all__'
 
-    def get_queryset(self) -> list[Proposal]:
-        """Return a list of proposals for the currently authenticated user"""
+    def get_queryset(self) -> list[AllocationRequest]:
+        """Return a list of allocation requests for the currently authenticated user"""
 
         if self.request.user.is_staff or self.request.user.is_superuser:
-            return Proposal.objects.all()
+            return AllocationRequest.objects.all()
 
-        return Proposal.objects.affiliated_with_user(self.request.user).all()
+        return AllocationRequest.objects.affiliated_with_user(self.request.user).all()
 
 
-class ProposalReviewViewSet(viewsets.ModelViewSet):
-    """Manage project proposal reviews submitted by administrators."""
+class AllocationRequestReviewViewSet(viewsets.ModelViewSet):
+    """Manage reviews of allocation request submitted by administrators."""
 
     permission_classes = [permissions.IsAuthenticated, StaffWriteGroupRead]
-    serializer_class = ProposalReviewSerializer
+    serializer_class = AllocationRequestReviewSerializer
     filterset_fields = '__all__'
 
     def get_queryset(self) -> list[Allocation]:
-        """Return a list of proposal reviews for the currently authenticated user"""
+        """Return a list of allocation reviews for the currently authenticated user"""
 
         if self.request.user.is_staff or self.request.user.is_superuser:
-            return ProposalReview.objects.all()
+            return AllocationRequestReview.objects.all()
 
-        return ProposalReview.objects.affiliated_with_user(self.request.user).all()
+        return AllocationRequestReview.objects.affiliated_with_user(self.request.user).all()
 
     def create(self, request, *args, **kwargs) -> Response:
-        """Create a new `ProposalReview` object"""
+        """Create a new `AllocationRequestReview` object"""
 
         data = request.data.copy()
         data.setdefault('reviewer', request.user.pk)
@@ -90,3 +78,11 @@ class ProposalReviewViewSet(viewsets.ModelViewSet):
 
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class ClusterViewSet(viewsets.ModelViewSet):
+    """Configuration settings for managed Slurm clusters."""
+
+    permission_classes = [permissions.IsAuthenticated, StaffWriteAuthenticatedRead]
+    serializer_class = ClusterSerializer
+    filterset_fields = '__all__'

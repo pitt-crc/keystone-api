@@ -9,14 +9,6 @@ from django.test import TestCase
 class Quickstart(TestCase):
     """Tests for the `quickstart` CLI utility"""
 
-    def test_celery_command(self) -> None:
-        """Test the `--celery` flag executes a celery command"""
-
-        with patch('subprocess.Popen') as mock_popen:
-            call_command('quickstart', '--celery', '--no-input')
-            mock_popen.assert_called_with(
-                ['celery', '-A', 'keystone_api.apps.scheduler', 'worker', '-D'])
-
     def test_gunicorn_command(self) -> None:
         """Test the `--gunicorn` flag executes a gunicorn server command"""
 

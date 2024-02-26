@@ -1,6 +1,7 @@
 """Top level Django application settings."""
 
 import importlib.metadata
+import os
 import sys
 from pathlib import Path
 
@@ -24,7 +25,7 @@ FIXTURE_DIRS = [BASE_DIR / 'tests' / 'fixtures']
 
 # Core security settings
 
-SECRET_KEY = env.str('SECURE_SECRET_KEY', 'key-' + get_random_secret_key())
+SECRET_KEY = os.environ.get('SECURE_SECRET_KEY', get_random_secret_key())
 ALLOWED_HOSTS = env.list("SECURE_ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
 
 _SECURE_SESSION_TOKENS = env.bool("SECURE_SESSION_TOKENS", default=False)
@@ -69,7 +70,6 @@ INSTALLED_APPS = [
     'apps.audit',
     'apps.docs',
     'apps.health',
-    'apps.research_products',
     'apps.scheduler',
     'apps.users',
 ]
@@ -174,30 +174,26 @@ CELERY_CACHE_BACKEND = 'django-cache'
 
 # Database
 
+DATABASES = dict()
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-_DB_NAME = env.str('DB_NAME', 'keystone')
-_POSTGRES_CONFIG = {
-    'ENGINE': 'django.db.backends.postgresql',
-    'NAME': _DB_NAME,
-    'USER': env.str('DB_USER', ''),
-    'PASSWORD': env.str('DB_PASSWORD', ''),
-    'HOST': env.str('DB_HOST', 'localhost'),
-    'PORT': env.str('DB_PORT', '5432'),
-}
-
-_SQLITE_CONFIG = {
-    'ENGINE': 'django.db.backends.sqlite3',
-    'NAME': BASE_DIR / f'{_DB_NAME}.db',
-    'timeout': 30,
-}
-
-DATABASES = dict()
+_db_name = env.str('DB_NAME', 'keystone')
 if env.bool('DB_POSTGRES_ENABLE', False):
-    DATABASES['default'] = _POSTGRES_CONFIG
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': _db_name,
+        'USER': env.str('DB_USER', ''),
+        'PASSWORD': env.str('DB_PASSWORD', ''),
+        'HOST': env.str('DB_HOST', 'localhost'),
+        'PORT': env.str('DB_PORT', '5432'),
+    }
 
 else:
-    DATABASES['default'] = _SQLITE_CONFIG
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / f'{_db_name}.db',
+        'timeout': 30,
+    }
 
 # Authentication
 
@@ -210,7 +206,6 @@ if AUTH_LDAP_SERVER_URI := env.url("AUTH_LDAP_SERVER_URI", "").geturl():
 
     AUTHENTICATION_BACKENDS.append("django_auth_ldap.backend.LDAPBackend")
 
-    AUTH_LDAP_MIRROR_GROUPS = True
     AUTH_LDAP_ALWAYS_UPDATE_USER = True
     AUTH_LDAP_START_TLS = env.bool("AUTH_LDAP_START_TLS", True)
     AUTH_LDAP_BIND_DN = env.str("AUTH_LDAP_BIND_DN", "")
@@ -221,7 +216,7 @@ if AUTH_LDAP_SERVER_URI := env.url("AUTH_LDAP_SERVER_URI", "").geturl():
         "(uid=%(user)s)"
     )
 
-    if env.bool('AUTH_LDAP_REQUIRE_CERT', True):
+    if env.bool('AUTH_LDAP_REQUIRE_CERT', False):
         AUTH_LDAP_GLOBAL_OPTIONS = {ldap.OPT_X_TLS_REQUIRE_CERT: ldap.OPT_X_TLS_NEVER}
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -234,3 +229,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Static file handling (CSS, JavaScript, Images)
 
 STATIC_URL = 'static/'
+STATIC_ROOT = env.path('STORAGE_STATIC_DIR', BASE_DIR / 'static_files')
+
+MEDIA_URL = 'uploads/'
+MEDIA_ROOT = env.path('STORAGE_UPLOAD_DIR', BASE_DIR / 'upload_files')

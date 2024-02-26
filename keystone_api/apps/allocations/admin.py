@@ -12,12 +12,126 @@ from .models import *
 settings.JAZZMIN_SETTINGS['icons'].update({
     'allocations.Cluster': 'fa fa-server',
     'allocations.Allocation': 'fas fa-coins',
-    'allocations.Proposal': 'fa fa-file-alt',
+    'allocations.AllocationRequest': 'fa fa-file-alt',
 })
 
 settings.JAZZMIN_SETTINGS['order_with_respect_to'].extend([
-    'allocations.Cluster', 'allocations.Proposal', 'allocations.allocation'
+    'allocations.Cluster',
+    'allocations.AllocationRequest',
+    'allocations.Allocation'
 ])
+
+
+class AllocationInline(admin.TabularInline):
+    """Inline admin interface for the `Allocation` model"""
+
+    model = Allocation
+    show_change_link = True
+    extra = 1
+
+
+class AllocationRequestReviewInline(admin.StackedInline):
+    """Inline admin interface for the `AllocationRequestReview` model"""
+
+    model = AllocationRequestReview
+    verbose_name = 'Review'
+    show_change_link = True
+    readonly_fields = ('date_modified',)
+    extra = 1
+
+
+class AttachmentInline(admin.TabularInline):
+    """Inline interface for the `Attachment` model"""
+
+    model = Attachment
+    show_change_link = True
+    extra = 1
+
+
+@admin.register(Allocation)
+class AllocationAdmin(admin.ModelAdmin):
+    """Admin interface for the `Allocation` model"""
+
+    @staticmethod
+    @admin.display
+    def group(obj: Allocation) -> str:
+        """Return the name of the group the allocation is assigned to"""
+
+        return obj.request.group.name
+
+    @staticmethod
+    @admin.display
+    def approved(obj: Allocation) -> bool:
+        """Return whether the request for the allocation has been marked as approved"""
+
+        return obj.request.approved or '--'
+
+    @staticmethod
+    @admin.display
+    def requested(obj: Allocation) -> str:
+        """Return the allocation's service units as a human friendly string"""
+
+        return f'{obj.requested:,}'
+
+    @staticmethod
+    @admin.display
+    def awarded(obj: Allocation) -> str:
+        """Return the allocation's service units as a human friendly string"""
+
+        return f'{obj.awarded:,}' if obj.awarded else '--'
+
+    @staticmethod
+    @admin.display
+    def final_usage(obj: Allocation) -> str:
+        """Return the allocation's final usage as a human friendly string"""
+
+        return f'{obj.final:,}' if obj.final else '--'
+
+    list_display = [group, 'request', 'cluster', requested, awarded, final_usage, approved]
+    list_display_links = list_display
+    ordering = ['request__group__name', 'cluster']
+    search_fields = ['request__group__name', 'request__title', 'cluster__name']
+    list_filter = [
+        ('request__approved', admin.DateFieldListFilter)
+    ]
+
+
+@admin.register(AllocationRequest)
+class AllocationRequestAdmin(admin.ModelAdmin):
+    """Admin interface for the `AllocationRequest` model"""
+
+    @staticmethod
+    @admin.display
+    def title(obj: AllocationRequest) -> str:
+        """Return a request title as a human friendly string"""
+
+        return str(obj)
+
+    @staticmethod
+    @admin.display
+    def reviews(obj: AllocationRequest) -> int:
+        """Return the total number of submitted reviews"""
+
+        return sum(1 for _ in obj.allocationrequestreview_set.all())
+
+    @staticmethod
+    @admin.display
+    def approvals(obj: AllocationRequest) -> int:
+        """Return the number of approving reviews"""
+
+        return sum(1 for review in obj.allocationrequestreview_set.all() if review.approve)
+
+    list_display = ['group', title, 'submitted', 'approved', 'active', 'expire', 'reviews', 'approvals']
+    list_display_links = list_display
+    search_fields = ['title', 'description', 'group__name']
+    ordering = ['submitted']
+    list_filter = [
+        ('submitted', admin.DateFieldListFilter),
+        ('approved', admin.DateFieldListFilter),
+        ('active', admin.DateFieldListFilter),
+        ('expire', admin.DateFieldListFilter),
+    ]
+    inlines = [AllocationInline, AllocationRequestReviewInline, AttachmentInline]
 
 
 @admin.register(Cluster)
@@ -42,105 +156,3 @@ class ClusterAdmin(admin.ModelAdmin):
     list_filter = ['enabled']
     search_fields = ['name', 'description']
     actions = [enable_selected_clusters, disable_selected_clusters]
-
-
-class ProposalReviewInline(admin.StackedInline):
-    """Inline admin interface for the `ProposalReview` model"""
-
-    model = ProposalReview
-    show_change_link = True
-    readonly_fields = ('date_modified',)
-    extra = 0
-
-
-class AllocationInline(admin.TabularInline):
-    """Inline admin interface for the `Allocation` model"""
-
-    model = Allocation
-    show_change_link = True
-    extra = 0
-
-
-@admin.register(Proposal)
-class ProposalAdmin(admin.ModelAdmin):
-    """Admin interface for the `Proposal` model"""
-
-    @staticmethod
-    @admin.display
-    def title(obj: Proposal) -> str:
-        """Return a proposal's title as a human/table friendly string"""
-
-        return str(obj)
-
-    @staticmethod
-    @admin.display
-    def reviews(obj: Proposal) -> int:
-        """Return the total number of proposal reviews"""
-
-        return sum(1 for _ in obj.proposalreview_set.all())
-
-    @staticmethod
-    @admin.display
-    def approvals(obj: Proposal) -> int:
-        """Return the number of approving proposal reviews"""
-
-        return sum(1 for review in obj.proposalreview_set.all() if review.approve)
-
-    list_display = ['group', title, 'submitted', 'approved', 'active', 'expire', 'reviews', 'approvals']
-    list_display_links = list_display
-    search_fields = ['title', 'description', 'group__acc_name']
-    ordering = ['submitted']
-    list_filter = [
-        ('submitted', admin.DateFieldListFilter),
-        ('approved', admin.DateFieldListFilter),
-        ('active', admin.DateFieldListFilter),
-        ('expire', admin.DateFieldListFilter),
-    ]
-    inlines = [AllocationInline, ProposalReviewInline]
-
-
-@admin.register(Allocation)
-class AllocationAdmin(admin.ModelAdmin):
-    """Admin interface for the `Allocation` model"""
-
-    @staticmethod
-    @admin.display
-    def group(obj: Allocation) -> str:
-        """Return the username of the PI for the associated proposal"""
-
-        return obj.proposal.group.name
-
-    @staticmethod
-    @admin.display
-    def approved(obj: Allocation) -> bool:
-        """Return whether the allocation proposal has been marked as approved"""
-
-        return obj.proposal.approved or '--'
-
-    @staticmethod
-    @admin.display
-    def requested(obj: Allocation) -> str:
-        """Return an allocation's service units formatted as a human friendly string"""
-
-        return f'{obj.requested:,}'
-    @staticmethod
-    @admin.display
-    def awarded(obj: Allocation) -> str:
-        """Return an allocation's service units formatted as a human friendly string"""
-
-        return f'{obj.awarded:,}' if obj.awarded else '--'
-
-    @staticmethod
-    @admin.display
-    def final_usage(obj: Allocation) -> str:
-        """Return an allocation's final usage as a human friendly string"""
-
-        return f'{obj.final:,}' if obj.final else '--'
-
-    list_display = [group, 'proposal', 'cluster', requested, awarded, final_usage, approved]
-    list_display_links = list_display
-    ordering = ['proposal__group__name', 'cluster']
-    search_fields = ['proposal__group__name', 'proposal__title', 'cluster__name']
-    list_filter = [
-        ('proposal__approved', admin.DateFieldListFilter)
-    ]

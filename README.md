@@ -93,8 +93,11 @@ Administrators should adhere to the following general guidelines:
 - Ensure your deployment is isolated behind a web proxy with proper HTTPS handling
 - Always define the `SECURE_ALLOWED_HOSTS` list using a restrictive collection of domain patterns
 - Avoid issuing session/CSRF tokens over unsecured connections by enabling `SECURE_SESSION_TOKENS`
-- HTTP Strict Transport Security (HSTS) should be used to enforce the use of HTTPS
-- Use a fixed (and secure) `SECURE_SECRET_KEY` value to ensure consistent request signing across application instances/restarts
+- Always use a secure `SECURE_SECRET_KEY` value to ensure proper request signing across application instances/restarts
+- Consider using HTTP Strict Transport Security (HSTS) to enforce the use of HTTPS
+
+The `SECURE_SECRET_KEY` value may be changed at any given time. However, doing so may invalidate any active user
+sessions and require users to reauthenticate.
 
 | Setting Name              | Default Value            | Description                                                   |
 |---------------------------|--------------------------|---------------------------------------------------------------|
@@ -128,7 +131,7 @@ To enable LDAP, set the `AUTH_LDAP_SERVER_URI` value to the desired LDAP endpoin
 | `AUTH_LDAP_BIND_DN`       |                          | Optionally bind LDAP queries to the given DN.                 |
 | `AUTH_LDAP_BIND_PASSWORD` |                          | The password to use when binding to the LDAP server.          |
 | `AUTH_LDAP_USER_SEARCH`   | `(uid=%(user)s)`         | The search query for finding a user in the LDAP server.       |
-| `AUTH_LDAP_REQUIRE_CERT`  | `True`                   | Require TLS when connecting to LDAP.                          |
+| `AUTH_LDAP_REQUIRE_CERT`  | `False`                  | Whether to require certificate verification.                  |
 
 ### Database Connection
 
@@ -157,9 +160,19 @@ Enabling password authentication is suggested when deploying Redis in a producti
 | `REDIS_DB`                | `0`                      | The Redis database number to use.                             |
 | `REDIS_PASSWORD`          |                          | Optionally connect using the given password.                  |
 
+### File Storage
+
+Keystone uses various static files to facilitate operation and support user requests.
+By default, these files are stored in subdirectories of the installed application directory (`<app>`).
+
+| Setting Name              | Default Value        | Description                                                       |
+|---------------------------|----------------------|-------------------------------------------------------------------|
+| `STORAGE_STATIC_DIR`      | `<app>/static_files` | Where to store internal static files required by the application. |
+| `STORAGE_UPLOAD_DIR`      | `<app>/upload_files` | Where to store file data uploaded by users.                       |
+
 ### Developer Settings
 
-The following settings are intended exclusively for use in development settings.
+The following settings are intended exclusively for use in development.
 The `DEBUG` option is inherently insecure and should **never** be enabled in production settings.
 
 | Setting Name              | Default Value            | Description                                                   |

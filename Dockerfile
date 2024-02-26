@@ -17,16 +17,17 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
-# Copy application build files
-WORKDIR /app
-COPY keystone_api keystone_api
-COPY pyproject.toml pyproject.toml
-COPY README.md README.md
+# Create an unprivliged user for running services
+RUN groupadd --gid 900 keystone && useradd -m -u 999 -g keystone keystone \
+    && mkdir /app && chown keystone /app
 
-# Install the application
-ENV PIP_ROOT_USER_ACTION=ignore
-RUN pip install -e . && pip cache purge
+USER keystone
+WORKDIR /app
+
+COPY --chown=keystone . src
+RUN pip install ./src && rm -rf src && mkdir static
+ENV PATH="${PATH}:/home/keystone/.local/bin"
 
 # Setup and launch the application
 ENTRYPOINT ["keystone-api"]
-CMD ["quickstart", "--migrate", "--celery", "--gunicorn", "--no-input"]
+CMD ["quickstart", "--migrate", "--static", "--celery", "--gunicorn", "--no-input"]
