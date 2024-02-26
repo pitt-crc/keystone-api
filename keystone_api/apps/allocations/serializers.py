@@ -13,27 +13,11 @@ from .models import *
 
 __all__ = [
     'AllocationSerializer',
-    'ClusterSerializer',
     'AllocationRequestSerializer',
     'AllocationRequestReviewSerializer',
+    'ClusterSerializer',
     'SafeClusterSerializer'
 ]
-
-
-class ClusterSerializer(serializers.ModelSerializer):
-    """Object serializer for the `Cluster` class"""
-
-    class Meta:
-        model = Cluster
-        fields = '__all__'
-
-
-class SafeClusterSerializer(serializers.ModelSerializer):
-    """Object serializer for the `Cluster` class that excludes sensitive fields"""
-
-    class Meta:
-        model = Cluster
-        fields = ('name', 'description', 'enabled')
 
 
 class AllocationSerializer(serializers.ModelSerializer):
@@ -67,3 +51,19 @@ class AllocationRequestReviewSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Reviewer cannot be set to a different user than the submitter")
 
         return value
+
+
+class ClusterSerializer(serializers.ModelSerializer):
+    """Object serializer for the `Cluster` class"""
+
+    class Meta:
+        model = Cluster
+        fields = '__all__'
+
+
+class SafeClusterSerializer(serializers.ModelSerializer):
+    """Object serializer for the `Cluster` class that excludes sensitive fields"""
+
+    class Meta:
+        model = Cluster
+        fields = ('name', 'description', 'enabled')

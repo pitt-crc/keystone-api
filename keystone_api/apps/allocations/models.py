@@ -6,6 +6,8 @@ Each model reflects a different database and defines low-level defaults for how
 the associated table/fields/records are presented by parent interfaces.
 """
 
+from __future__ import annotations
+
 import abc
 
 from django.db import models
@@ -18,9 +20,10 @@ __all__ = [
     'Allocation',
     'AllocationRequest',
     'AllocationRequestReview',
-    'Cluster',
     'Attachment',
-    'RGModelInterface']
+    'Cluster',
+    'RGModelInterface'
+]
 
 
 class RGModelInterface:
@@ -31,29 +34,27 @@ class RGModelInterface:
         """Return the research group tied to the current record"""
 
 
-class Cluster(models.Model):
-    """A slurm cluster and it's associated management settings"""
+class Allocation(RGModelInterface, models.Model):
+    """User service unit allocation"""
 
-    name = models.CharField(max_length=50)
-    description = models.TextField(max_length=150, null=True, blank=True)
-    enabled = models.BooleanField(default=True)
-    api_url = models.CharField(max_length=1000)
-    api_user = models.CharField(max_length=150)
-    api_token = models.CharField(max_length=200)
+    requested = models.PositiveIntegerField('Requested Service Units')
+    awarded = models.PositiveIntegerField('Awarded Service Units', null=True, blank=True)
+    final = models.PositiveIntegerField('Final Usage', null=True, blank=True)
+
+    cluster: Cluster = models.ForeignKey('Cluster', on_delete=models.CASCADE)
+    request: AllocationRequest = models.ForeignKey('AllocationRequest', on_delete=models.CASCADE)
+
+    objects = AllocationManager()
+
+    def get_research_group(self) -> ResearchGroup:
+        """Return the research group tied to the current record"""
+
+        return self.request.group
 
     def __str__(self) -> str:
-        """Return the cluster name as a string"""
+        """Return a human-readable summary of the allocation"""
 
-        return str(self.name)
-
-
-class Attachment(models.Model):
-    """File data uploaded by users"""
-
-    file_data = models.FileField()
-    uploaded = models.DateTimeField(auto_now=True)
-
-    request = models.ForeignKey('AllocationRequest', on_delete=models.CASCADE)
+        return f'{self.cluster} allocation for {self.request.group}'
 
 
 class AllocationRequest(RGModelInterface, models.Model):
@@ -81,29 +82,6 @@ class AllocationRequest(RGModelInterface, models.Model):
         return truncatechars(self.title, 100)
 
 
-class Allocation(RGModelInterface, models.Model):
-    """User service unit allocation"""
-
-    requested = models.PositiveIntegerField('Requested Service Units')
-    awarded = models.PositiveIntegerField('Awarded Service Units', null=True, blank=True)
-    final = models.PositiveIntegerField('Final Usage', null=True, blank=True)
-
-    cluster: Cluster = models.ForeignKey(Cluster, on_delete=models.CASCADE)
-    request: AllocationRequest = models.ForeignKey(AllocationRequest, on_delete=models.CASCADE)
-
-    objects = AllocationManager()
-
-    def get_research_group(self) -> ResearchGroup:
-        """Return the research group tied to the current record"""
-
-        return self.request.group
-
-    def __str__(self) -> str:
-        """Return a human-readable summary of the allocation"""
-
-        return f'{self.cluster} allocation for {self.request.group}'
-
-
 class AllocationRequestReview(RGModelInterface, models.Model):
     """Reviewer feedback for an allocation request"""
 
@@ -126,3 +104,28 @@ class AllocationRequestReview(RGModelInterface, models.Model):
         """Return a human-readable identifier for the allocation request"""
 
         return f'{self.reviewer} review for \"{self.request.title}\"'
+
+
+class Attachment(models.Model):
+    """File data uploaded by users"""
+
+    file_data = models.FileField()
+    uploaded = models.DateTimeField(auto_now=True)
+
+    request = models.ForeignKey('AllocationRequest', on_delete=models.CASCADE)
+
+
+class Cluster(models.Model):
+    """A slurm cluster and it's associated management settings"""
+
+    name = models.CharField(max_length=50)
+    description = models.TextField(max_length=150, null=True, blank=True)
+    enabled = models.BooleanField(default=True)
+    api_url = models.CharField(max_length=1000)
+    api_user = models.CharField(max_length=150)
+    api_token = models.CharField(max_length=200)
+
+    def __str__(self) -> str:
+        """Return the cluster name as a string"""
+
+        return str(self.name)
