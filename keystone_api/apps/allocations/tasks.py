@@ -4,8 +4,8 @@ from datetime import date
 import logging
 import re
 from shlex import split
-from subprocess import PIPE, Popen, CalledProcessError
-from typing import List, Tuple
+from subprocess import PIPE, Popen
+from typing import Collection
 
 from celery import shared_task
 from django.db.models import Sum
@@ -19,11 +19,12 @@ log = logging.getLogger(__name__)
 @shared_task()
 def update_limits() -> None:
     """Adjust per Slurm account usage limits on all enabled clusters"""
+    log.info(f"{date.today()} - BEGIN update_limits")
 
     for cluster in Cluster.objects.filter(enabled=True).all():
-        log.info(f"Updating limits for cluster {cluster.name}...")
+        log.debug(f"Updating limits for cluster {cluster.name}")
         update_limits_for_cluster(cluster)
-        log.info(f"Updating limits for cluster {cluster.name}... DONE")
+        log.debug(f"Updating limits for cluster {cluster.name} DONE")
 
 
 @shared_task()
@@ -33,9 +34,9 @@ def update_limits_for_cluster(cluster: Cluster) -> None:
     for account_name in get_accounts_on_cluster(cluster.name):
         if account_name in ['root']:
             continue
-        log.info(f"Updating limits for account {account_name}...")
+        log.debug(f"Updating limits for account {account_name}")
         update_limit_for_account(account_name, cluster.name)
-        log.info(f"Updating limits for account {account_name}... DONE")
+        log.debug(f"Updating limits for account {account_name} DONE")
 
 
 @shared_task()
@@ -51,66 +52,69 @@ def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
         set_cluster_limit(account_name, cluster.name, 0)
         return
 
-    # TODO: plan to perform a reset of rawusage before deployment.
-    #  Resetting rawusage will be part of the install procedure for us and others
+    # TODO: plan to perform a reset of rawusage before deployment. This makes it so an initial usage does not need
+    #  to be tracked. Resetting rawusage will be part of the install procedure for us and others
 
-    # Gather the historical usage from expired proposal allocations
+    # Gather allocations that have expired but do not have a final usage value
+    # (still contributing to current limit as active SUs instead of historical usage)
+    closing_allocations_query = (Allocation.objects.filter(proposal__group=account,
+                                                           cluster=cluster,
+                                                           proposal_approved=True,
+                                                           final=None,  # TODO: will this work?
+                                                           proposal__expire__lte=date.today())
+                                                   .order_by("proposal__expire"))
+
+    # Gather all allocations belonging to "active" (started today or before and approved) proposals for the account
+    active_allocations_query = (Allocation.objects.filter(proposal__group=account,
+                                                          cluster=cluster,
+                                                          proposal_approved=True,
+                                                          proposal__active__lte=date.today(),
+                                                          proposal__expire__gt=date.today())
+                                                  .order_by("proposal__expire"))
+
+    # Determine the SU contribution by active allocations
+    # TODO: Is this zero if there are no active allocations?
+    active_sus = active_allocations_query.aggregate(Sum("awarded"))
+
+    # Determine usage that can be covered:
+    # total usage on the cluster (from slurm) - historical usage (current limit from slurm - active SUs - closing SUs)
+    current_usage = (get_cluster_usage(account.name, cluster.name) -
+                     (get_cluster_limit(account.name, cluster.name)
+                      - active_sus - closing_allocations_query.aggregate(Sum("awarded"))))
+
+    # Close out any expired allocations
+    close_expired_allocations(closing_allocations_query.all(), current_usage)
+
+    # Gather the updated historical usage from expired proposal allocations (including any newly expired allocations)
     historical_usage = (Allocation.objects.filter(proposal__group=account,
                                                   cluster=cluster,
                                                   proposal__approved=True,
-                                                  proposal__active__lte=date.today(),
                                                   proposal__expire__lte=date.today())
-                        .exclude(final=None).aggregate(Sum("final")))
+                                          .aggregate(Sum("final")))
 
-    # Get the usage total on the cluster for the account from Slurm
-    total_usage = get_cluster_usage(account_name, cluster.name)
-
-    # Close out any expired allocations that have not already been closed out first
-    # Gather allocations that have expired but do not have a final usage value
-    allocations_to_close = Allocation.objects.filter(proposal__group=account,
-                                                     cluster=cluster,
-                                                     proposal_approved=True,
-                                                     final=None,  # TODO: will this work?
-                                                     proposal__expire__lte=date.today()).order_by("proposal__expire")
-
-    # Cover as much of the current usage as possible with expired allocations that have not yet been closed out
-    # TODO: move up before querying, have closed values contribute to historical before storing them
-    for allocation in allocations_to_close:
-        current_usage = total_usage - historical_usage
-
-        # Set the final usage for the expired allocation
-        # TODO: make sure to not double count usage if there are multiple allocations being checked here
-        if current_usage < allocation.awarded:
-            allocation.final = current_usage
-        else:
-            allocation.final = allocation.awarded
-
-        # Update the historical usage to reflect the closed out allocation
-        historical_usage += allocation.final
-
-    # Gather all allocations belonging to active proposals for the account
-    active_allocations_query = Allocation.objects.filter(proposal__group=account,
-                                                         cluster=cluster,
-                                                         proposal_approved=True,
-                                                         proposal__active__lte=date.today(),
-                                                         proposal__expire__gt=date.today()).order_by("proposal__expire")
-
-    # Calculate the new limit for the account given the current usage and state of their allocations
-    new_limit = calculate_new_limit(current_limit=get_cluster_limit(account_name, cluster.name),
-                                    proposal_sus=active_allocations_query.aggregate(Sum("awarded")),
-                                    historical_usage=historical_usage,
-                                    total_usage=total_usage)
+    # Determine new limit, including the SUs any new allocations starting today
+    new_limit = historical_usage + active_sus
 
     # Set the new limit to the calculated limit
     set_cluster_limit(account_name, cluster.name, new_limit)
 
 
-def calculate_new_limit(current_limit: int, proposal_sus: int, historical_usage: int, total_usage: int) -> int:
-    """Calculate the new usage limits given the current state of an account's usage and allocations"""
+def close_expired_allocations(closing_allocations: Collection[Allocation], current_usage: int) -> None:
+    """ Cover as much of the current usage as possible with expired allocations that have not yet been closed out
+    # Setting final usage for these allocations  the historical usage """
 
-    # TODO: Need to consider addition of new allocations and the corresponding limit change
-    #  What should the new limit be independent of current_limit
-    return current_limit - min(0, proposal_sus + historical_usage - total_usage)
+    for allocation in closing_allocations:
+        # TODO: Do these have an ID we can log instead?
+        log.debug(f"Closing allocation {allocation.proposal.group}:{allocation.proposal.title}")
+
+        # Set the final usage for the expired allocation
+        if current_usage < allocation.final:
+            allocation.final = current_usage
+        else:
+            allocation.final = allocation.awarded
+
+        # Update the usage needing to be covered, so it is not double counted (can only ever be >= 0)
+        current_usage -= allocation.final
 
 
 def get_accounts_on_cluster(cluster_name: str) -> List[str]:
