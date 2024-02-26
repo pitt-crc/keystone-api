@@ -10,8 +10,8 @@ from typing import Collection, List
 from celery import shared_task
 from django.db.models import Sum, ObjectDoesNotExist
 
-from apps.allocations.models import *
-from apps.users.models import *
+from apps.allocations.models import Allocation, Cluster
+from apps.users.models import ResearchGroup
 
 log = logging.getLogger(__name__)
 
