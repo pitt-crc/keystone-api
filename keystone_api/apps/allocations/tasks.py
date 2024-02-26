@@ -19,12 +19,11 @@ log = logging.getLogger(__name__)
 @shared_task()
 def update_limits() -> None:
     """Adjust per Slurm account usage limits on all enabled clusters"""
-    log.info(f"{date.today()} - BEGIN update_limits")
+    log.info(f"Begin updating billing TRES limits for all Slurm Accounts")
 
     for cluster in Cluster.objects.filter(enabled=True).all():
-        log.debug(f"Updating limits for cluster {cluster.name}")
+        log.info(f"Updating limits for cluster {cluster.name}")
         update_limits_for_cluster(cluster)
-        log.debug(f"Updating limits for cluster {cluster.name} DONE")
 
 
 @shared_task()
@@ -32,30 +31,25 @@ def update_limits_for_cluster(cluster: Cluster) -> None:
     """Update the usage limits of each account on a given cluster, excluding the root account"""
 
     for account_name in get_accounts_on_cluster(cluster.name):
+        # Do not adjust limits for root
         if account_name in ['root']:
             continue
-        log.debug(f"Updating limits for account {account_name}")
+        log.info(f"Updating limits for account {account_name}")
         update_limit_for_account(account_name, cluster.name)
-        log.debug(f"Updating limits for account {account_name} DONE")
 
 
 @shared_task()
 def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
-    """Update the usage limits for an individual Slurm account"""
+    """Update the usage limits for an individual Slurm account, closing out any expired allocations"""
 
     # Check that the Slurm account has an entry in the keystone database
     try:
         account = ResearchGroup.objects.get(name=account_name)
     except ObjectDoesNotExist:
-        #  Set the usage limit to zero (lock on this cluster) and continue
+        #  Set the usage limit to the current usage (lock on this cluster) and continue
         log.warning(f"No existing ResearchGroup for account {account_name}, locking {account_name} on {cluster.name}")
-        # TODO: This may create historical usage that keystone doesnt know about if raw usage is not reset
-        #  for the account upon it actually being added into the application
         set_cluster_limit(account_name, cluster.name, get_cluster_usage(account_name, cluster.name))
         return
-
-    # TODO: plan to perform a reset of rawusage before deployment. This makes it so an initial usage does not need
-    #  to be tracked. Resetting rawusage will be part of the install procedure for us and others
 
     # Gather allocations that have expired but do not have a final usage value
     # (still contributing to current limit as active SUs instead of historical usage)
@@ -76,7 +70,6 @@ def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
                                                   .order_by("request__expire"))
 
     # Determine the SU contribution by active allocations
-    # TODO: Is this zero if there are no active allocations?
     active_sus = active_allocations_query.aggregate(Sum("awarded"))
 
     # Determine usage that can be covered:
@@ -107,7 +100,6 @@ def close_expired_allocations(closing_allocations: Collection[Allocation], curre
     # Setting final usage for these allocations  the historical usage """
 
     for allocation in closing_allocations:
-        # TODO: Do these have an ID we can log instead?
         log.debug(f"Closing allocation {allocation.request.group}:{allocation.request.title}")
 
         # Set the final usage for the expired allocation
@@ -123,7 +115,6 @@ def close_expired_allocations(closing_allocations: Collection[Allocation], curre
 def get_accounts_on_cluster(cluster_name: str) -> Collection[str]:
     """Return a list of account names for a given cluster"""
 
-    # TODO: can we assume Slurm installations will have root as parent for child slurm accounts
     cmd = split(f"sacctmgr show -nP account withassoc where parents=root cluster={cluster_name} format=Account")
 
     out = subprocess_call(cmd)
@@ -133,8 +124,6 @@ def get_accounts_on_cluster(cluster_name: str) -> Collection[str]:
 
 def set_cluster_limit(account_name: str, cluster_name: str, limit: int) -> None:
     """Update the current usage limit (in minutes) to the provided limit on a given cluster for a given account"""
-
-    # TODO: This needs to be run as slurm user
 
     cmd = split(f"sacctmgr modify account where account={account_name} cluster={cluster_name} set "
                 f"GrpTresRunMins=billing={limit}")
