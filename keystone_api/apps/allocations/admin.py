@@ -48,30 +48,6 @@ class AttachmentInline(admin.TabularInline):
     extra = 1
 
 
-@admin.register(Cluster)
-class ClusterAdmin(admin.ModelAdmin):
-    """Admin interface for the `Cluster` model"""
-
-    @admin.action
-    def enable_selected_clusters(self, request, queryset) -> None:
-        """Mark selected clusters as enabled"""
-
-        queryset.update(enabled=True)
-
-    @admin.action
-    def disable_selected_clusters(self, request, queryset) -> None:
-        """Mark selected clusters as disabled"""
-
-        queryset.update(enabled=False)
-
-    list_display = ['enabled', 'name', 'description']
-    list_display_links = list_display
-    ordering = ['name']
-    list_filter = ['enabled']
-    search_fields = ['name', 'description']
-    actions = [enable_selected_clusters, disable_selected_clusters]
-
-
 @admin.register(Allocation)
 class AllocationAdmin(admin.ModelAdmin):
     """Admin interface for the `Allocation` model"""
@@ -127,21 +103,21 @@ class AllocationRequestAdmin(admin.ModelAdmin):
     @staticmethod
     @admin.display
     def title(obj: AllocationRequest) -> str:
-        """Return a request's title as a human friendly string"""
+        """Return a request title as a human friendly string"""
 
         return str(obj)
 
     @staticmethod
     @admin.display
     def reviews(obj: AllocationRequest) -> int:
-        """Return the total number of request reviews"""
+        """Return the total number of submitted reviews"""
 
         return sum(1 for _ in obj.allocationrequestreview_set.all())
 
     @staticmethod
     @admin.display
     def approvals(obj: AllocationRequest) -> int:
-        """Return the number of approving request reviews"""
+        """Return the number of approving reviews"""
 
         return sum(1 for review in obj.allocationrequestreview_set.all() if review.approve)
 
@@ -156,3 +132,27 @@ class AllocationRequestAdmin(admin.ModelAdmin):
         ('expire', admin.DateFieldListFilter),
     ]
     inlines = [AllocationInline, AllocationRequestReviewInline, AttachmentInline]
+
+
+@admin.register(Cluster)
+class ClusterAdmin(admin.ModelAdmin):
+    """Admin interface for the `Cluster` model"""
+
+    @admin.action
+    def enable_selected_clusters(self, request, queryset) -> None:
+        """Mark selected clusters as enabled"""
+
+        queryset.update(enabled=True)
+
+    @admin.action
+    def disable_selected_clusters(self, request, queryset) -> None:
+        """Mark selected clusters as disabled"""
+
+        queryset.update(enabled=False)
+
+    list_display = ['enabled', 'name', 'description']
+    list_display_links = list_display
+    ordering = ['name']
+    list_filter = ['enabled']
+    search_fields = ['name', 'description']
+    actions = [enable_selected_clusters, disable_selected_clusters]

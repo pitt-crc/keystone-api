@@ -11,24 +11,12 @@ from .models import *
 from .permissions import *
 from .serializers import *
 
-__all__ = ['AllocationViewSet', 'ClusterViewSet', 'AllocationRequestViewSet', 'AllocationRequestReviewViewSet']
-
-
-class ClusterViewSet(viewsets.ModelViewSet):
-    """Configuration settings for managed Slurm clusters."""
-
-    permission_classes = [permissions.IsAuthenticated, StaffWriteAuthenticatedRead]
-    queryset = Cluster.objects.all()
-    filterset_fields = '__all__'
-
-    def get_serializer_class(self) -> type[serializers.Serializer]:
-        """Return the class to use for the serializer"""
-
-        user = self.request.user
-        if user.is_staff or user.is_superuser:
-            return ClusterSerializer
-
-        return SafeClusterSerializer
+__all__ = [
+    'AllocationViewSet',
+    'AllocationRequestViewSet',
+    'AllocationRequestReviewViewSet',
+    'ClusterViewSet'
+]
 
 
 class AllocationViewSet(viewsets.ModelViewSet):
@@ -90,3 +78,20 @@ class AllocationRequestReviewViewSet(viewsets.ModelViewSet):
 
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class ClusterViewSet(viewsets.ModelViewSet):
+    """Configuration settings for managed Slurm clusters."""
+
+    permission_classes = [permissions.IsAuthenticated, StaffWriteAuthenticatedRead]
+    queryset = Cluster.objects.all()
+    filterset_fields = '__all__'
+
+    def get_serializer_class(self) -> type[serializers.Serializer]:
+        """Return the class to use for the serializer"""
+
+        user = self.request.user
+        if user.is_staff or user.is_superuser:
+            return ClusterSerializer
+
+        return SafeClusterSerializer

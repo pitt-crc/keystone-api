@@ -24,7 +24,7 @@ class LogEntrySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def to_representation(self, instance: LogEntry) -> dict:
-        """Return a dictionary representation of the given object"""
+        """Return a dictionary representation of the given LogEntry"""
 
         representation = super().to_representation(instance)
         representation['changes'] = json.loads(representation['changes'])
