@@ -18,29 +18,29 @@ log = logging.getLogger(__name__)
 
 @shared_task()
 def update_limits() -> None:
-    """Adjust per Slurm account usage limits on all enabled clusters"""
-    log.info(f"Begin updating billing TRES limits for all Slurm Accounts")
+    """Adjust per Slurm account TRES billing hours usage limits on all enabled clusters"""
+    log.info(f"Begin updating TRES billing hour limits for all Slurm Accounts")
 
     for cluster in Cluster.objects.filter(enabled=True).all():
-        log.info(f"Updating limits for cluster {cluster.name}")
+        log.info(f"Updating TRES billing hour limits for cluster {cluster.name}")
         update_limits_for_cluster(cluster)
 
 
 @shared_task()
 def update_limits_for_cluster(cluster: Cluster) -> None:
-    """Update the usage limits of each account on a given cluster, excluding the root account"""
+    """Update the TRES billing hour usage limits of each account on a given cluster, excluding the root account"""
 
     for account_name in get_accounts_on_cluster(cluster.name):
         # Do not adjust limits for root
         if account_name in ['root']:
             continue
-        log.info(f"Updating limits for account {account_name}")
+        log.info(f"Updating TRES billing hour limits for account {account_name}")
         update_limit_for_account(account_name, cluster.name)
 
 
 @shared_task()
 def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
-    """Update the usage limits for an individual Slurm account, closing out any expired allocations"""
+    """Update the TRES Billing Hour usage limits for an individual Slurm account, closing out any expired allocations"""
 
     # Check that the Slurm account has an entry in the keystone database
     try:
@@ -90,7 +90,14 @@ def close_expired_allocations(closing_allocations: Collection[Allocation], curre
 
 
 def get_accounts_on_cluster(cluster_name: str) -> Collection[str]:
-    """Return a list of account names for a given cluster"""
+    """Gather a list of account names for a given cluster from sacctmgr
+
+    Args:
+        cluster_name: The name of the cluster to get usage on
+
+    Returns:
+        A list of Slurm account names
+    """
 
     cmd = split(f"sacctmgr show -nP account withassoc where parents=root cluster={cluster_name} format=Account")
 
@@ -99,34 +106,77 @@ def get_accounts_on_cluster(cluster_name: str) -> Collection[str]:
     return out.split()
 
 
-def set_cluster_limit(account_name: str, cluster_name: str, limit: int) -> None:
-    """Update the current usage limit (in minutes) to the provided limit on a given cluster for a given account"""
+def set_cluster_limit(account_name: str, cluster_name: str, limit: int, in_minutes: bool = False) -> None:
+    """Update the current TRES Billing hour usage limit to the provided limit on a given cluster for a given account
+    with sacctmgr. The default time unit is Hours.
 
-    cmd = split(f"sacctmgr modify account where account={account_name} cluster={cluster_name} set "
-                f"GrpTresRunMins=billing={limit}")
+    Args:
+        account_name: The name of the account to get usage for
+        cluster_name: The name of the cluster to get usage on
+        limit: Number of billing TRES hours to set the usage limit to
+        in_minutes: Boolean value for whether (True) or not (False) the set limit is in minutes (Default: False)
+    """
+
+    if in_minutes:
+        limit *= 60
+
+    cmd = split(f"sacctmgr modify account where account={account_name} cluster={cluster_name} set GrpTresRunMins=billing={limit}")
 
     subprocess_call(cmd)
 
 
-def get_cluster_limit(account_name: str, cluster_name: str) -> int:
-    """Get the current usage limit (in minutes) on a given cluster for a given account"""
+def get_cluster_limit(account_name: str, cluster_name: str, in_minutes: bool = False) -> int:
+    """Get the current TRES Billing Hour usage limit on a given cluster for a given account with sacctmgr.
+    The default time unit is Hours.
+
+    Args:
+        account_name: The name of the account to get usage for
+        cluster_name: The name of the cluster to get usage on
+        in_minutes: Boolean value for whether (True) or not (False) the returned limit is in minutes (Default: False)
+
+    Returns:
+        An integer representing the total (historical + current) billing TRES limit
+    """
 
     cmd = split(f"sacctmgr show -nP association where account={account_name} cluster={cluster_name} "
                 f"format=GrpTRESRunMin")
 
     limit = re.findall(r'billing=(.*)\n', subprocess_call(cmd))[0]
 
-    return int(limit) if limit.isnumeric() else 0
+    if not limit.isnumeric():
+        return 0
+
+    limit = int(limit)
+    if in_minutes:
+        limit *= 60
+
+    return limit
 
 
-def get_cluster_usage(account_name: str, cluster_name: str) -> int:
-    """Get the total billable usage in minutes on a given cluster for a given account"""
+def get_cluster_usage(account_name: str, cluster_name: str, in_hours: bool = True) -> int:
+    """Get the total billable usage in minutes on a given cluster for a given account
+
+    Args:
+        account_name: The name of the account to get usage for
+        cluster_name: The name of the cluster to get usage on
+        in_hours: Boolean value for whether (True) or not (False) the returned Usage is in hours (Default: True)
+
+    Returns:
+        An integer representing the total (historical + current) billing TRES hours usage from sshare
+    """
 
     cmd = split(f"sshare -nP -A {account_name} -M {cluster_name} --format=GrpTRESRaw")
 
     usage = re.findall(r'billing=(.*),fs', subprocess_call(cmd))[0]
 
-    return int(usage) if usage.isnumeric() else 0
+    if not usage.isnumeric():
+        return 0
+
+    usage = int(usage)
+    if in_hours:
+        usage //= 60
+
+    return usage
 
 
 def subprocess_call(args: List[str]) -> str:
