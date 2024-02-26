@@ -59,20 +59,21 @@ def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
 
     # Gather allocations that have expired but do not have a final usage value
     # (still contributing to current limit as active SUs instead of historical usage)
-    closing_allocations_query = (Allocation.objects.filter(proposal__group=account,
+    closing_allocations_query = (Allocation.objects.filter(request__group=account,
                                                            cluster=cluster,
-                                                           proposal_approved=True,
+                                                           request__approved=True,
                                                            final=None,  # TODO: will this work?
-                                                           proposal__expire__lte=date.today())
-                                                   .order_by("proposal__expire"))
+                                                           request__expire__lte=date.today())
+                                                   .order_by("request__expire"))
 
-    # Gather all allocations belonging to "active" (started today or before and approved) proposals for the account
-    active_allocations_query = (Allocation.objects.filter(proposal__group=account,
+    # Gather all allocations belonging to "active" (started today or before and approved) Allocation Requests
+    # for the account
+    active_allocations_query = (Allocation.objects.filter(request__group=account,
                                                           cluster=cluster,
-                                                          proposal_approved=True,
-                                                          proposal__active__lte=date.today(),
-                                                          proposal__expire__gt=date.today())
-                                                  .order_by("proposal__expire"))
+                                                          request__approved=True,
+                                                          request__active__lte=date.today(),
+                                                          request__expire__gt=date.today())
+                                                  .order_by("request__expire"))
 
     # Determine the SU contribution by active allocations
     # TODO: Is this zero if there are no active allocations?
@@ -87,11 +88,11 @@ def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
     # Close out any expired allocations
     close_expired_allocations(closing_allocations_query.all(), current_usage)
 
-    # Gather the updated historical usage from expired proposal allocations (including any newly expired allocations)
-    historical_usage = (Allocation.objects.filter(proposal__group=account,
+    # Gather the updated historical usage from expired allocations (including any newly expired allocations)
+    historical_usage = (Allocation.objects.filter(request__group=account,
                                                   cluster=cluster,
-                                                  proposal__approved=True,
-                                                  proposal__expire__lte=date.today())
+                                                  request__approved=True,
+                                                  request__expire__lte=date.today())
                                           .aggregate(Sum("final")))
 
     # Determine new limit, including the SUs any new allocations starting today
@@ -107,7 +108,7 @@ def close_expired_allocations(closing_allocations: Collection[Allocation], curre
 
     for allocation in closing_allocations:
         # TODO: Do these have an ID we can log instead?
-        log.debug(f"Closing allocation {allocation.proposal.group}:{allocation.proposal.title}")
+        log.debug(f"Closing allocation {allocation.request.group}:{allocation.request.title}")
 
         # Set the final usage for the expired allocation
         if current_usage < allocation.final:
