@@ -5,10 +5,10 @@ import logging
 import re
 from shlex import split
 from subprocess import PIPE, Popen
-from typing import Collection
+from typing import Collection, List
 
 from celery import shared_task
-from django.db.models import Sum
+from django.db.models import Sum, ObjectDoesNotExist
 
 from apps.allocations.models import *
 from apps.users.models import *
@@ -46,10 +46,12 @@ def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
     # Check that the Slurm account has an entry in the keystone database
     try:
         account = ResearchGroup.objects.get(name=account_name)
-    except ResearchGroup.DoesNotExist:
+    except ObjectDoesNotExist:
         #  Set the usage limit to zero (lock on this cluster) and continue
         log.warning(f"No existing ResearchGroup for account {account_name}, locking {account_name} on {cluster.name}")
-        set_cluster_limit(account_name, cluster.name, 0)
+        # TODO: This may create historical usage that keystone doesnt know about if raw usage is not reset
+        #  for the account upon it actually being added into the application
+        set_cluster_limit(account_name, cluster.name, get_cluster_usage(account_name, cluster.name))
         return
 
     # TODO: plan to perform a reset of rawusage before deployment. This makes it so an initial usage does not need
@@ -117,7 +119,7 @@ def close_expired_allocations(closing_allocations: Collection[Allocation], curre
         current_usage -= allocation.final
 
 
-def get_accounts_on_cluster(cluster_name: str) -> List[str]:
+def get_accounts_on_cluster(cluster_name: str) -> Collection[str]:
     """Return a list of account names for a given cluster"""
 
     # TODO: can we assume Slurm installations will have root as parent for child slurm accounts
