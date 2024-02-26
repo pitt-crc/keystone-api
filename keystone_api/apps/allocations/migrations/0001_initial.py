@@ -43,9 +43,6 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=50)),
                 ('description', models.TextField(blank=True, max_length=150, null=True)),
                 ('enabled', models.BooleanField(default=True)),
-                ('api_url', models.CharField(max_length=1000)),
-                ('api_user', models.CharField(max_length=150)),
-                ('api_token', models.CharField(max_length=200)),
             ],
         ),
         migrations.CreateModel(

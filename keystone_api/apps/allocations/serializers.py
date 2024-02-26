@@ -16,7 +16,6 @@ __all__ = [
     'AllocationRequestSerializer',
     'AllocationRequestReviewSerializer',
     'ClusterSerializer',
-    'SafeClusterSerializer'
 ]
 
 
@@ -59,11 +58,3 @@ class ClusterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cluster
         fields = '__all__'
-
-
-class SafeClusterSerializer(serializers.ModelSerializer):
-    """Object serializer for the `Cluster` class that excludes sensitive fields"""
-
-    class Meta:
-        model = Cluster
-        fields = ('name', 'description', 'enabled')
