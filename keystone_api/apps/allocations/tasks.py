@@ -51,62 +51,39 @@ def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
         set_cluster_limit(account_name, cluster.name, get_cluster_usage(account_name, cluster.name))
         return
 
-    # Gather allocations that have expired but do not have a final usage value
+    # Base query for approved Allocations under the account on this cluster
+    acct_alloc_query = Allocation.objects.filter(request__group=account, cluster=cluster, request__approved=True)
+
+    # Filter on the base query for allocations that have expired but do not have a final usage value
     # (still contributing to current limit as active SUs instead of historical usage)
-    closing_allocations_query = (Allocation.objects.filter(request__group=account,
-                                                           cluster=cluster,
-                                                           request__approved=True,
-                                                           final=None,
-                                                           request__expire__lte=date.today())
-                                                   .order_by("request__expire"))
+    closing_query = acct_alloc_query.filter(final=None, request__expire__lte=date.today()) \
+                                    .order_by("request__expire")
 
-    # Gather all allocations belonging to "active" (started today or before and approved) Allocation Requests
-    # for the account
-    active_allocations_query = (Allocation.objects.filter(request__group=account,
-                                                          cluster=cluster,
-                                                          request__approved=True,
-                                                          request__active__lte=date.today(),
-                                                          request__expire__gt=date.today())
-                                                  .order_by("request__expire"))
-
-    # Determine the SU contribution by active allocations
-    active_sus = active_allocations_query.aggregate(Sum("awarded"))
+    # Filter account's allocations to those that are active, and determine their total service unit contribution
+    active_sus = acct_alloc_query.filter(request__active__lte=date.today(),request__expire__gt=date.today()) \
+                                 .aggregate(Sum("awarded"))
 
     # Determine usage that can be covered:
     # total usage on the cluster (from slurm) - historical usage (current limit from slurm - active SUs - closing SUs)
-    current_usage = (get_cluster_usage(account.name, cluster.name) -
-                     (get_cluster_limit(account.name, cluster.name)
-                      - active_sus - closing_allocations_query.aggregate(Sum("awarded"))))
+    current_usage = get_cluster_usage(account.name, cluster.name) - (get_cluster_limit(account.name, cluster.name) - active_sus - closing_query.aggregate(Sum("awarded")))
 
-    # Close out any expired allocations
-    close_expired_allocations(closing_allocations_query.all(), current_usage)
+    close_expired_allocations(closing_query.all(), current_usage)
 
     # Gather the updated historical usage from expired allocations (including any newly expired allocations)
-    historical_usage = (Allocation.objects.filter(request__group=account,
-                                                  cluster=cluster,
-                                                  request__approved=True,
-                                                  request__expire__lte=date.today())
-                                          .aggregate(Sum("final")))
-
-    # Determine new limit, including the SUs any new allocations starting today
-    new_limit = historical_usage + active_sus
+    historical_usage = acct_alloc_query.filter(request__expire__lte=date.today()).aggregate(Sum("final"))
 
     # Set the new limit to the calculated limit
-    set_cluster_limit(account_name, cluster.name, new_limit)
+    set_cluster_limit(account_name, cluster.name, limit=historical_usage + active_sus)
 
 
 def close_expired_allocations(closing_allocations: Collection[Allocation], current_usage: int) -> None:
-    """ Cover as much of the current usage as possible with expired allocations that have not yet been closed out
-    # Setting final usage for these allocations  the historical usage """
+    """Set the final usage for expired allocations that have not yet been closed out"""
 
     for allocation in closing_allocations:
         log.debug(f"Closing allocation {allocation.request.group}:{allocation.request.title}")
 
         # Set the final usage for the expired allocation
-        if current_usage < allocation.final:
-            allocation.final = current_usage
-        else:
-            allocation.final = allocation.awarded
+        allocation.final = min(current_usage, allocation.awarded)
 
         # Update the usage needing to be covered, so it is not double counted (can only ever be >= 0)
         current_usage -= allocation.final
