@@ -63,15 +63,16 @@ def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
 
     # Determine usage that can be covered:
     # total usage on the cluster (from slurm) - historical usage (current limit from slurm - active SUs - closing SUs)
-    current_usage = get_cluster_usage(account.name, cluster.name) - (get_cluster_limit(account.name, cluster.name) - active_sus - closing_query.aggregate(Sum("awarded")))
+    historical_usage_from_limit = get_cluster_limit(account.name, cluster.name) - active_sus - closing_query.aggregate(Sum("awarded"))
+    current_usage = get_cluster_usage(account.name, cluster.name) - historical_usage_from_limit
 
     close_expired_allocations(closing_query.all(), current_usage)
 
     # Gather the updated historical usage from expired allocations (including any newly expired allocations)
-    historical_usage = acct_alloc_query.filter(request__expire__lte=date.today()).aggregate(Sum("final"))
+    updated_historical_usage = acct_alloc_query.filter(request__expire__lte=date.today()).aggregate(Sum("final"))
 
     # Set the new limit to the calculated limit
-    set_cluster_limit(account_name, cluster.name, limit=historical_usage + active_sus)
+    set_cluster_limit(account_name, cluster.name, limit=updated_historical_usage + active_sus)
 
 
 def close_expired_allocations(closing_allocations: Collection[Allocation], current_usage: int) -> None:
