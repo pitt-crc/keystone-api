@@ -168,8 +168,9 @@ _redis_db = env.int('REDIS_DB', 0)
 _redis_pass = env.str('REDIS_PASSWORD', '')
 
 REDIS_URL = f'redis://:{_redis_pass}@{_redis_host}:{_redis_port}'
-CELERY_BROKER_URL = REDIS_URL.rstrip('/') + f'/{_redis_db}'
-CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+CELERY_BROKER_URL = REDIS_URL + f'/{_redis_db}'
+
+CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'django-cache'
 
 # Database
@@ -229,7 +230,14 @@ AUTH_PASSWORD_VALIDATORS = [
 # Static file handling (CSS, JavaScript, Images)
 
 STATIC_URL = 'static/'
-STATIC_ROOT = env.path('STORAGE_STATIC_DIR', BASE_DIR / 'static_files')
+STATIC_ROOT = env.path('CONFIG_STATIC_DIR', BASE_DIR / 'static_files')
 
 MEDIA_URL = 'uploads/'
-MEDIA_ROOT = env.path('STORAGE_UPLOAD_DIR', BASE_DIR / 'upload_files')
+MEDIA_ROOT = env.path('CONFIG_UPLOAD_DIR', BASE_DIR / 'upload_files')
+
+# Timezones
+
+USE_TZ = True
+CELERY_ENABLE_UTC = True
+DJANGO_CELERY_BEAT_TZ_AWARE = True
+TIME_ZONE = env.str('CONFIG_TIMEZONE', 'UTC')

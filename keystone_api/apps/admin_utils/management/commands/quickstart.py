@@ -69,8 +69,8 @@ class Command(BaseCommand):
         """Start a Celery worker"""
 
         subprocess.Popen(['redis-server'])
-        subprocess.Popen(['celery', '-A', 'keystone_api', 'beat'])
-        subprocess.Popen(['celery', '-A', 'keystone_api', 'worker'])
+        subprocess.Popen(['celery', '-A', 'keystone_api.apps.scheduler', 'beat', '--scheduler', 'django_celery_beat.schedulers:DatabaseScheduler'])
+        subprocess.Popen(['celery', '-A', 'keystone_api.apps.scheduler', 'worker'])
 
     @staticmethod
     def run_gunicorn(host: str = '0.0.0.0', port: int = 8000) -> None:
