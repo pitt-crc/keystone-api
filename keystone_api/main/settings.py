@@ -229,7 +229,14 @@ AUTH_PASSWORD_VALIDATORS = [
 # Static file handling (CSS, JavaScript, Images)
 
 STATIC_URL = 'static/'
-STATIC_ROOT = env.path('STORAGE_STATIC_DIR', BASE_DIR / 'static_files')
+STATIC_ROOT = env.path('CONFIG_STATIC_DIR', BASE_DIR / 'static_files')
 
 MEDIA_URL = 'uploads/'
-MEDIA_ROOT = env.path('STORAGE_UPLOAD_DIR', BASE_DIR / 'upload_files')
+MEDIA_ROOT = env.path('CONFIG_UPLOAD_DIR', BASE_DIR / 'upload_files')
+
+# Timezones
+
+USE_TZ = True
+CELERY_ENABLE_UTC = True
+DJANGO_CELERY_BEAT_TZ_AWARE = True
+TIME_ZONE = env.str('CONFIG_TIMEZONE', 'UTC')

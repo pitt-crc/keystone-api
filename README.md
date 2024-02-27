@@ -109,6 +109,19 @@ sessions and require users to reauthenticate.
 | `SECURE_HSTS_SUBDOMAINS`  | `False`                  | Enable HSTS for subdomains.                                   |
 | `SECURE_HSTS_PRELOAD`     | `False`                  | Enable HSTS preload functionality.                            |
 
+### General Configuration
+
+The following settings configure varius aspects of Keystone's backend behavior.
+
+Keystone uses various static files to facilitate operation and support user requests.
+By default, these files are stored in subdirectories of the installed application directory (`<app>`).
+
+| Setting Name              | Default Value        | Description                                                       |
+|---------------------------|----------------------|-------------------------------------------------------------------|
+| `CONFIG_TIMEZONE`         | `UTC`                | The application timezone.                                         |
+| `CONFIG_STATIC_DIR`       | `<app>/static_files` | Where to store internal static files required by the application. |
+| `CONFIG_UPLOAD_DIR`       | `<app>/upload_files` | Where to store file data uploaded by users.                       |
+
 ### API Throttling
 
 API settings are used to throttle incoming API requests against a maximum limit.
@@ -159,16 +172,6 @@ Enabling password authentication is suggested when deploying Redis in a producti
 | `REDIS_PORT`              | `6379`                   | Port number for the Redis message cache.                      |
 | `REDIS_DB`                | `0`                      | The Redis database number to use.                             |
 | `REDIS_PASSWORD`          |                          | Optionally connect using the given password.                  |
-
-### File Storage
-
-Keystone uses various static files to facilitate operation and support user requests.
-By default, these files are stored in subdirectories of the installed application directory (`<app>`).
-
-| Setting Name              | Default Value        | Description                                                       |
-|---------------------------|----------------------|-------------------------------------------------------------------|
-| `STORAGE_STATIC_DIR`      | `<app>/static_files` | Where to store internal static files required by the application. |
-| `STORAGE_UPLOAD_DIR`      | `<app>/upload_files` | Where to store file data uploaded by users.                       |
 
 ### Developer Settings
 
