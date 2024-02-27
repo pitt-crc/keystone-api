@@ -168,8 +168,9 @@ _redis_db = env.int('REDIS_DB', 0)
 _redis_pass = env.str('REDIS_PASSWORD', '')
 
 REDIS_URL = f'redis://:{_redis_pass}@{_redis_host}:{_redis_port}'
-CELERY_BROKER_URL = REDIS_URL.rstrip('/') + f'/{_redis_db}'
-CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+CELERY_BROKER_URL = REDIS_URL + f'/{_redis_db}'
+
+CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'django-cache'
 
 # Database
