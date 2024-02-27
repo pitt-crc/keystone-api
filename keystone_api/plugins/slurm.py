@@ -6,6 +6,8 @@ from shlex import split
 from subprocess import PIPE, Popen
 from typing import Collection, List
 
+log = logging.getLogger(__name__)
+
 
 def subprocess_call(args: List[str]) -> str:
     """Wrapper method for executing shell commands via ``Popen.communicate``
@@ -22,7 +24,7 @@ def subprocess_call(args: List[str]) -> str:
 
     if process.returncode != 0:
         message = f"Error executing shell command: {' '.join(args)} \n {err.decode('utf-8').strip()}"
-        logging.getLogger(__name__).error(message)
+        log.error(message)
         raise RuntimeError(message)
 
     return out.decode("utf-8").strip()
