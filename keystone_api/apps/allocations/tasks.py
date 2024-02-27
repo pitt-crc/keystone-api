@@ -2,13 +2,14 @@
 
 from datetime import date
 import logging
+from typing import Collection
 
 from celery import shared_task
 from django.db.models import Sum, ObjectDoesNotExist
 
 from apps.allocations.models import Allocation, Cluster
 from apps.users.models import ResearchGroup
-from keystone_api.plugins.slurm import get_cluster_usage, get_cluster_limit, get_accounts_on_cluster
+from keystone_api.plugins.slurm import get_accounts_on_cluster, get_cluster_limit, get_cluster_usage, set_cluster_limit
 
 log = logging.getLogger(__name__)
 
@@ -57,7 +58,7 @@ def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
                                     .order_by("request__expire")
 
     # Filter account's allocations to those that are active, and determine their total service unit contribution
-    active_sus = acct_alloc_query.filter(request__active__lte=date.today(),request__expire__gt=date.today()) \
+    active_sus = acct_alloc_query.filter(request__active__lte=date.today(), request__expire__gt=date.today()) \
                                  .aggregate(Sum("awarded"))
 
     # Determine usage that can be covered:
