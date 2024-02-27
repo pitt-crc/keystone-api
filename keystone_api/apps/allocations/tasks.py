@@ -43,7 +43,7 @@ def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
     # Check that the Slurm account has an entry in the keystone database
     try:
         account = ResearchGroup.objects.get(name=account_name)
-    except ObjectDoesNotExist:
+    except ResearchGroup.DoesNotExist:
         #  Set the usage limit to the current usage (lock on this cluster) and continue
         log.warning(f"No existing ResearchGroup for account {account_name}, locking {account_name} on {cluster.name}")
         set_cluster_limit(account_name, cluster.name, get_cluster_usage(account_name, cluster.name))
