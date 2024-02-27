@@ -5,7 +5,7 @@ import logging
 from typing import Collection
 
 from celery import shared_task
-from django.db.models import Sum, ObjectDoesNotExist
+from django.db.models import Sum
 
 from apps.allocations.models import Allocation, Cluster
 from apps.users.models import ResearchGroup
