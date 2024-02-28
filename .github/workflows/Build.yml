@@ -43,7 +43,7 @@ jobs:
           path: /tmp/keystone-api.tar
 
   build-python:
-    name: Build Docker Image
+    name: Build Python Dist
     runs-on: ubuntu-latest
 
     steps:
