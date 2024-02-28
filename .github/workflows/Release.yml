@@ -34,7 +34,7 @@ jobs:
     needs: build
     uses: ./.github/workflows/Test.yml
   
-  docker:
-    name: Publish
-    needs: test
-    uses: ./.github/workflows/Publish.yml
+  # publish:
+  #   name: Publish
+  #   needs: test
+  #   uses: ./.github/workflows/Publish.yml
