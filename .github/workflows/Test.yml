@@ -15,7 +15,7 @@ jobs:
       - name: Fetch image artifact
         uses: actions/download-artifact@v4
         with:
-          name: keystone-api
+          name: keystone-api-docker
           path: /tmp
 
       - name: Load image
@@ -37,7 +37,7 @@ jobs:
       - name: Fetch image artifact
         uses: actions/download-artifact@v4
         with:
-          name: keystone-api
+          name: keystone-api-docker
           path: /tmp
 
       - name: Load image
@@ -63,7 +63,7 @@ jobs:
       - name: Fetch image artifact
         uses: actions/download-artifact@v4
         with:
-          name: keystone-api
+          name: keystone-api-docker
           path: /tmp
 
       - name: Run tests
