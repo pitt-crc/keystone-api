@@ -37,16 +37,16 @@ docker exec -it [CONTAINER NAME] keystone-api createsuperuser
 The default container instance is *not* suitable for full production out of the box.
 See the [Settings](#settings) section for a complete overview of configurable options and recommended settings.
 
-### Installing from source
+### Installing from PyPI
 
-Installing from source is only recommended for developers or as a fallback for situations where Docker is not available.
-Before proceeding with installation, the following system dependencies must be met:
+Installing the Keystone-API Python package is only recommended as a fallback for situations where using Docker is not feasible.
+Before proceeding with the installation, the following dependencies must be met:
 
 - A running Celery instance
 - A running Celery Beat instance
 - A running Redis database
 
-The following system dependencies are optional:
+The following dependencies are optional:
 
 - A running PostgreSQL database (if using PostgreSQL instead of SQLite)
 - LDAP development binaries (if using LDAP authentication)
@@ -59,10 +59,9 @@ conda activate keystone-api
 ```
 
 The package and its dependencies are pip installable.
-Note the recommended use of editable mode (`-e`) to simplify development.
 
 ```bash
-pip install -e keystone-api
+pip install keystone-api
 ```
 
 If the installation was successful, the packaged CLI tool will be available in your working environment.
