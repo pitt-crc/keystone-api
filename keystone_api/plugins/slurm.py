@@ -61,7 +61,7 @@ def set_cluster_limit(account_name: str, cluster_name: str, limit: int, in_minut
     if in_minutes:
         limit *= 60
 
-    cmd = split(f"sacctmgr modify account where account={account_name} cluster={cluster_name} set GrpTresRunMins=billing={limit}")
+    cmd = split(f"sacctmgr modify -i account where account={account_name} cluster={cluster_name} set GrpTresRunMins=billing={limit}")
 
     subprocess_call(cmd)
 
