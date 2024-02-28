@@ -11,7 +11,7 @@ on:
 
 jobs:
   build-docker:
-    name: Build Docker Image
+    name: Docker Image
     runs-on: ubuntu-latest
 
     steps:
@@ -43,7 +43,7 @@ jobs:
           path: /tmp/keystone-api.tar
 
   build-python:
-    name: Build Python Dist
+    name: Python Distribution
     runs-on: ubuntu-latest
 
     steps:
