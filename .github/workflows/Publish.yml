@@ -1,4 +1,4 @@
-name: 🤖 Publish Docker
+name: 🤖 Publish Package
 
 on:
   workflow_call:
@@ -6,7 +6,7 @@ on:
 jobs:
   publish-docker:
     runs-on: ubuntu-latest
-    name: Publish Image
+    name: Docker Image
 
     steps:
       - name: Checkout source
@@ -15,7 +15,7 @@ jobs:
       - name: Fetch image artifact
         uses: actions/download-artifact@v4
         with:
-          name: keystone-api
+          name: keystone-api-docker
           path: /tmp
 
       - name: Load image
@@ -44,3 +44,34 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+  publish-pypi:
+    name: Python Distribution
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: false
+
+      - name: Fetch build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: keystone-api-python
+          path: dist
+
+      - name: Publish package
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          print-hash: true
+          user: ${{ secrets.REPO_USER }}
+          password: ${{ secrets.REPO_PASSWORD }}
