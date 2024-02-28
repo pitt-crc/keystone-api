@@ -79,19 +79,17 @@ def get_cluster_limit(account_name: str, cluster_name: str, in_minutes: bool = F
         An integer representing the total (historical + current) billing TRES limit
     """
 
-    cmd = split(f"sacctmgr show -nP association where account={account_name} cluster={cluster_name} "
-                f"format=GrpTRESRunMin")
+    cmd = split(f"sacctmgr show -nP association where account={account_name} cluster={cluster_name} format=GrpTRESRunMin")
 
-    limit = re.findall(r'billing=(.*)\n', subprocess_call(cmd))[0]
-
-    if not limit.isnumeric():
+    try:
+        limit = re.findall(r'billing=(.*)', subprocess_call(cmd))[0]
+    except IndexError:
+        log.debug(f"'billing' limit not found in command output from {cmd}, assuming zero for current limit")
         return 0
 
-    limit = int(limit)
-    if in_minutes:
-        limit *= 60
+    limit = int(limit) if limit.isnumeric() else 0
 
-    return limit
+    return limit if in_minutes else limit * 60
 
 
 def get_cluster_usage(account_name: str, cluster_name: str, in_hours: bool = True) -> int:
@@ -108,13 +106,12 @@ def get_cluster_usage(account_name: str, cluster_name: str, in_hours: bool = Tru
 
     cmd = split(f"sshare -nP -A {account_name} -M {cluster_name} --format=GrpTRESRaw")
 
-    usage = re.findall(r'billing=(.*),fs', subprocess_call(cmd))[0]
-
-    if not usage.isnumeric():
+    try:
+        usage = re.findall(r'billing=(.*),fs', subprocess_call(cmd))[0]
+    except IndexError:
+        log.debug(f"'billing' usage not found in command output from {cmd}, assuming zero for current usage")
         return 0
 
-    usage = int(usage)
-    if in_hours:
-        usage //= 60
+    usage = int(usage) if usage.isnumeric() else 0
 
-    return usage
+    return usage if in_hours else usage // 60
