@@ -43,6 +43,7 @@ Installing from source is only recommended for developers or as a fallback for s
 Before proceeding with installation, the following system dependencies must be met:
 
 - A running Celery instance
+- A running Celery Beat instance
 - A running Redis database
 
 The following system dependencies are optional:
