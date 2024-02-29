@@ -10,6 +10,21 @@ from celery import shared_task
 from django.conf import Settings
 from django_auth_ldap.backend import LDAPBackend
 
+from .models import User
+
+
+def get_connection() -> ldap.ldapobject.LDAPObject:
+    """Establish a new LDAP connection"""
+
+    conn = ldap.initialize(Settings.AUTH_LDAP_SERVER_URI)
+    if Settings.AUTH_LDAP_BIND_DN:
+        conn.bind(Settings.AUTH_LDAP_BIND_DN, Settings.AUTH_LDAP_BIND_PASSWORD)
+
+    if Settings.AUTH_LDAP_START_TLS:
+        conn.start_tls_s()
+
+    return conn
+
 
 @shared_task()
 def ldap_update() -> None:
@@ -22,15 +37,22 @@ def ldap_update() -> None:
     if not Settings.AUTH_LDAP_SERVER_URI:
         return
 
-    conn = ldap.initialize(Settings.AUTH_LDAP_SERVER_URI)
-    if Settings.AUTH_LDAP_BIND_DN:
-        conn.bind(Settings.AUTH_LDAP_BIND_DN, Settings.AUTH_LDAP_BIND_PASSWORD)
-
-    if Settings.AUTH_LDAP_START_TLS:
-        conn.start_tls_s()
-
+    conn = get_connection()
     search = conn.search_s(Settings.AUTH_LDAP_USER_SEARCH, ldap.SCOPE_SUBTREE, '(objectClass=account)')
     ldap_names = {uid.decode() for result in search for uid in result[1]['uid']}
 
     for username in ldap_names:
         LDAPBackend().populate_user(username)
+
+
+def ldap_prune() -> None:
+    """Delete all user accounts with usernames not found in LDAP"""
+
+    conn = get_connection()
+    search = conn.search_s(Settings.AUTH_LDAP_USER_SEARCH, ldap.SCOPE_SUBTREE, '(objectClass=account)')
+
+    ldap_names = {uid.decode() for result in search for uid in result[1]['uid']}
+    usernames = set(User.objects.values_list('name', flat=True))
+    users_to_delete = usernames - ldap_names
+
+    User.objects.filter(username__in=users_to_delete).delete()
