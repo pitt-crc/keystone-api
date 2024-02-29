@@ -12,7 +12,7 @@ from django_auth_ldap.backend import LDAPBackend
 
 
 @shared_task()
-def sync_users_with_ldap() -> None:
+def ldap_update() -> None:
     """Update the user database with the latest data from LDAP
 
     This function performs no action if the `AUTH_LDAP_SERVER_URI` setting
