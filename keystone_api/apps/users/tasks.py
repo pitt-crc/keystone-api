@@ -32,4 +32,4 @@ def sync_users_with_ldap() -> None:
     search = conn.search_s(Settings.AUTH_LDAP_USER_SEARCH, ldap.SCOPE_SUBTREE, '(objectClass=account)')
     for result in search:
         for uid in result[1]['uid']:
-            LDAPBackend().populate_user(uid)
+            LDAPBackend().populate_user(uid.decode())
