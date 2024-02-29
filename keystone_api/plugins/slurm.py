@@ -66,14 +66,14 @@ def set_cluster_limit(account_name: str, cluster_name: str, limit: int, in_minut
     subprocess_call(cmd)
 
 
-def get_cluster_limit(account_name: str, cluster_name: str, in_minutes: bool = False) -> int:
+def get_cluster_limit(account_name: str, cluster_name: str, in_hours: bool = True) -> int:
     """Get the current TRES Billing Hour usage limit on a given cluster for a given account with sacctmgr.
-    The default time unit is Hours.
+    The default time unit is Hours and can be converted to minutes with in_hours = False.
 
     Args:
         account_name: The name of the account to get usage for
         cluster_name: The name of the cluster to get usage on
-        in_minutes: Boolean value for whether (True) or not (False) the returned limit is in minutes (Default: False)
+        in_hours: Boolean value for whether (True) or not (False) the returned limit is in Hours (Default: True)
 
     Returns:
         An integer representing the total (historical + current) billing TRES limit
@@ -89,11 +89,12 @@ def get_cluster_limit(account_name: str, cluster_name: str, in_minutes: bool = F
 
     limit = int(limit) if limit.isnumeric() else 0
 
-    return limit if in_minutes else limit * 60
+    return limit if in_hours else limit * 60
 
 
 def get_cluster_usage(account_name: str, cluster_name: str, in_hours: bool = True) -> int:
-    """Get the total billable usage in minutes on a given cluster for a given account
+    """Get the total billable usage in Hours on a given cluster for a given account. Can be provided in minutes with
+    in_hours = False.
 
     Args:
         account_name: The name of the account to get usage for
@@ -114,4 +115,5 @@ def get_cluster_usage(account_name: str, cluster_name: str, in_hours: bool = Tru
 
     usage = int(usage) if usage.isnumeric() else 0
 
-    return usage if in_hours else usage // 60
+    # Billing TRES comes out of Slurm in minutes, needs to be converted to hours
+    return usage // 60 if in_hours else usage
