@@ -45,6 +45,9 @@ def ldap_update() -> None:
         LDAPBackend().populate_user(username)
 
 
+# TODO: Protect accounts not made via LDAP syncing
+# TODO: Revisit handling of the mapping from attributes to model fields
+
 def ldap_prune() -> None:
     """Delete all user accounts with usernames not found in LDAP"""
 
