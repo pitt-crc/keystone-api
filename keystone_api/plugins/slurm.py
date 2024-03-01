@@ -48,14 +48,14 @@ def get_accounts_on_cluster(cluster_name: str) -> Collection[str]:
 
 
 def set_cluster_limit(account_name: str, cluster_name: str, limit: int, in_hours: bool = True) -> None:
-    """Update the current TRES Billing hour usage limit to the provided limit on a given cluster for a given account
-    with sacctmgr. The default time unit is Hours.
+    """Update the current TRES Billing usage limit to the provided limit on a given cluster for a given account
+    with sacctmgr. The default expected limit unit is Hours, and a conversion takes place as Slurm uses minutes.
 
     Args:
         account_name: The name of the account to get usage for
         cluster_name: The name of the cluster to get usage on
         limit: Number of billing TRES hours to set the usage limit to
-        in_hours: Boolean value for whether (True) or not (False) the set limit is in minutes (Default: False)
+        in_hours: Boolean value for whether (True) or not (False) the limit provided is in Hours (Default: True)
     """
 
     # Convert the input hours to minutes
@@ -68,8 +68,9 @@ def set_cluster_limit(account_name: str, cluster_name: str, limit: int, in_hours
 
 
 def get_cluster_limit(account_name: str, cluster_name: str, in_hours: bool = True) -> int:
-    """Get the current TRES Billing Hour usage limit on a given cluster for a given account with sacctmgr.
-    The default time unit is Hours and can be converted to minutes with in_hours = False.
+    """Get the current TRES Billing usage limit on a given cluster for a given account with sacctmgr.
+    The limit unit coming out of Slurm is minutes, and the default behavior is to convert this to hours.
+    This can be skipped with in_hours = False.
 
     Args:
         account_name: The name of the account to get usage for
@@ -94,8 +95,8 @@ def get_cluster_limit(account_name: str, cluster_name: str, in_hours: bool = Tru
 
 
 def get_cluster_usage(account_name: str, cluster_name: str, in_hours: bool = True) -> int:
-    """Get the total billable usage in Hours on a given cluster for a given account. Can be provided in minutes with
-    in_hours = False.
+    """Get the total billable usage in Hours on a given cluster for a given account. Slurm provides a usage in minutes
+    and that values is converted to Hours by default. This can be skipped with in_hours = False.
 
     Args:
         account_name: The name of the account to get usage for

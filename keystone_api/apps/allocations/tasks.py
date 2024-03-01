@@ -26,7 +26,7 @@ def update_limits() -> None:
 
 @shared_task()
 def update_limits_for_cluster(cluster: Cluster) -> None:
-    """Update the TRES billing hour usage limits of each account on a given cluster, excluding the root account"""
+    """Update the TRES billing usage limits of each account on a given cluster, excluding the root account"""
 
     for account_name in get_accounts_on_cluster(cluster.name):
         # Do not adjust limits for root
@@ -38,7 +38,7 @@ def update_limits_for_cluster(cluster: Cluster) -> None:
 
 @shared_task()
 def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
-    """Update the TRES Billing Hour usage limits for an individual Slurm account, closing out any expired allocations"""
+    """Update the TRES billing usage limits for an individual Slurm account, closing out any expired allocations"""
 
     # Check that the Slurm account has an entry in the keystone database
     try:
