@@ -33,7 +33,7 @@ def update_limits_for_cluster(cluster: Cluster) -> None:
         if account_name in ['root']:
             continue
         log.info(f"Updating TRES billing hour limits for account {account_name}")
-        update_limit_for_account(account_name, cluster.name)
+        update_limit_for_account(account_name, cluster)
 
 
 @shared_task()
