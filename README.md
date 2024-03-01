@@ -132,10 +132,19 @@ Limits are specified as the maximum number of requests per `day`, `minute`, `hou
 | `API_THROTTLE_ANON`       | `1000/day`               | Rate limiting for anonymous (unauthenticated) users.          |
 | `API_THROTTLE_USER`       | `10000/day`              | Rate limiting for authenticated users.                        |
 
-### Authentication
+### LDAP Authentication
 
 Enabling LDAP authentication is optional and disabled by default.
 To enable LDAP, set the `AUTH_LDAP_SERVER_URI` value to the desired LDAP endpoint.
+
+Application user fields can be mapped to LDAP attributes by specifying the `AUTH_LDAP_ATTR_MAP` setting.
+The following example maps the `first_name` and `last_name` fields used by Keystone to the LDAP attributes `givenName` and `sn`:
+
+```bash
+AUTH_LDAP_ATTR_MAP="first_name=givenName,last_name=sn"
+```
+
+See the `apps.users.models.User` class for a full list of available Keystone fields.
 
 | Setting Name              | Default Value            | Description                                                   |
 |---------------------------|--------------------------|---------------------------------------------------------------|
@@ -145,6 +154,7 @@ To enable LDAP, set the `AUTH_LDAP_SERVER_URI` value to the desired LDAP endpoin
 | `AUTH_LDAP_BIND_PASSWORD` |                          | The password to use when binding to the LDAP server.          |
 | `AUTH_LDAP_USER_SEARCH`   | `(uid=%(user)s)`         | The search query for finding a user in the LDAP server.       |
 | `AUTH_LDAP_REQUIRE_CERT`  | `False`                  | Whether to require certificate verification.                  |
+| `AUTH_LDAP_ATTR_MAP`      |                          | A mapping of user fields to LDAP attribute names.             |
 
 ### Database Connection
 
