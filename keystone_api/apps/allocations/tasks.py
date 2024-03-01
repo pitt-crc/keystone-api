@@ -50,7 +50,7 @@ def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
         return
 
     # Base query for approved Allocations under the account on this cluster
-    acct_alloc_query = Allocation.objects.filter(request__group=account, cluster=cluster, request__approved=True)
+    acct_alloc_query = Allocation.objects.filter(request__group=account, cluster=cluster, request__approved__isnull=False)
 
     # Filter on the base query for allocations that have expired but do not have a final usage value
     # (still contributing to current limit as active SUs instead of historical usage)
