@@ -47,7 +47,7 @@ def get_accounts_on_cluster(cluster_name: str) -> Collection[str]:
     return out.split()
 
 
-def set_cluster_limit(account_name: str, cluster_name: str, limit: int, in_minutes: bool = False) -> None:
+def set_cluster_limit(account_name: str, cluster_name: str, limit: int, in_hours: bool = True) -> None:
     """Update the current TRES Billing hour usage limit to the provided limit on a given cluster for a given account
     with sacctmgr. The default time unit is Hours.
 
@@ -55,13 +55,14 @@ def set_cluster_limit(account_name: str, cluster_name: str, limit: int, in_minut
         account_name: The name of the account to get usage for
         cluster_name: The name of the cluster to get usage on
         limit: Number of billing TRES hours to set the usage limit to
-        in_minutes: Boolean value for whether (True) or not (False) the set limit is in minutes (Default: False)
+        in_hours: Boolean value for whether (True) or not (False) the set limit is in minutes (Default: False)
     """
 
-    if in_minutes:
+    # Convert the input hours to minutes
+    if in_hours:
         limit *= 60
 
-    cmd = split(f"sacctmgr modify -i account where account={account_name} cluster={cluster_name} set GrpTresRunMins=billing={limit}")
+    cmd = split(f"sacctmgr modify -i account where account={account_name} cluster={cluster_name} set GrpTresMins=billing={limit}")
 
     subprocess_call(cmd)
 
@@ -79,7 +80,7 @@ def get_cluster_limit(account_name: str, cluster_name: str, in_hours: bool = Tru
         An integer representing the total (historical + current) billing TRES limit
     """
 
-    cmd = split(f"sacctmgr show -nP association where account={account_name} cluster={cluster_name} format=GrpTRESRunMin")
+    cmd = split(f"sacctmgr show -nP association where account={account_name} cluster={cluster_name} format=GrpTRESMins")
 
     try:
         limit = re.findall(r'billing=(.*)', subprocess_call(cmd))[0]
@@ -89,7 +90,7 @@ def get_cluster_limit(account_name: str, cluster_name: str, in_hours: bool = Tru
 
     limit = int(limit) if limit.isnumeric() else 0
 
-    return limit if in_hours else limit * 60
+    return limit // 60 if in_hours else limit
 
 
 def get_cluster_usage(account_name: str, cluster_name: str, in_hours: bool = True) -> int:
