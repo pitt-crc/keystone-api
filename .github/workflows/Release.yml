@@ -38,3 +38,4 @@ jobs:
     name: Publish
     needs: test
     uses: ./.github/workflows/Publish.yml
+    secrets: inherit
