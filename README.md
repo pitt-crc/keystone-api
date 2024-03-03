@@ -105,6 +105,7 @@ sessions and require users to reauthenticate.
 | `SECURE_ALLOWED_HOSTS`    | `localhost,127.0.0.1`    | Comma-separated list of accepted host/domain names.           |
 | `SECURE_SSL_REDIRECT`     | `False`                  | Automatically redirect all HTTP traffic to HTTPS.             |
 | `SECURE_SESSION_TOKENS`   | `False`                  | Only issue session/CSRF tokens over secure connections.       |
+| `SECURE_CSRF_ORIGINS`     | `[]`                     | Domains (with protocol) to accept CSRF headers from.          |
 | `SECURE_HSTS_SECONDS`     | `0` (Disabled)           | HSTS cache duration in seconds.                               |
 | `SECURE_HSTS_SUBDOMAINS`  | `False`                  | Enable HSTS for subdomains.                                   |
 | `SECURE_HSTS_PRELOAD`     | `False`                  | Enable HSTS preload functionality.                            |
