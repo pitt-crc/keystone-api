@@ -220,8 +220,8 @@ if AUTH_LDAP_SERVER_URI := env.url("AUTH_LDAP_SERVER_URI", "").geturl():
     if env.bool('AUTH_LDAP_REQUIRE_CERT', False):
         AUTH_LDAP_GLOBAL_OPTIONS = {ldap.OPT_X_TLS_REQUIRE_CERT: ldap.OPT_X_TLS_NEVER}
 
-    if _AUTH_LDAP_ATTR_MAP := env.dict('AUTH_LDAP_ATTR_MAP', default=dict()):
-        AUTH_LDAP_USER_ATTR_MAP = _AUTH_LDAP_ATTR_MAP
+    if _ldap_attr_map := env.dict('AUTH_LDAP_ATTR_MAP', default=dict()):
+        AUTH_LDAP_USER_ATTR_MAP = _ldap_attr_map
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
