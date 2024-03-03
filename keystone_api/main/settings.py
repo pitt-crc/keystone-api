@@ -28,14 +28,14 @@ FIXTURE_DIRS = [BASE_DIR / 'tests' / 'fixtures']
 SECRET_KEY = os.environ.get('SECURE_SECRET_KEY', get_random_secret_key())
 ALLOWED_HOSTS = env.list("SECURE_ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
 
-_SECURE_SESSION_TOKENS = env.bool("SECURE_SESSION_TOKENS", default=False)
+_SECURE_SESSION_TOKENS = env.bool("SECURE_SESSION_TOKENS", False)
 SESSION_COOKIE_SECURE = _SECURE_SESSION_TOKENS
 CSRF_COOKIE_SECURE = _SECURE_SESSION_TOKENS
 
-SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=False)
-SECURE_HSTS_PRELOAD = env.bool("SECURE_HSTS_PRELOAD", default=False)
-SECURE_HSTS_SECONDS = env.int("SECURE_HSTS_SECONDS", default=0)
-SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool("SECURE_HSTS_SUBDOMAINS", default=False)
+SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", False)
+SECURE_HSTS_PRELOAD = env.bool("SECURE_HSTS_PRELOAD", False)
+SECURE_HSTS_SECONDS = env.int("SECURE_HSTS_SECONDS", 0)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool("SECURE_HSTS_SUBDOMAINS", False)
 
 # App Configuration
 
@@ -132,8 +132,8 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle'
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': env.str('API_THROTTLE_ANON', default='1000/day'),
-        'user': env.str('API_THROTTLE_USER', default='10000/day')
+        'anon': env.str('API_THROTTLE_ANON', '1000/day'),
+        'user': env.str('API_THROTTLE_USER', '10000/day')
     },
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
@@ -220,7 +220,7 @@ if AUTH_LDAP_SERVER_URI := env.url("AUTH_LDAP_SERVER_URI", "").geturl():
     if env.bool('AUTH_LDAP_REQUIRE_CERT', False):
         AUTH_LDAP_GLOBAL_OPTIONS = {ldap.OPT_X_TLS_REQUIRE_CERT: ldap.OPT_X_TLS_NEVER}
 
-    if _AUTH_LDAP_ATTR_MAP := env.dict('AUTH_LDAP_ATTR_MAP'):
+    if _AUTH_LDAP_ATTR_MAP := env.dict('AUTH_LDAP_ATTR_MAP', default=dict()):
         AUTH_LDAP_USER_ATTR_MAP = _AUTH_LDAP_ATTR_MAP
 
 AUTH_PASSWORD_VALIDATORS = [
