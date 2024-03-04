@@ -29,4 +29,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options) -> None:
         """Handle the command execution"""
 
-        ldap_update(prune=options['prune'])
+        try:
+            ldap_update(prune=options['prune'])
+
+        except KeyboardInterrupt:
+            pass
