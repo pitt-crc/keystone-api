@@ -27,35 +27,31 @@ def get_connection() -> ldap.ldapobject.LDAPObject:
 
 
 @shared_task()
-def ldap_update() -> None:
+def ldap_update(prune=False) -> None:
     """Update the user database with the latest data from LDAP
 
     This function performs no action if the `AUTH_LDAP_SERVER_URI` setting
     is not configured in the application settings.
+
+    Args:
+        prune: Optionally delete any accounts with usernames not found in LDAP
     """
 
     if not Settings.AUTH_LDAP_SERVER_URI:
         return
 
+    # Search LDAP for all users
     conn = get_connection()
     search = conn.search_s(Settings.AUTH_LDAP_USER_SEARCH, ldap.SCOPE_SUBTREE, '(objectClass=account)')
-    ldap_names = {uid.decode() for result in search for uid in result[1]['uid']}
+
+    # Fetch keystone usernames using the LDAP attribute map defined in settings
+    ldap_username_attr = Settings.AUTH_LDAP_USER_ATTR_MAP.get('username', 'uid')
+    ldap_names = {uid.decode() for result in search for uid in result[1][ldap_username_attr]}
 
     for username in ldap_names:
         LDAPBackend().populate_user(username)
 
-
-# TODO: Protect accounts not made via LDAP syncing
-# TODO: Revisit handling of the mapping from attributes to model fields
-
-def ldap_prune() -> None:
-    """Delete all user accounts with usernames not found in LDAP"""
-
-    conn = get_connection()
-    search = conn.search_s(Settings.AUTH_LDAP_USER_SEARCH, ldap.SCOPE_SUBTREE, '(objectClass=account)')
-
-    ldap_names = {uid.decode() for result in search for uid in result[1]['uid']}
-    usernames = set(User.objects.values_list('name', flat=True))
-    users_to_delete = usernames - ldap_names
-
-    User.objects.filter(username__in=users_to_delete).delete()
+    if prune:
+        usernames = set(User.objects.values_list('name', flat=True))
+        users_to_delete = usernames - ldap_names
+        User.objects.filter(username__in=users_to_delete).delete()
