@@ -7,8 +7,9 @@ application database.
 
 import ldap
 from celery import shared_task
-from django.conf import Settings
+from django.conf import settings
 from django_auth_ldap.backend import LDAPBackend
+from tqdm import tqdm
 
 from .models import User
 
@@ -16,11 +17,11 @@ from .models import User
 def get_connection() -> ldap.ldapobject.LDAPObject:
     """Establish a new LDAP connection"""
 
-    conn = ldap.initialize(Settings.AUTH_LDAP_SERVER_URI)
-    if Settings.AUTH_LDAP_BIND_DN:
-        conn.bind(Settings.AUTH_LDAP_BIND_DN, Settings.AUTH_LDAP_BIND_PASSWORD)
+    conn = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
+    if settings.AUTH_LDAP_BIND_DN:
+        conn.bind(settings.AUTH_LDAP_BIND_DN, settings.AUTH_LDAP_BIND_PASSWORD)
 
-    if Settings.AUTH_LDAP_START_TLS:
+    if settings.AUTH_LDAP_START_TLS:
         conn.start_tls_s()
 
     return conn
@@ -37,18 +38,18 @@ def ldap_update(prune=False) -> None:
         prune: Optionally delete any accounts with usernames not found in LDAP
     """
 
-    if not Settings.AUTH_LDAP_SERVER_URI:
+    if not settings.AUTH_LDAP_SERVER_URI:
         return
 
     # Search LDAP for all users
     conn = get_connection()
-    search = conn.search_s(Settings.AUTH_LDAP_USER_SEARCH, ldap.SCOPE_SUBTREE, '(objectClass=account)')
+    search = conn.search_s(settings.AUTH_LDAP_USER_SEARCH.base_dn, ldap.SCOPE_SUBTREE, '(objectClass=account)')
 
     # Fetch keystone usernames using the LDAP attribute map defined in settings
-    ldap_username_attr = Settings.AUTH_LDAP_USER_ATTR_MAP.get('username', 'uid')
+    ldap_username_attr = settings.AUTH_LDAP_USER_ATTR_MAP.get('username', 'uid')
     ldap_names = {uid.decode() for result in search for uid in result[1][ldap_username_attr]}
 
-    for username in ldap_names:
+    for username in tqdm(ldap_names):
         LDAPBackend().populate_user(username)
 
     if prune:
