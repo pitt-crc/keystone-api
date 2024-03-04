@@ -47,55 +47,56 @@ def get_accounts_on_cluster(cluster_name: str) -> Collection[str]:
     return out.split()
 
 
-def set_cluster_limit(account_name: str, cluster_name: str, limit: int, in_minutes: bool = False) -> None:
-    """Update the current TRES Billing hour usage limit to the provided limit on a given cluster for a given account
-    with sacctmgr. The default time unit is Hours.
+def set_cluster_limit(account_name: str, cluster_name: str, limit: int, in_hours: bool = True) -> None:
+    """Update the current TRES Billing usage limit to the provided limit on a given cluster for a given account
+    with sacctmgr. The default expected limit unit is Hours, and a conversion takes place as Slurm uses minutes.
 
     Args:
         account_name: The name of the account to get usage for
         cluster_name: The name of the cluster to get usage on
         limit: Number of billing TRES hours to set the usage limit to
-        in_minutes: Boolean value for whether (True) or not (False) the set limit is in minutes (Default: False)
+        in_hours: Boolean value for whether (True) or not (False) the limit provided is in Hours (Default: True)
     """
 
-    if in_minutes:
+    # Convert the input hours to minutes
+    if in_hours:
         limit *= 60
 
-    cmd = split(f"sacctmgr modify account where account={account_name} cluster={cluster_name} set GrpTresRunMins=billing={limit}")
+    cmd = split(f"sacctmgr modify -i account where account={account_name} cluster={cluster_name} set GrpTresMins=billing={limit}")
 
     subprocess_call(cmd)
 
 
-def get_cluster_limit(account_name: str, cluster_name: str, in_minutes: bool = False) -> int:
-    """Get the current TRES Billing Hour usage limit on a given cluster for a given account with sacctmgr.
-    The default time unit is Hours.
+def get_cluster_limit(account_name: str, cluster_name: str, in_hours: bool = True) -> int:
+    """Get the current TRES Billing usage limit on a given cluster for a given account with sacctmgr.
+    The limit unit coming out of Slurm is minutes, and the default behavior is to convert this to hours.
+    This can be skipped with in_hours = False.
 
     Args:
         account_name: The name of the account to get usage for
         cluster_name: The name of the cluster to get usage on
-        in_minutes: Boolean value for whether (True) or not (False) the returned limit is in minutes (Default: False)
+        in_hours: Boolean value for whether (True) or not (False) the returned limit is in Hours (Default: True)
 
     Returns:
         An integer representing the total (historical + current) billing TRES limit
     """
 
-    cmd = split(f"sacctmgr show -nP association where account={account_name} cluster={cluster_name} "
-                f"format=GrpTRESRunMin")
+    cmd = split(f"sacctmgr show -nP association where account={account_name} cluster={cluster_name} format=GrpTRESMins")
 
-    limit = re.findall(r'billing=(.*)\n', subprocess_call(cmd))[0]
-
-    if not limit.isnumeric():
+    try:
+        limit = re.findall(r'billing=(.*)', subprocess_call(cmd))[0]
+    except IndexError:
+        log.debug(f"'billing' limit not found in command output from {cmd}, assuming zero for current limit")
         return 0
 
-    limit = int(limit)
-    if in_minutes:
-        limit *= 60
+    limit = int(limit) if limit.isnumeric() else 0
 
-    return limit
+    return limit // 60 if in_hours else limit
 
 
 def get_cluster_usage(account_name: str, cluster_name: str, in_hours: bool = True) -> int:
-    """Get the total billable usage in minutes on a given cluster for a given account
+    """Get the total billable usage in Hours on a given cluster for a given account. Slurm provides a usage in minutes
+    and that values is converted to Hours by default. This can be skipped with in_hours = False.
 
     Args:
         account_name: The name of the account to get usage for
@@ -108,13 +109,13 @@ def get_cluster_usage(account_name: str, cluster_name: str, in_hours: bool = Tru
 
     cmd = split(f"sshare -nP -A {account_name} -M {cluster_name} --format=GrpTRESRaw")
 
-    usage = re.findall(r'billing=(.*),fs', subprocess_call(cmd))[0]
-
-    if not usage.isnumeric():
+    try:
+        usage = re.findall(r'billing=(.*),fs', subprocess_call(cmd))[0]
+    except IndexError:
+        log.debug(f"'billing' usage not found in command output from {cmd}, assuming zero for current usage")
         return 0
 
-    usage = int(usage)
-    if in_hours:
-        usage //= 60
+    usage = int(usage) if usage.isnumeric() else 0
 
-    return usage
+    # Billing TRES comes out of Slurm in minutes, needs to be converted to hours
+    return usage // 60 if in_hours else usage
