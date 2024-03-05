@@ -22,6 +22,7 @@ def get_connection() -> ldap.ldapobject.LDAPObject:
         conn.bind(settings.AUTH_LDAP_BIND_DN, settings.AUTH_LDAP_BIND_PASSWORD)
 
     if settings.AUTH_LDAP_START_TLS:
+        ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
         conn.start_tls_s()
 
     return conn
