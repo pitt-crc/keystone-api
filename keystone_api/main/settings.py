@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 import environ
+from celery.schedules import crontab
 from django.core.management.utils import get_random_secret_key
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -243,3 +244,12 @@ USE_TZ = True
 CELERY_ENABLE_UTC = True
 DJANGO_CELERY_BEAT_TZ_AWARE = True
 TIME_ZONE = env.str('CONFIG_TIMEZONE', 'UTC')
+
+# Schedule
+
+CELERY_BEAT_SCHEDULE = {
+    "Update LDAP users": {
+        "task": "apps.users.tasks.ldap_update",
+        "schedule": crontab(minute='0'),
+    },
+}
