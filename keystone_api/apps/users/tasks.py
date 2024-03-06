@@ -68,16 +68,28 @@ def slurm_update_research_groups(prune=False) -> None:
         prune: Optionally delete any Research Groups that are no longer present in Slurm
     """
 
-    names_from_slurm = get_slurm_account_names()
-    names_from_keystone = set(ResearchGroup.objects.values_list('name', flat=True))
-    new_research_groups = names_from_slurm - names_from_keystone
+    groupnames_from_slurm = get_slurm_account_names()
+    groupnames_from_keystone = set(ResearchGroup.objects.values_list('name', flat=True))
 
-    for account_name in tqdm(new_research_groups):
-        ResearchGroup(name=account_name,
-                      pi=get_slurm_account_principal_investigator(account_name),
-                      members=User.objects.filter(username__in=get_slurm_account_users(account_name))
-                      ).save()
+    for account_name in tqdm(groupnames_from_slurm):
+
+        users_query = User.objects.filter(username__in=get_slurm_account_users(account_name))
+        pi_query = User.objects.filter(username__in=get_slurm_account_principal_investigator(account_name))
+
+        try:
+            # Attempt to update the existing research group
+            group = ResearchGroup.objects.get(name=account_name)
+            group.members = users_query.all()
+            group.pi = pi_query.all()
+
+        except ResearchGroup.DoesNotExist:
+
+            # Create a research group for the account
+            ResearchGroup(name=account_name,
+                          pi=get_slurm_account_principal_investigator(account_name),
+                          members=users_query.all()
+                          ).save()
 
     if prune:
-        groups_to_delete = names_from_keystone - names_from_slurm
+        groups_to_delete = groupnames_from_keystone - groupnames_from_slurm
         ResearchGroup.objects.filter(name__in=groups_to_delete).delete()
