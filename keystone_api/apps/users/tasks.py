@@ -86,7 +86,7 @@ def slurm_update_research_groups(prune=False) -> None:
 
             # Create a research group for the account
             ResearchGroup(name=account_name,
-                          pi=get_slurm_account_principal_investigator(account_name),
+                          pi=pi_query.all(),
                           members=users_query.all()
                           ).save()
 
