@@ -4,7 +4,7 @@ import logging
 import re
 from shlex import split
 from subprocess import PIPE, Popen
-from typing import Collection, List
+from typing import List, Optional, Set
 
 log = logging.getLogger(__name__)
 
@@ -30,21 +30,55 @@ def subprocess_call(args: List[str]) -> str:
     return out.decode("utf-8").strip()
 
 
-def get_accounts_on_cluster(cluster_name: str) -> Collection[str]:
-    """Gather a list of account names for a given cluster from sacctmgr
+def get_slurm_account_names(cluster_name: Optional[str] = None) -> Set[str]:
+    """Gather a list of account names defined on either all clusters or a given cluster from `sacctmgr`
 
     Args:
-        cluster_name: The name of the cluster to get usage on
+        cluster_name: Optionally provide the name of the cluster to get account names on
 
     Returns:
-        A list of Slurm account names
+        A set of unique Slurm account name strings
     """
 
-    cmd = split(f"sacctmgr show -nP account withassoc where parents=root cluster={cluster_name} format=Account")
+    cmd = split(f"sacctmgr show -nP account withassoc where parents=root format=Account")
+    if cluster_name:
+        cmd.append(f"cluster={cluster_name}")
 
     out = subprocess_call(cmd)
 
-    return out.split()
+    return set(out.split())
+
+
+def get_slurm_account_principal_investigator(account_name: str) -> str:
+    """Return the Principal Investigator (PI) username (Slurm account description field) for a Slurm account given the account name
+
+    Args:
+        account_name: The Slurm account name
+
+    Returns:
+        The Slurm account PI username (description field)
+    """
+    cmd = split(f"sacctmgr show -nP account where account={account_name} format=Descr")
+    return subprocess_call(cmd)
+
+
+def get_slurm_account_users(account_name: str, cluster_name: Optional[str] = None) -> Set[str]:
+    """Return the usernames of users under a Slurm account given the account name
+
+    Args:
+        account_name: The Slurm account name
+        cluster_name: Optionally provide the name of the cluster to get usernames on
+
+    Returns:
+        The account PI username
+    """
+    cmd = split(f"sacctmgr show -nP association where account={account_name} format=user")
+    if cluster_name:
+        cmd.append(f"cluster={cluster_name}")
+
+    out = subprocess_call(cmd)
+
+    return set(out)
 
 
 def set_cluster_limit(account_name: str, cluster_name: str, limit: int, in_hours: bool = True) -> None:
