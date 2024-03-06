@@ -11,10 +11,11 @@ from django.conf import settings
 from django_auth_ldap.backend import LDAPBackend
 from tqdm import tqdm
 
-from .models import User
+from keystone_api.plugins.slurm import get_slurm_account_names, get_slurm_account_principal_investigator, get_slurm_account_users
+from .models import ResearchGroup, User
 
 
-def get_connection() -> ldap.ldapobject.LDAPObject:
+def get_ldap_connection() -> ldap.ldapobject.LDAPObject:
     """Establish a new LDAP connection"""
 
     conn = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
@@ -29,7 +30,7 @@ def get_connection() -> ldap.ldapobject.LDAPObject:
 
 
 @shared_task()
-def ldap_update(prune=False) -> None:
+def ldap_update_users(prune=False) -> None:
     """Update the user database with the latest data from LDAP
 
     This function performs no action if the `AUTH_LDAP_SERVER_URI` setting
@@ -43,7 +44,7 @@ def ldap_update(prune=False) -> None:
         return
 
     # Search LDAP for all users
-    conn = get_connection()
+    conn = get_ldap_connection()
     search = conn.search_s(settings.AUTH_LDAP_USER_SEARCH.base_dn, ldap.SCOPE_SUBTREE, '(objectClass=account)')
 
     # Fetch keystone usernames using the LDAP attribute map defined in settings
@@ -54,6 +55,29 @@ def ldap_update(prune=False) -> None:
         LDAPBackend().populate_user(username)
 
     if prune:
-        usernames = set(User.objects.values_list('name', flat=True))
+        usernames = set(User.objects.values_list('username', flat=True))
         users_to_delete = usernames - ldap_names
         User.objects.filter(username__in=users_to_delete).delete()
+
+
+@shared_task()
+def slurm_update_research_groups(prune=False) -> None:
+    """Update the Research Group database with the latest account information from Slurm
+
+    Args:
+        prune: Optionally delete any Research Groups that are no longer present in Slurm
+    """
+
+    names_from_slurm = get_slurm_account_names()
+    names_from_keystone = set(ResearchGroup.objects.values_list('name', flat=True))
+    new_research_groups = names_from_slurm - names_from_keystone
+
+    for account_name in tqdm(new_research_groups):
+        ResearchGroup(name=account_name,
+                      pi=get_slurm_account_principal_investigator(account_name),
+                      members=User.objects.filter(username__in=get_slurm_account_users(account_name))
+                      ).save()
+
+    if prune:
+        groups_to_delete = names_from_keystone - names_from_slurm
+        ResearchGroup.objects.filter(name__in=groups_to_delete).delete()
