@@ -78,7 +78,7 @@ def get_slurm_account_users(account_name: str, cluster_name: Optional[str] = Non
 
     out = subprocess_call(cmd)
 
-    return set(out)
+    return set(out.split())
 
 
 def set_cluster_limit(account_name: str, cluster_name: str, limit: int, in_hours: bool = True) -> None:
