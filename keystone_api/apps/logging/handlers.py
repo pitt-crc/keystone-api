@@ -33,9 +33,11 @@ class DBHandler(Handler):
 
         if record.levelno > self.level:
             LogEntry(
-                level=record.levelname,
                 name=record.name,
+                level=record.levelname,
                 pathname=record.pathname,
                 lineno=record.lineno,
-                message=self.format(record)
+                message=self.format(record),
+                func=record.funcName,
+                sinfo=record.stack_info
             ).save()
