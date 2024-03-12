@@ -17,16 +17,12 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
-# Create an unprivliged user for running services
-RUN groupadd --gid 900 keystone && useradd -m -u 999 -g keystone keystone \
-    && mkdir /app && chown keystone /app
-
-USER keystone
 WORKDIR /app
+COPY . src
+RUN pip install ./src && rm -rf src
 
-COPY --chown=keystone . src
-RUN pip install ./src && rm -rf src && mkdir static
-ENV PATH="${PATH}:/home/keystone/.local/bin"
+# Create an unprivliged user for running background services
+RUN groupadd --gid 900 keystone && useradd -m -u 999 -g keystone keystone
 
 # Setup and launch the application
 ENTRYPOINT ["keystone-api"]
