@@ -1,4 +1,4 @@
-"""Tests for the `/allocations/clusters/<pk>/` endpoint"""
+"""Tests for the `/logs/` endpoint"""
 
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -15,19 +15,18 @@ class EndpointPermissions(APITestCase, CustomAsserts):
     | Authentication      | GET | HEAD | OPTIONS | POST | PUT | PATCH | DELETE | TRACE |
     |---------------------|-----|------|---------|------|-----|-------|--------|-------|
     | Anonymous User      | 401 | 401  | 401     | 401  | 401 | 401   | 401    | 401   |
-    | Authenticated User  | 200 | 200  | 200     | 403  | 403 | 403   | 403    | 403   |
-    | Staff User          | 200 | 200  | 200     | 405  | 200 | 200   | 204    | 405   |
+    | Authenticated User  | 403 | 403  | 403     | 403  | 403 | 403   | 403    | 403   |
+    | Staff User          | 200 | 200  | 200     | 405  | 405 | 405   | 405    | 405   |
     """
 
-    endpoint_pattern = '/allocations/clusters/{pk}/'
+    endpoint = '/logs/'
     fixtures = ['multi_research_group.yaml']
 
     def test_anonymous_user_permissions(self) -> None:
-        """Test unauthenticated users cannot access resources"""
+        """Test anonymous users are returned a 401 status code for all request types"""
 
-        endpoint = self.endpoint_pattern.format(pk=1)
         self.assert_http_responses(
-            endpoint,
+            self.endpoint,
             get=status.HTTP_401_UNAUTHORIZED,
             head=status.HTTP_401_UNAUTHORIZED,
             options=status.HTTP_401_UNAUTHORIZED,
@@ -39,17 +38,16 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         )
 
     def test_authenticated_user_permissions(self) -> None:
-        """Test general authenticated users have read-only permissions"""
+        """Test general authenticated users are returned a 403 status code for all request types"""
 
         user = User.objects.get(username='generic_user')
         self.client.force_authenticate(user=user)
 
-        endpoint = self.endpoint_pattern.format(pk=1)
         self.assert_http_responses(
-            endpoint,
-            get=status.HTTP_200_OK,
-            head=status.HTTP_200_OK,
-            options=status.HTTP_200_OK,
+            self.endpoint,
+            get=status.HTTP_403_FORBIDDEN,
+            head=status.HTTP_403_FORBIDDEN,
+            options=status.HTTP_403_FORBIDDEN,
             post=status.HTTP_403_FORBIDDEN,
             put=status.HTTP_403_FORBIDDEN,
             patch=status.HTTP_403_FORBIDDEN,
@@ -58,22 +56,19 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         )
 
     def test_staff_user_permissions(self) -> None:
-        """Test staff users have read and write permissions"""
+        """Test staff users have read-only permissions"""
 
         user = User.objects.get(username='staff_user')
         self.client.force_authenticate(user=user)
 
-        endpoint = self.endpoint_pattern.format(pk=1)
         self.assert_http_responses(
-            endpoint,
+            self.endpoint,
             get=status.HTTP_200_OK,
             head=status.HTTP_200_OK,
             options=status.HTTP_200_OK,
             post=status.HTTP_405_METHOD_NOT_ALLOWED,
-            put=status.HTTP_200_OK,
-            patch=status.HTTP_200_OK,
-            delete=status.HTTP_204_NO_CONTENT,
-            trace=status.HTTP_405_METHOD_NOT_ALLOWED,
-            put_body={'name': 'foo', 'api_url': 'localhost:6820', 'api_user': 'slurm', 'api_token': 'foobar'},
-            patch_body={'name': 'foo'}
+            put=status.HTTP_405_METHOD_NOT_ALLOWED,
+            patch=status.HTTP_405_METHOD_NOT_ALLOWED,
+            delete=status.HTTP_405_METHOD_NOT_ALLOWED,
+            trace=status.HTTP_405_METHOD_NOT_ALLOWED
         )

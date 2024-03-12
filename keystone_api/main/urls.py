@@ -15,6 +15,7 @@ urlpatterns = [
     path('audit/', include('apps.audit.urls', namespace='audit')),
     path('authentication/', include('apps.authentication.urls', namespace='authentication')),
     path('health/', include('apps.health.urls', namespace='health')),
+    path('logs/', include('apps.logging.urls', namespace='logs')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
