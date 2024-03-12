@@ -1,5 +1,5 @@
 """Tests for the `UserManager` class"""
-from django.core.exceptions import ValidationError
+
 from django.test import TestCase
 
 from apps.users.models import User
