@@ -36,5 +36,6 @@ class RequestLog(models.Model):
     date = models.DateTimeField(auto_now=True)
     body_response = models.TextField()
     body_request = models.TextField()
+    time = models.DateTimeField(auto_now_add=True)
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
