@@ -117,11 +117,13 @@ The following settings configure varius aspects of Keystone's backend behavior.
 Keystone uses various static files to facilitate operation and support user requests.
 By default, these files are stored in subdirectories of the installed application directory (`<app>`).
 
-| Setting Name              | Default Value        | Description                                                       |
-|---------------------------|----------------------|-------------------------------------------------------------------|
-| `CONFIG_TIMEZONE`         | `UTC`                | The application timezone.                                         |
-| `CONFIG_STATIC_DIR`       | `<app>/static_files` | Where to store internal static files required by the application. |
-| `CONFIG_UPLOAD_DIR`       | `<app>/upload_files` | Where to store file data uploaded by users.                       |
+| Setting Name              | Default Value             | Description                                                                                       |
+|---------------------------|---------------------------|---------------------------------------------------------------------------------------------------|
+| `CONFIG_TIMEZONE`         | `UTC`                     | The application timezone.                                                                         |
+| `CONFIG_STATIC_DIR`       | `<app>/static_files`      | Where to store internal static files required by the application.                                 |
+| `CONFIG_UPLOAD_DIR`       | `<app>/upload_files`      | Where to store file data uploaded by users.                                                       |
+| `CONFIG_LOG_RETENTION`    | 30 days                   | How long to store log records in seconds. Set to 0 to keep all records.                           |
+| `CONFIG_LOG_LEVEL`        | `WARNING`                 | Only record logs above this level (`CRITICAL`, `ERROR`, `WARNING`, `INFO`, `DEBUG`, or `NOTSET`). |
 
 ### API Throttling
 
