@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
                 ('endpoint', models.CharField(max_length=100, null=True)),
                 ('response_code', models.PositiveSmallIntegerField()),
                 ('method', models.CharField(max_length=10, null=True)),
-                ('remote_address', models.CharField(max_length=20, null=True)),
+                ('remote_address', models.CharField(max_length=40, null=True)),
                 ('date', models.DateTimeField(auto_now=True)),
                 ('body_response', models.TextField()),
                 ('body_request', models.TextField()),

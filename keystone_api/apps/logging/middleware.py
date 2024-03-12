@@ -5,16 +5,20 @@ cycle of incoming requests before they reach the application views or become
 an outgoing client response.
 """
 
+from django.http import HttpRequest
+
 from .models import RequestLog
 
+__all__ = ['LogRequestMiddleware']
 
-class LogRequest:
+
+class LogRequestMiddleware:
     """Log metadata from incoming HTTP requests to the database"""
 
     def __init__(self, get_response: callable) -> None:
         self.get_response = get_response
 
-    def __call__(self, request):
+    def __call__(self, request: HttpRequest) -> HttpRequest:
         """Execute the middleware on an incoming HTTP request
 
         Args:
@@ -25,14 +29,13 @@ class LogRequest:
         """
 
         response = self.get_response(request)
-
         request_log = RequestLog(
             endpoint=request.get_full_path(),
             response_code=response.status_code,
             method=request.method,
             remote_address=self.get_client_ip(request),
-            body_response=str(response.content),
-            body_request=str(request.body)
+            body_response=response.content.decode(),
+            body_request=request.body.decode()
         )
 
         if not request.user.is_anonymous:
@@ -41,7 +44,7 @@ class LogRequest:
         request_log.save()
         return response
 
-    def get_client_ip(self, request) -> str:
+    def get_client_ip(self, request: HttpRequest) -> str:
         """Return the client IP for the incoming request
 
         Args:
