@@ -35,7 +35,7 @@ class LogRequestMiddleware:
             method=request.method,
             remote_address=self.get_client_ip(request),
             body_response=response.content.decode(),
-            body_request=request.body.decode()
+            body_request=request.read().decode()
         )
 
         if not request.user.is_anonymous:
