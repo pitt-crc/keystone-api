@@ -245,9 +245,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 STATIC_URL = 'static/'
 STATIC_ROOT = env.path('CONFIG_STATIC_DIR', BASE_DIR / 'static_files')
+Path(STATIC_ROOT).mkdir(parents=True, exist_ok=True)
 
 MEDIA_URL = 'uploads/'
 MEDIA_ROOT = env.path('CONFIG_UPLOAD_DIR', BASE_DIR / 'upload_files')
+Path(MEDIA_ROOT).mkdir(parents=True, exist_ok=True)
 
 # Timezones
 
