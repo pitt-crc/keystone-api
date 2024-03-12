@@ -69,7 +69,7 @@ jobs:
       - name: Run tests
         run: |
           docker load --input /tmp/keystone-api.tar
-          docker run keystone-api test
+          docker run keystone-api test tests apps
 
   report-test-status:
     name: Report Test Status

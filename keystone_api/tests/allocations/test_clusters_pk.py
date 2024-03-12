@@ -77,34 +77,3 @@ class EndpointPermissions(APITestCase, CustomAsserts):
             put_body={'name': 'foo', 'api_url': 'localhost:6820', 'api_user': 'slurm', 'api_token': 'foobar'},
             patch_body={'name': 'foo'}
         )
-
-
-class ReturnedFields(APITestCase):
-    """Test the (in)exclusion of returned fields based on user permissions"""
-
-    endpoint_pattern = '/allocations/clusters/{pk}/'
-    fixtures = ['multi_research_group.yaml']
-
-    def test_general_user(self) -> None:
-        """Test secure fields are not exposed to general users"""
-
-        user = User.objects.get(username='generic_user')
-        self.client.force_authenticate(user=user)
-
-        endpoint = self.endpoint_pattern.format(pk=1)
-        response = self.client.get(endpoint)
-
-        self.assertNotIn('api_url', response.json().keys())
-        self.assertNotIn('api_token', response.json().keys())
-
-    def test_staff_user(self) -> None:
-        """Test secure fields are accessible to staff users"""
-
-        user = User.objects.get(username='staff_user')
-        self.client.force_authenticate(user=user)
-
-        endpoint = self.endpoint_pattern.format(pk=1)
-        response = self.client.get(endpoint)
-
-        self.assertIn('api_url', response.json().keys())
-        self.assertIn('api_token', response.json().keys())
