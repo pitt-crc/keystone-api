@@ -4,7 +4,7 @@ import importlib.metadata
 import os
 import sys
 from pathlib import Path
-
+from datetime import timedelta
 import environ
 from celery.schedules import crontab
 from django.core.management.utils import get_random_secret_key
@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'apps.audit',
     'apps.docs',
     'apps.health',
+    'apps.logging',
     'apps.scheduler',
     'apps.users',
 ]
@@ -174,6 +175,16 @@ CELERY_BROKER_URL = REDIS_URL + f'/{_redis_db}'
 
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'django-cache'
+CELERY_BEAT_SCHEDULE = {
+    "Update LDAP users": {
+        "task": "apps.users.tasks.ldap_update",
+        "schedule": crontab(minute='0'),
+    },
+    "Rotate Log Entries": {
+        "task": "apps.logging.tasks.rotate_log_files",
+        "schedule": crontab(hour='0', minute='0'),
+    }
+}
 
 # Database
 
@@ -247,11 +258,21 @@ CELERY_ENABLE_UTC = True
 DJANGO_CELERY_BEAT_TZ_AWARE = True
 TIME_ZONE = env.str('CONFIG_TIMEZONE', 'UTC')
 
-# Schedule
+# Logging
 
-CELERY_BEAT_SCHEDULE = {
-    "Update LDAP users": {
-        "task": "apps.users.tasks.ldap_update",
-        "schedule": crontab(minute='0'),
+LOG_RECORD_ROTATION = env.int('CONFIG_LOG_RETENTION', timedelta(days=30).total_seconds())
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "db": {
+            "class": "apps.logging.handlers.DBHandler",
+        }
     },
+    "loggers": {
+        "": {
+            "level": env.str('CONFIG_LOG_LEVEL', 'WARNING'),
+            "handlers": ["db"],
+        },
+    }
 }
