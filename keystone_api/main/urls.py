@@ -12,7 +12,6 @@ urlpatterns = [
 
     path('admin/', admin.site.urls),
     path('allocations/', include('apps.allocations.urls', namespace='alloc')),
-    path('audit/', include('apps.audit.urls', namespace='audit')),
     path('authentication/', include('apps.authentication.urls', namespace='authentication')),
     path('health/', include('apps.health.urls', namespace='health')),
     path('logs/', include('apps.logging.urls', namespace='logs')),

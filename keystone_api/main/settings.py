@@ -69,7 +69,6 @@ INSTALLED_APPS = [
     'auditlog',
     'apps.admin_utils',
     'apps.allocations',
-    'apps.audit',
     'apps.docs',
     'apps.health',
     'apps.logging',
