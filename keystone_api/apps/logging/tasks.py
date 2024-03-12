@@ -21,4 +21,4 @@ def rotate_log_files() -> None:
         return
 
     max_record_age = datetime.now() - timedelta(seconds=settings.LOG_RECORD_ROTATION)
-    LogEntry.objects.filter(time__lt=max_record_age).delete()
+    AppLog.objects.filter(time__lt=max_record_age).delete()
