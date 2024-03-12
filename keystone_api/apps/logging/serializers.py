@@ -10,14 +10,24 @@ from rest_framework import serializers
 
 from .models import *
 
-__all__ = ['LogEntrySerializer']
+__all__ = ['AppLogSerializer', 'RequestLogSerializer']
 
 
-class LogEntrySerializer(serializers.ModelSerializer):
-    """Object serializer for the `LogEntry` class"""
+class AppLogSerializer(serializers.ModelSerializer):
+    """Object serializer for the `AppLog` class"""
 
     class Meta:
         """Serializer settings"""
 
-        model = LogEntry
+        model = AppLog
+        fields = '__all__'
+
+
+class RequestLogSerializer(serializers.ModelSerializer):
+    """Object serializer for the `RequestLog` class"""
+
+    class Meta:
+        """Serializer settings"""
+
+        model = RequestLog
         fields = '__all__'
