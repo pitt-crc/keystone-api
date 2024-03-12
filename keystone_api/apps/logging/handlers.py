@@ -16,7 +16,7 @@ class DBHandler(Handler):
         """Configure the log handler
 
         Args:
-            level: Only save log records with a logging levl abv this value
+            level: Only save log records with a logging level above this value
         """
 
         super().__init__(level=level)
