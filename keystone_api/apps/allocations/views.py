@@ -83,6 +83,7 @@ class AllocationRequestReviewViewSet(viewsets.ModelViewSet):
 class ClusterViewSet(viewsets.ModelViewSet):
     """Configuration settings for managed Slurm clusters."""
 
+    queryset = Cluster.objects.all()
     permission_classes = [permissions.IsAuthenticated, StaffWriteAuthenticatedRead]
     serializer_class = ClusterSerializer
     filterset_fields = '__all__'
