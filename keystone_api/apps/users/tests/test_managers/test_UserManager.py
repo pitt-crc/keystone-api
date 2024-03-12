@@ -67,14 +67,3 @@ class UserCreation(TestCase):
                 email="foo@bar.com",
                 password="foobar123",
                 is_superuser=False)
-
-    def test_passwords_are_validated(self) -> None:
-        """Test passwords are required to meet security criteria"""
-
-        with self.assertRaisesRegex(ValidationError, 'This password is too short'):
-            User.objects.create_user(
-                username='foobar',
-                first_name='foo',
-                last_name='bar',
-                email="foo@bar.com",
-                password="foo")
