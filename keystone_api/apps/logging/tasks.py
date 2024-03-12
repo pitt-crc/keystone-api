@@ -14,7 +14,7 @@ from .models import *
 
 
 @shared_task()
-def rotate_log_files():
+def rotate_log_files() -> None:
     """Delete old log files"""
 
     if settings.LOG_RECORD_ROTATION == 0:
