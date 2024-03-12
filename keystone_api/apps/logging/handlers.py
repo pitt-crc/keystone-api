@@ -1,3 +1,10 @@
+"""Custom log handlers for use with the builtin Python logging module.
+
+Log handlers manage the distribution of log records to specific destinations
+such as files, streams, or sockets. They provide a means to control the output
+destination and formatting of log messages within the logging framework.
+"""
+
 import logging
 from logging import Handler
 
