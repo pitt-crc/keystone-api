@@ -180,6 +180,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "apps.users.tasks.ldap_update",
         "schedule": crontab(minute='0'),
     },
+    "Rotate Log Entries": {
+        "task": "apps.logging.tasks.rotate_log_files",
+        "schedule": crontab(hour='0', minute='0'),
+    }
 }
 
 # Database
@@ -261,17 +265,12 @@ LOGGING = {
     "handlers": {
         "db": {
             "class": "apps.logging.handlers.DBHandler",
-            "level": "DEBUG",
-        },
-        "console": {
-            "class": "logging.StreamHandler",
-            "level": "DEBUG",
-        },
+        }
     },
     "loggers": {
         "": {
-            "level": "DEBUG",
-            "handlers": ["db", "console"],
+            "level": env.str('CONFIG_LOG_LEVEL', 'WARNING'),
+            "handlers": ["db"],
         },
     }
 }
