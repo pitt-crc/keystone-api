@@ -1,0 +1,11 @@
+name: 🎯 Update Main
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  qa:
+    name: QA
+    uses: ./.github/workflows/QA.yml
