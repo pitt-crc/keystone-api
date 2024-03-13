@@ -4,12 +4,11 @@ import logging
 import re
 from shlex import split
 from subprocess import PIPE, Popen
-from typing import List, Optional, Set
 
 log = logging.getLogger(__name__)
 
 
-def subprocess_call(args: List[str]) -> str:
+def subprocess_call(args: list[str]) -> str:
     """Wrapper method for executing shell commands via ``Popen.communicate``
 
     Args:
@@ -30,7 +29,7 @@ def subprocess_call(args: List[str]) -> str:
     return out.decode("utf-8").strip()
 
 
-def get_slurm_account_names(cluster_name: Optional[str] = None) -> Set[str]:
+def get_slurm_account_names(cluster_name: str | None) -> set[str]:
     """Gather a list of account names defined on either all clusters or a given cluster from `sacctmgr`
 
     Args:
@@ -50,7 +49,8 @@ def get_slurm_account_names(cluster_name: Optional[str] = None) -> Set[str]:
 
 
 def get_slurm_account_principal_investigator(account_name: str) -> str:
-    """Return the Principal Investigator (PI) username (Slurm account description field) for a Slurm account given the account name
+    """Return the Principal Investigator (PI) username (Slurm account description field) for a Slurm account given the
+    account name
 
     Args:
         account_name: The Slurm account name
@@ -62,7 +62,7 @@ def get_slurm_account_principal_investigator(account_name: str) -> str:
     return subprocess_call(cmd)
 
 
-def get_slurm_account_users(account_name: str, cluster_name: Optional[str] = None) -> Set[str]:
+def get_slurm_account_users(account_name: str, cluster_name: str | None) -> set[str]:
     """Return the usernames of users under a Slurm account given the account name
 
     Args:
