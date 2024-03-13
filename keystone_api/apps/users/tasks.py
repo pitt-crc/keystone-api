@@ -75,20 +75,22 @@ def slurm_update_research_groups(prune=False) -> None:
 
         users_query = User.objects.filter(username__in=get_slurm_account_users(account_name))
         pi_query = User.objects.filter(username__in=get_slurm_account_principal_investigator(account_name))
+        if not pi_query:
+            continue
 
         try:
             # Attempt to update the existing research group
             group = ResearchGroup.objects.get(name=account_name)
-            group.members = users_query.all()
             group.pi = pi_query.all()
+            group.members.set(users_query.all())
 
         except ResearchGroup.DoesNotExist:
 
             # Create a research group for the account
-            ResearchGroup(name=account_name,
-                          pi=pi_query.all(),
-                          members=users_query.all()
-                          ).save()
+            new_group = ResearchGroup(name=account_name)
+            new_group.save()
+            new_group.pi = pi_query.all()
+            new_group.members.set(users_query.all())
 
     if prune:
         groups_to_delete = groupnames_from_keystone - groupnames_from_slurm

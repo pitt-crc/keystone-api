@@ -29,7 +29,7 @@ def subprocess_call(args: list[str]) -> str:
     return out.decode("utf-8").strip()
 
 
-def get_slurm_account_names(cluster_name: str | None) -> set[str]:
+def get_slurm_account_names(cluster_name: str | None = None) -> set[str]:
     """Gather a list of account names defined on either all clusters or a given cluster from `sacctmgr`
 
     Args:
@@ -62,7 +62,7 @@ def get_slurm_account_principal_investigator(account_name: str) -> str:
     return subprocess_call(cmd)
 
 
-def get_slurm_account_users(account_name: str, cluster_name: str | None) -> set[str]:
+def get_slurm_account_users(account_name: str, cluster_name: str | None = None) -> set[str]:
     """Return the usernames of users under a Slurm account given the account name
 
     Args:
