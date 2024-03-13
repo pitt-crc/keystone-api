@@ -12,11 +12,13 @@ __all__ = ['LogEntry']
 
 
 class LogEntry(models.Model):
-    """A log entry"""
+    """An application log entry"""
 
-    time = models.DateTimeField(auto_now_add=True)
-    level = models.CharField(max_length=10)
     name = models.CharField(max_length=100)
+    level = models.CharField(max_length=10)
     pathname = models.CharField(max_length=260)
     lineno = models.IntegerField()
     message = models.TextField()
+    func = models.CharField(max_length=80, blank=True, null=True)
+    sinfo = models.TextField(blank=True, null=True)
+    time = models.DateTimeField(auto_now_add=True)
