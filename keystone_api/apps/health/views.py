@@ -20,7 +20,7 @@ class HealthChecks(ViewSet, CheckMixin):
     permission_classes = []
 
     @staticmethod
-    def render_to_response_json(plugins: list[BaseHealthCheckBackend], status: int) -> JsonResponse:
+    def render_to_response_json(plugins: dict[str, BaseHealthCheckBackend], status: int) -> JsonResponse:
         """Render a JSON response summarizing the status for a list of plugins
 
         Args:
@@ -32,12 +32,12 @@ class HealthChecks(ViewSet, CheckMixin):
         """
 
         data = dict()
-        for plug in plugins:
-            data[plug.identifier()] = {
-                'status': 200 if plug.status else 500,
-                'message': plug.pretty_status(),
-                'time': plug.time_taken,
-                'critical_service': plug.critical_service
+        for plugin_name, plugin in plugins.items():
+            data[plugin_name] = {
+                'status': 200 if plugin.status else 500,
+                'message': plugin.pretty_status(),
+                'time': plugin.time_taken,
+                'critical_service': plugin.critical_service
             }
 
         return JsonResponse(data=data, status=status)

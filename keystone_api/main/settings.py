@@ -3,8 +3,9 @@
 import importlib.metadata
 import os
 import sys
-from pathlib import Path
 from datetime import timedelta
+from pathlib import Path
+
 import environ
 from celery.schedules import crontab
 from django.core.management.utils import get_random_secret_key
@@ -146,9 +147,6 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
-if DEBUG:  # Disable the API GUI if not in debug mode
-    REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'].append('rest_framework.renderers.BrowsableAPIRenderer')
-
 # Customize the generation of OpenAPI specifications
 
 SPECTACULAR_SETTINGS = {
@@ -157,10 +155,6 @@ SPECTACULAR_SETTINGS = {
     'VERSION': VERSION,
     'SERVE_INCLUDE_SCHEMA': False,
 }
-
-# Audit log
-
-AUDITLOG_INCLUDE_ALL_MODELS = True
 
 # Redis backend and Celery scheduler
 
