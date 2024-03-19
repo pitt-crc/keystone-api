@@ -44,7 +44,6 @@ def get_slurm_account_names(cluster_name: str | None = None) -> set[str]:
         cmd.append(f"cluster={cluster_name}")
 
     out = subprocess_call(cmd)
-
     return set(out.split())
 
 
@@ -58,6 +57,7 @@ def get_slurm_account_principal_investigator(account_name: str) -> str:
     Returns:
         The Slurm account PI username (description field)
     """
+
     cmd = split(f"sacctmgr show -nP account where account={account_name} format=Descr")
     return subprocess_call(cmd)
 
@@ -72,12 +72,12 @@ def get_slurm_account_users(account_name: str, cluster_name: str | None = None) 
     Returns:
         The account PI username
     """
+
     cmd = split(f"sacctmgr show -nP association where account={account_name} format=user")
     if cluster_name:
         cmd.append(f"cluster={cluster_name}")
 
     out = subprocess_call(cmd)
-
     return set(out.split())
 
 
@@ -97,7 +97,6 @@ def set_cluster_limit(account_name: str, cluster_name: str, limit: int, in_hours
         limit *= 60
 
     cmd = split(f"sacctmgr modify -i account where account={account_name} cluster={cluster_name} set GrpTresMins=billing={limit}")
-
     subprocess_call(cmd)
 
 
@@ -124,7 +123,6 @@ def get_cluster_limit(account_name: str, cluster_name: str, in_hours: bool = Tru
         return 0
 
     limit = int(limit) if limit.isnumeric() else 0
-
     return limit // 60 if in_hours else limit
 
 
