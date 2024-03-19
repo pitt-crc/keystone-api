@@ -16,11 +16,16 @@ __all__ = [
 
 
 class ResearchGroupViewSet(viewsets.ModelViewSet):
-    """View or create ResearchGroups."""
+    """View ResearchGroups."""
 
     permission_classes = [permissions.IsAdminUser]
     serializer_class = ResearchGroupSerializer
     filterset_fields = '__all__'
+
+    def get_queryset(self) -> list[ResearchGroup]:
+        """Return a list of research groups"""
+
+        return ResearchGroup.objects.all()
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -31,6 +36,6 @@ class UserViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
 
     def get_queryset(self) -> list[User]:
-        """Return a list of research groups for the currently authenticated user"""
+        """Return a list of users"""
 
         return User.objects.all()
