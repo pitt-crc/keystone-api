@@ -11,8 +11,7 @@ from django.conf import settings
 from django_auth_ldap.backend import LDAPBackend
 from tqdm import tqdm
 
-from keystone_api.plugins.slurm import get_slurm_account_names, get_slurm_account_principal_investigator, get_slurm_account_users
-from .models import ResearchGroup, User
+from .models import User
 
 
 def get_ldap_connection() -> ldap.ldapobject.LDAPObject:
@@ -58,40 +57,3 @@ def ldap_update_users(prune=False) -> None:
         usernames = set(User.objects.values_list('username', flat=True))
         users_to_delete = usernames - ldap_names
         User.objects.filter(username__in=users_to_delete).delete()
-
-
-@shared_task()
-def slurm_update_research_groups(prune=False) -> None:
-    """Update the Research Group database with the latest account information from Slurm
-
-    Args:
-        prune: Optionally delete any Research Groups that are no longer present in Slurm
-    """
-
-    groupnames_from_slurm = get_slurm_account_names()
-    groupnames_from_keystone = set(ResearchGroup.objects.values_list('name', flat=True))
-
-    for account_name in tqdm(groupnames_from_slurm):
-
-        users_query = User.objects.filter(username__in=get_slurm_account_users(account_name))
-        pi_query = User.objects.filter(username__in=get_slurm_account_principal_investigator(account_name))
-        if not pi_query:
-            continue
-
-        try:
-            # Attempt to update the existing research group
-            group = ResearchGroup.objects.get(name=account_name)
-            group.pi = pi_query.all()
-            group.members.set(users_query.all())
-
-        except ResearchGroup.DoesNotExist:
-
-            # Create a research group for the account
-            new_group = ResearchGroup(name=account_name)
-            new_group.save()
-            new_group.pi = pi_query.all()
-            new_group.members.set(users_query.all())
-
-    if prune:
-        groups_to_delete = groupnames_from_keystone - groupnames_from_slurm
-        ResearchGroup.objects.filter(name__in=groups_to_delete).delete()
