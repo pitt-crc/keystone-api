@@ -39,7 +39,7 @@ class ResearchGroupViewSet(viewsets.ModelViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     """View Users."""
 
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = UserSerializer
     filterset_fields = '__all__'
 
