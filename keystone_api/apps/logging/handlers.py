@@ -29,10 +29,10 @@ class DBHandler(Handler):
         """
 
         # Models cannot be imported until Django has loaded the app registry
-        from .models import LogEntry
+        from .models import AppLog
 
         if record.levelno > self.level:
-            LogEntry(
+            AppLog(
                 name=record.name,
                 level=record.levelname,
                 pathname=record.pathname,

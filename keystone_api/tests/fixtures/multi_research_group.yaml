@@ -130,7 +130,7 @@
     approve: true
     request: 1
     reviewer: 9
-    date_modified: "2023-01-01"
+    date_modified: "2023-01-01T12:00:00Z"
 
 # Allocations
 - model: allocations.allocation

@@ -9,13 +9,22 @@ from rest_framework import viewsets, permissions
 from .models import *
 from .serializers import *
 
-__all__ = ['LogEntryViewSet']
+__all__ = ['AppLogViewSet', 'RequestLogViewSet']
 
 
-class LogEntryViewSet(viewsets.ReadOnlyModelViewSet):
+class AppLogViewSet(viewsets.ReadOnlyModelViewSet):
     """Returns application log data"""
 
-    queryset = LogEntry.objects.all()
-    serializer_class = LogEntrySerializer
+    queryset = AppLog.objects.all()
+    serializer_class = AppLogSerializer
+    filterset_fields = '__all__'
+    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+
+
+class RequestLogViewSet(viewsets.ReadOnlyModelViewSet):
+    """Returns HTTP request log data"""
+
+    queryset = RequestLog.objects.all()
+    serializer_class = RequestLogSerializer
     filterset_fields = '__all__'
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
