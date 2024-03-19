@@ -151,9 +151,6 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60)
 }
 
-if DEBUG:  # Disable the API GUI if not in debug mode
-    REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'].append('rest_framework.renderers.BrowsableAPIRenderer')
-
 # Customize the generation of OpenAPI specifications
 
 SPECTACULAR_SETTINGS = {
