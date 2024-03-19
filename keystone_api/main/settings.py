@@ -146,10 +146,6 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60)
-}
-
 # Customize the generation of OpenAPI specifications
 
 SPECTACULAR_SETTINGS = {
