@@ -5,8 +5,8 @@ asynchronously from the rest of the application and log their results in the
 application database.
 """
 
-from datetime import date
 import logging
+from datetime import date
 from typing import Collection
 
 from celery import shared_task

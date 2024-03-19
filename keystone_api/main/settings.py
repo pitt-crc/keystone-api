@@ -3,8 +3,9 @@
 import importlib.metadata
 import os
 import sys
-from pathlib import Path
 from datetime import timedelta
+from pathlib import Path
+
 import environ
 from celery.schedules import crontab
 from django.core.management.utils import get_random_secret_key
@@ -66,10 +67,8 @@ INSTALLED_APPS = [
     'django_celery_results',
     'django_filters',
     'drf_spectacular',
-    'auditlog',
     'apps.admin_utils',
     'apps.allocations',
-    'apps.audit',
     'apps.docs',
     'apps.health',
     'apps.logging',
@@ -85,8 +84,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'auditlog.middleware.AuditlogMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'apps.logging.middleware.LogRequestMiddleware',
 ]
 
 TEMPLATES = [
@@ -159,10 +158,6 @@ SPECTACULAR_SETTINGS = {
     'VERSION': VERSION,
     'SERVE_INCLUDE_SCHEMA': False,
 }
-
-# Audit log
-
-AUDITLOG_INCLUDE_ALL_MODELS = True
 
 # Redis backend and Celery scheduler
 

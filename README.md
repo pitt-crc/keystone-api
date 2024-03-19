@@ -205,7 +205,6 @@ Running the application in debug mode enables/disables various features to aid i
 In addition to enabling the standard debugging behavior provided by Django:
 
 - A `/docs` page is enabled with full API documentation for the parent application
-- A web GUI is enabled for easier interaction with API endpoints
 - Tracebacks are provided in the browser when an exception occurs (a Django standard)
 
 ### Tests and System Checks

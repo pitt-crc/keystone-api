@@ -56,10 +56,10 @@ class TestHealthChecks(TestCase):
             }
         }
 
-        health_checks = [
-            self.create_mock_plugin(**expected_data['plugin1']),
-            self.create_mock_plugin(**expected_data['plugin2'])
-        ]
+        health_checks = {
+            'plugin1': self.create_mock_plugin(**expected_data['plugin1']),
+            'plugin2': self.create_mock_plugin(**expected_data['plugin2'])
+        }
 
         response = HealthChecks.render_to_response_json(health_checks, 500)
         self.assertIsInstance(response, JsonResponse)
@@ -85,10 +85,10 @@ class TestHealthChecks(TestCase):
             }
         }
 
-        health_checks = [
-            self.create_mock_plugin(**expected_data['plugin1']),
-            self.create_mock_plugin(**expected_data['plugin2'])
-        ]
+        health_checks = {
+            'plugin1': self.create_mock_plugin(**expected_data['plugin1']),
+            'plugin2': self.create_mock_plugin(**expected_data['plugin2'])
+        }
 
         response = HealthChecks.render_to_response_json(health_checks, 500)
         self.assertIsInstance(response, JsonResponse)
