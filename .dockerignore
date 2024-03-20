@@ -1,3 +1,21 @@
+# Git / Github
+.git/
+.gitignore
+.github
+
+# Application files
 keystone_api/keystone.db
-keystone_api/static_root
-keystone_api/email
+keystone_api/static_files/
+keystone_api/upload_files/
+keystone_api/email/
+
+# Distribution and packaging
+__pycache__/
+dist/
+
+# IDE / Developer
+.idea/
+*.env
+
+# OS
+.DS_Store

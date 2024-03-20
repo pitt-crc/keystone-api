@@ -14,7 +14,7 @@ keywords = ["Pitt", "CRC", "HPC", "django"]
 keystone-api = "keystone_api.manage:main"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.11"
 django = "4.2.11"
 django-auth-ldap = "4.6.0"
 django-celery-beat = "2.6.0"
@@ -31,6 +31,6 @@ gunicorn = "21.2.0"
 psycopg2-binary = "2.9.9"
 pyyaml = "6.0.1"
 redis = "5.0.3"
-tqdm = "^4.66.2"
+tqdm = "4.66.2"
 uritemplate = "4.1.1"
 whitenoise = "6.6.0"
