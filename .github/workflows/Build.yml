@@ -64,7 +64,7 @@ jobs:
         run: poetry version "${{ inputs.version }}"
 
       - name: Build Python distribution
-        run: asdf
+        run: poetry build
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
