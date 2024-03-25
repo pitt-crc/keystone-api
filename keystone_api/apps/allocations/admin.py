@@ -61,10 +61,10 @@ class AllocationAdmin(admin.ModelAdmin):
 
     @staticmethod
     @admin.display
-    def approved(obj: Allocation) -> bool:
-        """Return whether the request for the allocation has been marked as approved"""
+    def status(obj: Allocation) -> str:
+        """Return the status of the corresponding allocation request"""
 
-        return obj.request.approved or '--'
+        return obj.request.StatusChoices(obj.request.status).label
 
     @staticmethod
     @admin.display
@@ -87,12 +87,12 @@ class AllocationAdmin(admin.ModelAdmin):
 
         return f'{obj.final:,}' if obj.final else '--'
 
-    list_display = [group, 'request', 'cluster', requested, awarded, final_usage, approved]
+    list_display = [group, 'request', 'cluster', requested, awarded, final_usage, status]
     list_display_links = list_display
     ordering = ['request__group__name', 'cluster']
     search_fields = ['request__group__name', 'request__title', 'cluster__name']
     list_filter = [
-        ('request__approved', admin.DateFieldListFilter)
+        ('request__status', admin.ChoicesFieldListFilter)
     ]
 
 
@@ -114,22 +114,15 @@ class AllocationRequestAdmin(admin.ModelAdmin):
 
         return sum(1 for _ in obj.allocationrequestreview_set.all())
 
-    @staticmethod
-    @admin.display
-    def approvals(obj: AllocationRequest) -> int:
-        """Return the number of approving reviews"""
-
-        return sum(1 for review in obj.allocationrequestreview_set.all() if review.approve)
-
-    list_display = ['group', title, 'submitted', 'approved', 'active', 'expire', 'reviews', 'approvals']
+    list_display = ['group', title, 'submitted', 'active', 'expire', 'reviews', 'status']
     list_display_links = list_display
     search_fields = ['title', 'description', 'group__name']
     ordering = ['submitted']
     list_filter = [
         ('submitted', admin.DateFieldListFilter),
-        ('approved', admin.DateFieldListFilter),
         ('active', admin.DateFieldListFilter),
         ('expire', admin.DateFieldListFilter),
+        ('status', admin.ChoicesFieldListFilter),
     ]
     inlines = [AllocationInline, AllocationRequestReviewInline, AttachmentInline]
 

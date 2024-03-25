@@ -60,10 +60,16 @@ class Allocation(RGModelInterface, models.Model):
 class AllocationRequest(RGModelInterface, models.Model):
     """User request for additional service units on one or more clusters"""
 
+    class StatusChoices(models.TextChoices):
+        PENDING = 'PD', 'Pending'
+        APPROVED = 'AP', 'Approved'
+        DECLINED = 'DC', 'Declined'
+        CHANGES = 'CR', 'Changes Requested'
+
     title = models.CharField(max_length=250)
     description = models.TextField(max_length=1600)
     submitted = models.DateField('Submission Date', auto_now=True)
-    approved = models.DateField('Approval Date', null=True, blank=True)
+    status = models.CharField('Review Status', max_length=2, choices=StatusChoices.choices, default=StatusChoices.PENDING)
     active = models.DateField('Active Date', null=True, blank=True)
     expire = models.DateField('Expiration Date', null=True, blank=True)
 
@@ -85,7 +91,12 @@ class AllocationRequest(RGModelInterface, models.Model):
 class AllocationRequestReview(RGModelInterface, models.Model):
     """Reviewer feedback for an allocation request"""
 
-    approve = models.BooleanField()
+    class StatusChoices(models.TextChoices):
+        APPROVED = 'AP', 'Approved'
+        DECLINED = 'DC', 'Declined'
+        CHANGES = 'CR', 'Changes Requested'
+
+    status = models.CharField(max_length=2, choices=StatusChoices.choices)
     public_comments = models.TextField(max_length=1600, null=True, blank=True)
     private_comments = models.TextField(max_length=1600, null=True, blank=True)
     date_modified = models.DateTimeField(auto_now=True)
