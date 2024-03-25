@@ -23,7 +23,7 @@ class ResearchGroupViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
 
     def get_queryset(self) -> list[ResearchGroup]:
-        """Return a list of all research groups to superusers, or the requesting users research groups"""
+        """Return a list of all research groups to admins, or the requesting users research groups"""
 
         if self.request.user.is_superuser or self.request.user.is_staff:
             return ResearchGroup.objects.all()
@@ -39,7 +39,7 @@ class UserViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
 
     def get_queryset(self) -> list[User]:
-        """Return a list of all users to superusers, or the requesting users info"""
+        """Return a list of all users to admins, or the requesting users info"""
 
         if self.request.user.is_superuser or self.request.user.is_staff:
             return User.objects.all()
