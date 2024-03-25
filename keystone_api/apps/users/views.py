@@ -16,26 +16,32 @@ __all__ = [
 
 
 class ResearchGroupViewSet(viewsets.ModelViewSet):
-    """View ResearchGroups."""
+    """View ResearchGroups"""
 
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = ResearchGroupSerializer
     filterset_fields = '__all__'
 
     def get_queryset(self) -> list[ResearchGroup]:
-        """Return a list of research groups"""
+        """Return a list of all research groups to superusers, or the requesting users research groups"""
 
-        return ResearchGroup.objects.all()
+        if self.request.user.is_superuser or self.request.user.is_staff:
+            return ResearchGroup.objects.all()
+
+        return ResearchGroup.objects.groups_for_user(self.request.user)
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    """View Users."""
+    """View Users"""
 
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = UserSerializer
     filterset_fields = '__all__'
 
     def get_queryset(self) -> list[User]:
-        """Return a list of users"""
+        """Return a list of all users to superusers, or the requesting users info"""
 
-        return User.objects.all()
+        if self.request.user.is_superuser or self.request.user.is_staff:
+            return User.objects.all()
+
+        return User.objects.filter(username=self.request.user)
