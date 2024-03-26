@@ -71,5 +71,5 @@ class EndpointPermissions(APITestCase, CustomAsserts):
             patch=status.HTTP_405_METHOD_NOT_ALLOWED,
             delete=status.HTTP_405_METHOD_NOT_ALLOWED,
             trace=status.HTTP_405_METHOD_NOT_ALLOWED,
-            post_body={'approve': True, 'request': 1}
+            post_body={'status': 'AP', 'request': 1}
         )

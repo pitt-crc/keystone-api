@@ -98,6 +98,6 @@ class EndpointPermissions(APITestCase, CustomAsserts):
             patch=status.HTTP_200_OK,
             delete=status.HTTP_204_NO_CONTENT,
             trace=status.HTTP_405_METHOD_NOT_ALLOWED,
-            put_body={'approve': 1, 'request': 1},
-            patch_body={'approve': True}
+            put_body={'status': 'DC', 'request': 1},
+            patch_body={'status': 'DC'}
         )
