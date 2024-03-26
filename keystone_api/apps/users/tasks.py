@@ -14,7 +14,7 @@ from tqdm import tqdm
 from .models import User
 
 
-def get_connection() -> ldap.ldapobject.LDAPObject:
+def get_ldap_connection() -> ldap.ldapobject.LDAPObject:
     """Establish a new LDAP connection"""
 
     conn = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
@@ -29,7 +29,7 @@ def get_connection() -> ldap.ldapobject.LDAPObject:
 
 
 @shared_task()
-def ldap_update(prune=False) -> None:
+def ldap_update_users(prune=False) -> None:
     """Update the user database with the latest data from LDAP
 
     This function performs no action if the `AUTH_LDAP_SERVER_URI` setting
@@ -43,7 +43,7 @@ def ldap_update(prune=False) -> None:
         return
 
     # Search LDAP for all users
-    conn = get_connection()
+    conn = get_ldap_connection()
     search = conn.search_s(settings.AUTH_LDAP_USER_SEARCH.base_dn, ldap.SCOPE_SUBTREE, '(objectClass=account)')
 
     # Fetch keystone usernames using the LDAP attribute map defined in settings
@@ -54,6 +54,6 @@ def ldap_update(prune=False) -> None:
         LDAPBackend().populate_user(username)
 
     if prune:
-        usernames = set(User.objects.values_list('name', flat=True))
+        usernames = set(User.objects.values_list('username', flat=True))
         users_to_delete = usernames - ldap_names
         User.objects.filter(username__in=users_to_delete).delete()
