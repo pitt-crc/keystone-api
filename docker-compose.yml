@@ -15,10 +15,8 @@ services:
     image: postgres:15.5
     container_name: keystone-db
     restart: always
-    environment:
-      POSTGRES_DB: "keystone"
-      POSTGRES_USER: db_user
-      POSTGRES_PASSWORD: foobar123
+    env_file:
+      - db.env
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     networks:
@@ -40,23 +38,8 @@ services:
       - db
     ports:
       - "8000:8000"
-    environment:
-      DJANGO_SETTINGS_MODULE: "keystone_api.main.settings"
-      STORAGE_STATIC_DIR: "/app/static"
-      STORAGE_UPLOAD_DIR: "/app/upload_files"
-
-      # Security Settings
-      SECURE_ALLOWED_HOSTS: "*"
-
-      # Redis settings
-      REDIS_HOST: "cache"
-
-      # Database settings
-      DB_POSTGRES_ENABLE: "true"
-      DB_NAME: "keystone"
-      DB_USER: db_user
-      DB_PASSWORD: foobar123
-      DB_HOST: "db"
+    env_file:
+      - api.env
     volumes:
       - static_files:/app/static
       - uploaded_files:/app/upload_files
@@ -74,23 +57,8 @@ services:
       - cache
       - db
       - api
-    environment:
-      DJANGO_SETTINGS_MODULE: "keystone_api.main.settings"
-      STORAGE_STATIC_DIR: "/app/static"
-      STORAGE_UPLOAD_DIR: "/app/upload_files"
-
-      # Security Settings
-      SECURE_ALLOWED_HOSTS: "*"
-
-      # Redis settings
-      REDIS_HOST: "cache"
-
-      # Database settings
-      DB_POSTGRES_ENABLE: "true"
-      DB_NAME: "keystone"
-      DB_USER: db_user
-      DB_PASSWORD: foobar123
-      DB_HOST: "db"
+    env_file:
+      - api.env
     networks:
       - backend
 
@@ -105,23 +73,8 @@ services:
       - db
       - api
       - celery-worker
-    environment:
-      DJANGO_SETTINGS_MODULE: "keystone_api.main.settings"
-      STORAGE_STATIC_DIR: "/app/static"
-      STORAGE_UPLOAD_DIR: "/app/upload_files"
-
-      # Security Settings
-      SECURE_ALLOWED_HOSTS: "*"
-
-      # Redis settings
-      REDIS_HOST: "cache"
-
-      # Database settings
-      DB_POSTGRES_ENABLE: "true"
-      DB_NAME: "keystone"
-      DB_USER: db_user
-      DB_PASSWORD: foobar123
-      DB_HOST: "db"
+    env_file:
+      - api.env
     networks:
       - backend
 
