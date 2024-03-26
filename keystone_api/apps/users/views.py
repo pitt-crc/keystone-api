@@ -7,6 +7,7 @@ appropriately rendered HTML template or other HTTP response.
 from rest_framework import permissions, viewsets
 
 from .models import *
+from .permissions import StaffWriteAuthenticatedRead
 from .serializers import *
 
 __all__ = [
@@ -18,7 +19,7 @@ __all__ = [
 class ResearchGroupViewSet(viewsets.ModelViewSet):
     """View ResearchGroups"""
 
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, StaffWriteAuthenticatedRead]
     serializer_class = ResearchGroupSerializer
     filterset_fields = '__all__'
 
@@ -34,6 +35,6 @@ class ResearchGroupViewSet(viewsets.ModelViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     """View Users"""
 
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, StaffWriteAuthenticatedRead]
     serializer_class = UserSerializer
     filterset_fields = '__all__'
