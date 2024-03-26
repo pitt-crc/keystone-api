@@ -115,11 +115,13 @@
 - model: allocations.allocationrequest
   pk: 1
   fields:
+    status: AP
     group: 1
     submitted: "2023-01-01"
 - model: allocations.allocationrequest
   pk: 2
   fields:
+    status: AP
     group: 2
     submitted: "2023-01-01"
 
@@ -127,7 +129,7 @@
 - model: allocations.allocationrequestreview
   pk: 1
   fields:
-    approve: true
+    status: AP
     request: 1
     reviewer: 9
     date_modified: "2023-01-01T12:00:00Z"
