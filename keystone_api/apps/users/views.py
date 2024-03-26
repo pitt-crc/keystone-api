@@ -37,11 +37,3 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = UserSerializer
     filterset_fields = '__all__'
-
-    def get_queryset(self) -> list[User]:
-        """Return a list of all users to admins, or the requesting users info"""
-
-        if self.request.user.is_superuser or self.request.user.is_staff:
-            return User.objects.all()
-
-        return User.objects.filter(username=self.request.user)
