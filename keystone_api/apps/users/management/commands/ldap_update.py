@@ -9,7 +9,7 @@ from argparse import ArgumentParser
 
 from django.core.management.base import BaseCommand
 
-from apps.users.tasks import ldap_update
+from apps.users.tasks import ldap_update_users
 
 
 class Command(BaseCommand):
@@ -30,7 +30,7 @@ class Command(BaseCommand):
         """Handle the command execution"""
 
         try:
-            ldap_update(prune=options['prune'])
+            ldap_update_users(prune=options['prune'])
 
         except KeyboardInterrupt:
             pass

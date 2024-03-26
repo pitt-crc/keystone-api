@@ -14,7 +14,7 @@ from django.db.models import Sum
 
 from apps.allocations.models import Allocation, Cluster
 from apps.users.models import ResearchGroup
-from keystone_api.plugins.slurm import get_accounts_on_cluster, get_cluster_limit, get_cluster_usage, set_cluster_limit
+from keystone_api.plugins.slurm import get_cluster_limit, get_cluster_usage, get_slurm_account_names, set_cluster_limit
 
 log = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ def update_limits() -> None:
 def update_limits_for_cluster(cluster: Cluster) -> None:
     """Update the TRES billing usage limits of each account on a given cluster, excluding the root account"""
 
-    for account_name in get_accounts_on_cluster(cluster.name):
+    for account_name in get_slurm_account_names(cluster.name):
         # Do not adjust limits for root
         if account_name in ['root']:
             continue
