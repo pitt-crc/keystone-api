@@ -15,6 +15,7 @@ jobs:
 
   qa:
     name: QA
+    needs: build
     uses: ./.github/workflows/QA.yml
     secrets: inherit
 
