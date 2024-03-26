@@ -15,7 +15,9 @@ jobs:
 
   qa:
     name: QA
+    needs: build
     uses: ./.github/workflows/QA.yml
+    secrets: inherit
 
   report-pr-status:
     name: Report PR Status
@@ -25,5 +27,5 @@ jobs:
 
     steps:
       - name: Check PR status
-        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'skipped') }}
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'skipped') || contains(needs.*.result, 'cancelled') }}
         run: exit 1
