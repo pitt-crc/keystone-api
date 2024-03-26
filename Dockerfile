@@ -22,7 +22,7 @@ COPY . src
 RUN pip install ./src && rm -rf src
 
 # Create an unprivliged user for running background services
-RUN groupadd --gid 900 keystone && useradd -m -u 999 -g keystone keystone
+RUN groupadd --gid 900 keystone && useradd -m -u 900 -g keystone keystone
 
 # Setup and launch the application
 ENTRYPOINT ["keystone-api"]
