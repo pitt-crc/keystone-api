@@ -87,3 +87,11 @@ class ClusterViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, StaffWriteAuthenticatedRead]
     serializer_class = ClusterSerializer
     filterset_fields = '__all__'
+
+    def get_queryset(self) -> list[Cluster]:
+        """Return a list of enabled clusters"""
+
+        if self.request.user.is_staff or self.request.user.is_superuser:
+            return Cluster.objects.all()
+
+        return Cluster.objects.is_enabled().all()

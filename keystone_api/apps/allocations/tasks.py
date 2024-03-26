@@ -24,7 +24,7 @@ def update_limits() -> None:
     """Adjust per Slurm account TRES billing hours usage limits on all enabled clusters"""
     log.info(f"Begin updating TRES billing hour limits for all Slurm Accounts")
 
-    for cluster in Cluster.objects.filter(enabled=True).all():
+    for cluster in Cluster.objects.is_enabled().all():
         log.info(f"Updating TRES billing hour limits for cluster {cluster.name}")
         update_limits_for_cluster(cluster)
 
