@@ -23,6 +23,8 @@ class AllocationSerializer(serializers.ModelSerializer):
     """Object serializer for the `Allocation` class"""
 
     class Meta:
+        """Serializer settings"""
+
         model = Allocation
         fields = '__all__'
 
@@ -31,6 +33,8 @@ class AllocationRequestSerializer(serializers.ModelSerializer):
     """Object serializer for the `AllocationRequest` class"""
 
     class Meta:
+        """Serializer settings"""
+
         model = AllocationRequest
         fields = '__all__'
 
@@ -39,6 +43,8 @@ class AllocationRequestReviewSerializer(serializers.ModelSerializer):
     """Object serializer for the `AllocationRequestReview` class"""
 
     class Meta:
+        """Serializer settings"""
+
         model = AllocationRequestReview
         fields = '__all__'
         extra_kwargs = {'reviewer': {'required': False}}  # Default reviewer value is set by the view class
@@ -56,5 +62,7 @@ class ClusterSerializer(serializers.ModelSerializer):
     """Object serializer for the `Cluster` class"""
 
     class Meta:
+        """Serializer settings"""
+
         model = Cluster
         fields = '__all__'

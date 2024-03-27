@@ -61,6 +61,8 @@ class AllocationRequest(RGModelInterface, models.Model):
     """User request for additional service units on one or more clusters"""
 
     class StatusChoices(models.TextChoices):
+        """Enumerated choices for the `status` field"""
+
         PENDING = 'PD', 'Pending'
         APPROVED = 'AP', 'Approved'
         DECLINED = 'DC', 'Declined'
@@ -92,6 +94,8 @@ class AllocationRequestReview(RGModelInterface, models.Model):
     """Reviewer feedback for an allocation request"""
 
     class StatusChoices(models.TextChoices):
+        """Enumerated choices for the `status` field"""
+
         APPROVED = 'AP', 'Approved'
         DECLINED = 'DC', 'Declined'
         CHANGES = 'CR', 'Changes Requested'
