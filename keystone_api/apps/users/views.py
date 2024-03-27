@@ -17,7 +17,7 @@ __all__ = [
 
 
 class ResearchGroupViewSet(viewsets.ModelViewSet):
-    """View ResearchGroups"""
+    """Manage user membership in research groups"""
 
     permission_classes = [permissions.IsAuthenticated, StaffWriteAuthenticatedRead]
     serializer_class = ResearchGroupSerializer
@@ -33,7 +33,7 @@ class ResearchGroupViewSet(viewsets.ModelViewSet):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    """View Users"""
+    """Read only access to user datta."""
 
     permission_classes = [permissions.IsAuthenticated, StaffWriteAuthenticatedRead]
     serializer_class = UserSerializer

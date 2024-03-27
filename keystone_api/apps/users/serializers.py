@@ -20,6 +20,8 @@ class ResearchGroupSerializer(serializers.ModelSerializer):
     """Object serializer for the `ResearchGroup` class"""
 
     class Meta:
+        """Serializer settings"""
+
         model = ResearchGroup
         fields = '__all__'
 
@@ -28,5 +30,7 @@ class UserSerializer(serializers.ModelSerializer):
     """Object serializer for the `User` class"""
 
     class Meta:
+        """Serializer settings"""
+
         model = User
         exclude = ['password']

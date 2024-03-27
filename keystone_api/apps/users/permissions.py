@@ -23,4 +23,4 @@ class StaffWriteAuthenticatedRead(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return request.user.is_authenticated
 
-        return request.user.is_staff
+        return request.user.is_staff or request.user.is_superuser

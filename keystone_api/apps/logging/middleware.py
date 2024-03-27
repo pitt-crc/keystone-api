@@ -44,7 +44,8 @@ class LogRequestMiddleware:
         request_log.save()
         return response
 
-    def get_client_ip(self, request: HttpRequest) -> str:
+    @staticmethod
+    def get_client_ip(request: HttpRequest) -> str:
         """Return the client IP for the incoming request
 
         Args:

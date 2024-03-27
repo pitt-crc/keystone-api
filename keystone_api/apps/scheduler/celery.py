@@ -1,7 +1,7 @@
 """Application interface for the backend Celery service.
 
 Defines a specially named `celery_app` variable which acts as the primary
-interface between django and Celery. Celery tasks are automatically registered
+interface between Django and Celery. Celery tasks are automatically registered
 with the Celery application instance for all applications defined in the
 `settings.INSTALLED_APPS` list.
 """
@@ -17,7 +17,7 @@ celery_app.conf.beat_schedule = {
     'apps.users.tasks.ldap_update_users': {
         'task': 'apps.users.tasks.ldap_update_users',
         'schedule': crontab(minute='0'),
-        'description': 'This task synchronizes user data against LDAP. If LDAP authentication is not bing used, this task does nothing.'
+        'description': 'This task synchronizes user data against LDAP. If LDAP authentication is not being used, this task does nothing.'
     },
     'apps.logging.tasks.rotate_log_files': {
         'task': 'apps.logging.tasks.rotate_log_files',
