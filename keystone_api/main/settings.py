@@ -7,7 +7,6 @@ from datetime import timedelta
 from pathlib import Path
 
 import environ
-from celery.schedules import crontab
 from django.core.management.utils import get_random_secret_key
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -166,20 +165,10 @@ _redis_db = env.int('REDIS_DB', 0)
 _redis_pass = env.str('REDIS_PASSWORD', '')
 
 REDIS_URL = f'redis://:{_redis_pass}@{_redis_host}:{_redis_port}'
-CELERY_BROKER_URL = REDIS_URL + f'/{_redis_db}'
 
+CELERY_BROKER_URL = REDIS_URL + f'/{_redis_db}'
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'django-cache'
-CELERY_BEAT_SCHEDULE = {
-    "Update LDAP users": {
-        "task": "apps.users.tasks.ldap_update_users",
-        "schedule": crontab(minute='0'),
-    },
-    "Rotate Log Entries": {
-        "task": "apps.logging.tasks.rotate_log_files",
-        "schedule": crontab(hour='0', minute='0'),
-    }
-}
 
 # Database
 
