@@ -12,18 +12,22 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     build-essential \
     libsasl2-dev \
     libldap2-dev \
-    # Required for celery
+    # Required for Celery
     redis \
+    # Required for Docker health checks
+    curl \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app
-COPY . src
-RUN pip install ./src && rm -rf src
 
 # Create an unprivliged user for running background services
 RUN groupadd --gid 900 keystone && useradd -m -u 900 -g keystone keystone
 
+# Install the application
+WORKDIR /app
+COPY . src
+RUN pip install ./src && rm -rf src
+
 # Setup and launch the application
 ENTRYPOINT ["keystone-api"]
-CMD ["quickstart", "--migrate", "--static", "--celery", "--gunicorn", "--no-input"]
+HEALTHCHECK CMD curl --fail --location localhost:8000/health/ || exit 1
+CMD ["quickstart", "--no-input", "--migrate", "--static", "--celery", "--gunicorn"]
