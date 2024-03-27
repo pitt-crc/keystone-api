@@ -33,7 +33,7 @@ def get_slurm_account_names(cluster_name: str | None = None) -> set[str]:
     """Return a list of Slurm account names from `sacctmgr`
 
     Args:
-        cluster_name: Optionally reutrn account names on a specific Slurm cluster
+        cluster_name: Optionally return account names on a specific Slurm cluster
 
     Returns:
         A set of unique Slurm account names

@@ -32,7 +32,7 @@ class CustomAsserts:
             endpoint: The URL to perform requests against
             **<request>: The integer status code expected by the given request type (get, post, etc.)
             **<request>_body: The data to include in the request (get_body, post_body, etc.)
-            **<request>_headers: Header vaues to include in the request (get_headers, post_headers, etc.)
+            **<request>_headers: Header values to include in the request (get_headers, post_headers, etc.)
         """
 
         http_methods = ['get', 'head', 'options', 'post', 'put', 'patch', 'delete', 'trace']
