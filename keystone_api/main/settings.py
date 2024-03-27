@@ -172,7 +172,7 @@ CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'django-cache'
 CELERY_BEAT_SCHEDULE = {
     "Update LDAP users": {
-        "task": "apps.users.tasks.ldap_update",
+        "task": "apps.users.tasks.ldap_update_users",
         "schedule": crontab(minute='0'),
     },
     "Rotate Log Entries": {
