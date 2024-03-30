@@ -36,7 +36,7 @@ def ldap_update_users(prune=False) -> None:
     is not configured in the application settings.
 
     Args:
-        prune: Optionally delete any accounts with usernames not found in LDAP
+        prune: Optionally delete old LDAP accounts with usernames no longer found in LDAP
     """
 
     if not settings.AUTH_LDAP_SERVER_URI:
@@ -52,8 +52,11 @@ def ldap_update_users(prune=False) -> None:
 
     for username in tqdm(ldap_names):
         LDAPBackend().populate_user(username)
+        user = User.objects.get(username=username)
+        user.is_ldap_user = True
+        user.save()
 
     if prune:
-        usernames = set(User.objects.values_list('username', flat=True))
+        usernames = set(User.objects.filter(is_ldap=True).values_list('username', flat=True))
         users_to_delete = usernames - ldap_names
         User.objects.filter(username__in=users_to_delete).delete()

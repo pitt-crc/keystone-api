@@ -24,17 +24,16 @@ settings.JAZZMIN_SETTINGS['order_with_respect_to'].extend([
 class UserAdmin(auth.admin.UserAdmin):
     """Admin interface for managing user accounts"""
 
-    readonly_fields = ("last_login", "date_joined")
+    readonly_fields = ("last_login", "date_joined", "is_ldap_user")
     fieldsets = (
-        (None, {"fields": ("username", "password")}),
-        ("Personal info", {"fields": ("first_name", "last_name", "email")}),
+        ("User Info", {"fields": ("first_name", "last_name", "email", "last_login", "date_joined", 'is_ldap_user')}),
+        ("Credentials", {"fields": ("username", "password")}),
         ("Permissions",
          {"fields": (
              "is_active",
              "is_staff",
              "is_superuser",
-         )}),
-        ("Important dates", {"fields": ("last_login", "date_joined")}),
+         )})
     )
 
 

@@ -28,6 +28,8 @@ class User(auth_models.AbstractBaseUser, auth_models.PermissionsMixin):
     is_staff = models.BooleanField('staff status', default=False)
     date_joined = models.DateTimeField('date joined', default=timezone.now)
 
+    is_ldap_user = models.BooleanField('LDAP User', default=False)
+
     objects = UserManager()
 
     USERNAME_FIELD = 'username'
