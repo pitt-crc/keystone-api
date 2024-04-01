@@ -216,6 +216,18 @@ In addition to enabling the standard debugging behavior provided by Django:
 - A `/docs` page is enabled with full API documentation for the parent application
 - Tracebacks are provided in the browser when an exception occurs (a Django standard)
 
+### Admin Utilities
+
+The `keystone-api` utility includes a series of admin utilities.
+These utilities are useful for automating various development tasks.
+A brief summary is provided below.
+Use the `keystone-api <command> --help` option for specific usage information.
+
+| Command                   | Description                                                                              |
+|---------------------------|------------------------------------------------------------------------------------------|
+| `clean`                   | Clean up files generated when launching a new application instance.                      |
+| `quickstart`              | A helper utility for quickly migrating/deploying an application instance.                |
+
 ### Tests and System Checks
 
 Application tests are run using the `test` command:
@@ -225,10 +237,10 @@ keystone-api test
 ```
 
 Specific subsets of tests are run by specifying an app label.
-For example, tests for the `admin_utils` application are executed as:
+For example, tests for the `users` application are executed as:
 
 ```bash
-keystone-api test apps.admin_utils
+keystone-api test apps.users
 ```
 
 The default django system checks can also be executed as standard:
