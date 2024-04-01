@@ -44,8 +44,8 @@ class Command(BaseCommand):
         shutil.copyfile(completion_script_src, completion_script_dest)
 
         # Source the completion file in the user's shell configuration
-        with profile_path.open():
-            profile_path.write_text('\nsource ~/.keystone_autocomplete\n')
+        with profile_path.open(mode='a') as file:
+            file.write('\nsource ~/.keystone_autocomplete\n')
 
     @staticmethod
     def prompt_for_confirmation() -> bool:
