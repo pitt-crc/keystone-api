@@ -71,13 +71,22 @@ Use the `--help` option to view the available commands.
 keystone-api --help
 ```
 
-The following example will setup the project database, create an admin user account, and launch the
+The following example will set up the project database, create an admin user account, and launch the
 API server in debug mode. As a general rule, debug mode should **never** be enabled in production.
 
 ```bash
 keystone-api migrate
 keystone-api createsuperuser
 DEBUG=true keystone-api runserver
+```
+
+#### Enabling Autocomplete
+
+The `keystone-api` utility does not support tab autocompletion by default.
+To enable this feature, use the `enable_autocomplete` command:
+
+```bash
+keystone-api enable_autocomplete
 ```
 
 ## Settings
