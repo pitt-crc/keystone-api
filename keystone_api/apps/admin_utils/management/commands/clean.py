@@ -19,9 +19,9 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    """A helper utility that wraps common Django deployment tasks"""
+    """Clean up files generated when launching a new application instance."""
 
-    help = 'A helper utility for deploying a development application instance.'
+    help = __doc__
 
     def add_arguments(self, parser: ArgumentParser) -> None:
         """Define command-line arguments
