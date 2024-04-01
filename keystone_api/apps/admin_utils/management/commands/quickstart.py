@@ -34,11 +34,12 @@ class Command(BaseCommand):
           parser: The argument parser instance
         """
 
-        parser.add_argument('--static', action='store_true', help='Collect static files.')
-        parser.add_argument('--migrate', action='store_true', help='Run database migrations.')
-        parser.add_argument('--celery', action='store_true', help='Launch a background Celery worker.')
-        parser.add_argument('--gunicorn', action='store_true', help='Run a web server using Gunicorn.')
-        parser.add_argument('--no-input', action='store_false', help='Do not prompt for user input of any kind.')
+        group = parser.add_argument_group('quickstart options')
+        group.add_argument('--static', action='store_true', help='Collect static files.')
+        group.add_argument('--migrate', action='store_true', help='Run database migrations.')
+        group.add_argument('--celery', action='store_true', help='Launch a background Celery worker.')
+        group.add_argument('--gunicorn', action='store_true', help='Run a web server using Gunicorn.')
+        group.add_argument('--no-input', action='store_false', help='Do not prompt for user input of any kind.')
 
     def handle(self, *args, **options) -> None:
         """Handle the command execution
