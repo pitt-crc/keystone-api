@@ -35,6 +35,7 @@ class ResearchGroupViewSet(viewsets.ModelViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     """Read only access to user datta."""
 
+    queryset = User.objects.all()
     permission_classes = [permissions.IsAuthenticated, StaffWriteAuthenticatedRead]
     serializer_class = UserSerializer
     filterset_fields = '__all__'
