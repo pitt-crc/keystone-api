@@ -1,0 +1,17 @@
+# #############################################################################
+# This bash script adds tab-completion feature to the keystone-api utility
+# To install this script, source it from your .bash_profile or .bashrc file:
+#
+#     . ~/path/to/keystone_autocomplete
+#
+# To uninstall the script, remove or comment out the added line.
+# #############################################################################
+
+
+_keystone_autocomplete()
+{
+    COMPREPLY=( $( COMP_WORDS="${COMP_WORDS[*]}" \
+                   COMP_CWORD=$COMP_CWORD \
+                   DJANGO_AUTO_COMPLETE=1 $1 ) )
+}
+complete -F _keystone_autocomplete -o default keystone-api
