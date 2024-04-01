@@ -7,9 +7,9 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    """A Django management command that enables Bash autocompletion for the keystone-api command."""
+    """Enable Bash autocompletion for the keystone-api commandline tool."""
 
-    help = 'Enable Bash autocompletion for the keystone-api commandline client'
+    help = __doc__
 
     def handle(self, *args, **options) -> None:
         """Handle the command execution
