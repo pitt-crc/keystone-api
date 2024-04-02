@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'health_check.contrib.celery_ping',
     'health_check.contrib.redis',
     'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
     'django_celery_beat',
     'django_celery_results',
     'django_filters',
