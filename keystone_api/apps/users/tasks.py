@@ -51,10 +51,10 @@ def ldap_update_users(prune=False) -> None:
     ldap_names = {uid.decode() for result in search for uid in result[1][ldap_username_attr]}
 
     for username in tqdm(ldap_names):
-        LDAPBackend().populate_user(username)
-        user = User.objects.get(username=username)
-        user.is_ldap_user = True
-        user.save()
+        user = LDAPBackend().populate_user(username)
+        if user is not None:
+            user.is_ldap_user = True
+            user.save()
 
     if prune:
         usernames = set(User.objects.filter(is_ldap=True).values_list('username', flat=True))
