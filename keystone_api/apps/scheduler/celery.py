@@ -23,5 +23,10 @@ celery_app.conf.beat_schedule = {
         'task': 'apps.logging.tasks.rotate_log_files',
         'schedule': crontab(hour='0', minute='0'),
         'description': 'This task deletes old log entries according to application settings.'
-    }
+    },
+    'apps.authentication.tasks.flush_expired_tokens': {
+        'task': 'apps.authentication.tasks.flush_expired_tokens',
+        'schedule': crontab(hour='0', minute='0'),
+        'description': 'This task clears the JWT token blacklist.'
+    },
 }
