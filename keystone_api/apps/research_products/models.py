@@ -21,7 +21,7 @@ class Publication(models.Model):
     title = models.CharField(max_length=250)
     abstract = models.TextField()
     date = models.DateField('Publication Date')
-    journal = models.CharField(max_length=100, null=True, blank=True)
+    journal = models.CharField(max_length=100)
     doi = models.CharField(max_length=50, unique=True, null=True, blank=True)
 
     def __str__(self) -> str:

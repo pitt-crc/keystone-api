@@ -13,19 +13,19 @@ from .serializers import *
 __all__ = ['GrantViewSet', 'PublicationViewSet']
 
 
-class PublicationViewSet(viewsets.ReadOnlyModelViewSet):
+class PublicationViewSet(viewsets.ModelViewSet):
     """Manage metadata for research publications."""
 
     queryset = Publication.objects.all()
-    permission_classes = [permissions.IsAdminUser | GroupMemberAll]
+    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser | GroupMemberAll]
     serializer_class = PublicationSerializer
     filterset_fields = '__all__'
 
 
-class GrantViewSet(viewsets.ReadOnlyModelViewSet):
+class GrantViewSet(viewsets.ModelViewSet):
     """Track funding awards and grant information."""
 
     queryset = Grant.objects.all()
-    permission_classes = [permissions.IsAdminUser | GroupMemberReadGroupAdminWrite]
+    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser | GroupMemberReadGroupAdminWrite]
     serializer_class = GrantSerializer
     filterset_fields = '__all__'
