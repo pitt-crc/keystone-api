@@ -27,9 +27,9 @@ class PublicationAdmin(admin.ModelAdmin):
         # Rely on the object to determine the appropriate string title representation
         return str(obj)
 
-    list_display = ['user', 'title', 'date']
+    list_display = ['group', 'title', 'date']
     list_display_links = list_display
-    search_fields = ['title', 'user__username']
+    search_fields = ['title', 'group__name']
     list_filter = [
         ('date', admin.DateFieldListFilter),
     ]
@@ -39,10 +39,10 @@ class PublicationAdmin(admin.ModelAdmin):
 class GrantAdmin(admin.ModelAdmin):
     """Admin interface for the `Grant` class"""
 
-    list_display = ['user', 'fiscal_year', 'amount', 'agency', 'start_date', 'end_date']
+    list_display = ['group', 'fiscal_year', 'amount', 'agency', 'start_date', 'end_date']
     list_display_links = list_display
-    ordering = ['user', '-fiscal_year']
-    search_fields = ['title', 'agency', 'fiscal_year', 'user__username']
+    ordering = ['group', '-fiscal_year']
+    search_fields = ['title', 'agency', 'fiscal_year', 'group__name']
     list_filter = [
         ('start_date', admin.DateFieldListFilter),
         ('end_date', admin.DateFieldListFilter),

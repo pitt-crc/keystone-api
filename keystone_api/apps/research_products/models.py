@@ -6,9 +6,10 @@ Each model reflects a different database and defines low-level defaults for how
 the associated table/fields/records are presented by parent interfaces.
 """
 
-from django.contrib.auth import get_user_model
 from django.db import models
 from django.template.defaultfilters import truncatechars
+
+from apps.users.models import ResearchGroup
 
 __all__ = ['Grant', 'Publication']
 
@@ -16,7 +17,7 @@ __all__ = ['Grant', 'Publication']
 class Publication(models.Model):
     """Metadata for an academic publication"""
 
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    group = models.ForeignKey(ResearchGroup, on_delete=models.CASCADE)
     title = models.CharField(max_length=250)
     abstract = models.TextField()
     date = models.DateField('Publication Date')
@@ -32,7 +33,7 @@ class Publication(models.Model):
 class Grant(models.Model):
     """Metadata for a funding grant"""
 
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    group = models.ForeignKey(ResearchGroup, on_delete=models.CASCADE)
     fiscal_year = models.IntegerField()
     start_date = models.DateField()
     end_date = models.DateField()
