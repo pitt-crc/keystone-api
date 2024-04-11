@@ -1,0 +1,21 @@
+site_name: Keystone API
+theme:
+  name: material
+  features:
+    - navigation.sections
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+nav:
+  - overview.md
+  - Installation:
+      - Getting Started: install/getting_started.md
+      - install/docker.md
+      - install/python.md
+  - Application Settings:
+      - settings/settings.md
+      - settings/security.md
+  - Developer Notes:
+      - developer/common.md
