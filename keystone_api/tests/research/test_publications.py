@@ -1,4 +1,5 @@
 """Tests for the `/research/publications/` endpoint"""
+
 import datetime
 
 from rest_framework import status

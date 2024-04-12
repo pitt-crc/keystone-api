@@ -1,5 +1,5 @@
 # This test fixture creates two research groups on the same cluster.
-# Each group has a single allocation request with a single allocation.
+# Each group has a single allocation request with a single allocation, grant, and publication.
 #
 # Research Group 1:
 #   - pi_1          (Research group PI)
@@ -149,3 +149,21 @@
     cluster: 1
     requested: 10000
     awarded: 10000
+
+# Publications
+- model: research_products.publication
+  pk: 1
+  fields:
+    title: "Publication title 1"
+    abstract: "Abstract 1"
+    date: "2021-01-01"
+    journal: "Journal 1"
+    group: 1
+- model: research_products.publication
+  pk: 2
+  fields:
+    title: "Publication title 2"
+    abstract: "Abstract 2"
+    date: "2022-02-02"
+    journal: "Journal 2"
+    group: 2
