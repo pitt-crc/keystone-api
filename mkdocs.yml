@@ -11,7 +11,7 @@ markdown_extensions:
 nav:
   - overview.md
   - Installation:
-      - Getting Started: install/getting_started.md
+      - install/slurm.md
       - install/docker.md
       - install/python.md
   - Application Settings:

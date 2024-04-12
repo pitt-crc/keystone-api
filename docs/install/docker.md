@@ -1,38 +1,56 @@
 # Deploying with Docker
 
-Deploying Keystone API using container images is strongly recommended.
-For situations where containers are not an option, see the documentation on [deploying with Python](python).
+The Keystone API can be deployed as a single container using Docker, or as several containers using Docker Compose.
+Single container deployments are for those looking to test-drive Keystone's capabilities.
+Deploying with Docker Compose is strongly recommended for HPC teams operating at scale.
 
 ## Using Docker Standalone
 
-The application image can be pulled and launched from the GitHub container registry:
+Start by pulling the latest `keystone-api` image from the GitHub container registry.
 
 ```bash
 docker pull ghcr.io/pitt-crc/keystone-api
-docker run -p 8000:8000 ghcr.io/pitt-crc/keystone-api
 ```
 
-The container will automatically deploy a fully functioning API server, including all supporting services.
-Once the container is ready, you will need to manually create the first user account.
-Execute the following command with the appropriate container name and follow the onscreen prompts.
+When launching a new container, make sure to expose the internal API from port `8000` to an external port of your choosing.
+In the following example, the application is launched in a container named `keystone` with port `8000` mapped to port `80`.
 
 ```bash
-docker exec -it [CONTAINER NAME] keystone-api createsuperuser
+docker run --detach --publish 8000:80 --name keystone ghcr.io/pitt-crc/keystone-api
 ```
 
-The REST API is now ready to us on port `8000`.
+Create an administrative account by executing the `createsuperuser` command from within the container and follow the onscreen prompts.
+
+```bash
+docker exec -it keystone keystone-api createsuperuser
+```
+
+You can test the new credentials by using them to generate a pair of JWT tokens.
+
+```bash
+curl \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"username": "[USERNAME]", "password": "[PASSWORD]"}' \
+  http://localhost:80/api/token/
+```
+
+If successful, you will receive a response similar to the following:
+
+```json
+{
+  "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX3BrIjoxLCJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiY29sZF9zdHVmZiI6IuKYgyIsImV4cCI6MTIzNDU2LCJqdGkiOiJmZDJmOWQ1ZTFhN2M0MmU4OTQ5MzVlMzYyYmNhOGJjYSJ9.NHlztMGER7UADHZJlxNG0WSi22a2KaYSfd1S-AuT7lU",
+  "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX3BrIjoxLCJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImNvbGRfc3R1ZmYiOiLimIMiLCJleHAiOjIzNDU2NywianRpIjoiZGUxMmY0ZTY3MDY4NDI3ODg5ZjE1YWMyNzcwZGEwNTEifQ.aEoAYkSJjoWH1boshQAaTkf8G3yn0kapko6HFRt7Rh4"
+}
+```
 
 !!! important
 
     The default container instance is **not** suitable for production out of the box.
-    Supporting services (PostgreSQL, Redis, etc.) will not persist data between container restarts and should be deployed separately to ensure proper data persistence. 
-    See the [Settings](../../settings/settings) section for a complete overview of configurable options and recommended settings.
+    Supporting services will not save data between container restarts and should be deployed separately to ensure data persistence. 
+    See the [Settings](../../settings/settings) page for a complete overview of configurable options and recommended settings.
 
 ## Using Docker Compose
-
-Deploying with Docker Compose provides several benefits over a single container deployment.
-Most importantly, database services are configured to persist data on the host machine, preventing data loss between container restarts.
-The configuration file is also easily customizable to fit individual use cases and is scalable to meet production loads.
 
 The following compose recipe provides a general starting point for a production ready deployment.
 Users are responsible for customizing the deployment to meet their specific needs.
@@ -112,7 +130,7 @@ volumes:
 ```
 
 Application settings are configured using environmental variables defined in various `.env` files.
-The following example files provide preliminary settings for getting everything up and running. 
+The following example files provide preliminary settings for getting everything up and running.
 
 !!! important
 
@@ -121,7 +139,7 @@ The following example files provide preliminary settings for getting everything 
 
 === "api.env"
 
-    ```bash
+    ```
     # General Settings
     DJANGO_SETTINGS_MODULE="keystone_api.main.settings"
     STORAGE_STATIC_DIR="/app/static"
@@ -143,7 +161,7 @@ The following example files provide preliminary settings for getting everything 
 
 === "db.env"
 
-    ```bash
+    ```
     # Credential values must match api.env
     POSTGRES_DB="keystone"
     POSTGRES_USER="db_user"

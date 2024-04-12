@@ -1,24 +1,8 @@
 # Deploying with Python
 
 The Keystone REST API can be installed as a standard Python package using the pip package manager.
-Deploying a production instance via pip is only recommended as a fallback for situations where Docker is not available. 
+Deploying a production instance via pip is only recommended as a fallback for situations where Docker is not available.
 Direct package installations typically require extra configuration and a working familiarity with system administration.
-
-## System Requirements
-
-The following dependencies are required:
-
-- A Redis database
-
-The additional dependencies listed below are optional, but required to support various application functionality: 
-
-- A PostgreSQL database (if using PostgreSQL instead of SQLite)
-- LDAP development binaries (if using LDAP authentication)
-
-!!! note
-
-    Support for SQLite is intended primarily for use in development and demonstrations.
-    Enabling PostgreSQL is **strongly** recommended when operating in a production environment.
 
 ## Installing the API
 
@@ -36,22 +20,6 @@ Use the `--help` option to view the available commands.
 keystone-api --help
 ```
 
-A development instance of the application 
-The following example will set up the project database, create an admin user account, and launch the
-API server in debug mode. As a general rule, debug mode should **never** be enabled in production.
-
-```bash
-keystone-api migrate
-keystone-api createsuperuser
-DEBUG=true keystone-api runserver
-```
-
-The default container instance is *not* suitable for full production out of the box.
-See the [Settings](#settings) section for a complete overview of configurable options and recommended settings.
-
-
-### Enabling Autocomplete
-
 The `keystone-api` utility does not support tab autocompletion by default.
 To enable autocomplete for the Bash shell, use the `enable_autocomplete` command.
 
@@ -59,4 +27,31 @@ To enable autocomplete for the Bash shell, use the `enable_autocomplete` command
 keystone-api enable_autocomplete
 ```
 
+You can test the installed package by deploying a development instance of the application.
+The following example set sup a SQLite database, create an admin user account, and launch the API server in debug mode.
+
+!!! danger
+
+    Debug mode is inherently insecure and should **never** be enabled in production.
+    It's use is reserved for development and demonstrative purposes only.
+
+```bash
+keystone-api migrate
+keystone-api createsuperuser
+DEBUG=true keystone-api runserver
+```
+
 ## Deploying the Application
+
+Keystone requires several backend services to support operation in a production environment.
+Specific instructions are provided below on configuring each dependency to wrk with the Keystone API.
+
+### LDAP
+
+### Redis
+
+### PostgreSQL
+
+### Celery
+
+### Gunicorn
