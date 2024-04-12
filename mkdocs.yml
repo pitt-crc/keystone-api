@@ -9,13 +9,11 @@ markdown_extensions:
   - pymdownx.tabbed:
       alternate_style: true
 nav:
-  - overview.md
+  - Overview: index.md
   - Installation:
       - install/slurm.md
       - install/docker.md
       - install/python.md
-  - Application Settings:
-      - settings/settings.md
-      - settings/security.md
+      - install/settings.md
   - Developer Notes:
       - developer/common.md

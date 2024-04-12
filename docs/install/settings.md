@@ -1,4 +1,4 @@
-# Settings Overview
+# Application Settings
 
 Keystone API reads application settings from environmental variables.
 Individual settings are listed below by category and use case.
