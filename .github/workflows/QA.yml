@@ -69,7 +69,6 @@ jobs:
             exit 1
           fi
 
-
   report-qa-status:
     name: Report QA Status
     runs-on: ubuntu-latest
