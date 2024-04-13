@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # Getting Started
 
 Keystone-API provides the REST API backend behind the Keystone web interface.
