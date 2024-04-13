@@ -40,7 +40,7 @@ jobs:
           upload: true
   
   api-spec:
-    name: API Specification
+    name: OpenAPI Specification
     runs-on: ubuntu-latest
     steps:
       - name: Fetch image artifact
@@ -51,9 +51,6 @@ jobs:
 
       - name: Load image
         run: docker load --input /tmp/keystone-api.tar
-      
-      - name: Generate OpenAPI file
-        run: docker run keystone-api spectacular > new_spec.yml
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -64,6 +61,7 @@ jobs:
           old_spec_content=$(cat $old_spec_path)
           
           new_spec_path="new_spec.yml"
+          docker run keystone-api spectacular > $new_spec_path
           new_spec_content=$(cat $new_spec_path)
           
           if [ "$old_spec_content" != "$new_spec_content" ]; then
