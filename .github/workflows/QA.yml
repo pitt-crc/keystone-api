@@ -56,14 +56,14 @@ jobs:
         run: docker run keystone-api spectacular > new_spec.yml
 
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Check file content
         run: |
           old_spec_path="docs/api.yml"
           old_spec_content=$(cat $old_spec_path)
           
-          new_spec_path="docs/api.yml"
+          new_spec_path="new_spec.yml"
           new_spec_content=$(cat $new_spec_path)
           
           if [ "$old_spec_content" != "$new_spec_content" ]; then
