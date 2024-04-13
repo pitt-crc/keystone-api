@@ -1,0 +1,1878 @@
+openapi: 3.0.3
+info:
+  title: Keystone API
+  version: 0.0.0
+  description: A REST API for managing user resource allocations on HPC systems.
+paths:
+  /allocations/allocations/:
+    get:
+      operationId: allocations_allocations_list
+      description: Manage allocations for user research groups.
+      parameters:
+      - in: query
+        name: awarded
+        schema:
+          type: integer
+      - in: query
+        name: cluster
+        schema:
+          type: integer
+      - in: query
+        name: final
+        schema:
+          type: integer
+      - in: query
+        name: request
+        schema:
+          type: integer
+      - in: query
+        name: requested
+        schema:
+          type: integer
+      tags:
+      - allocations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Allocation'
+          description: ''
+    post:
+      operationId: allocations_allocations_create
+      description: Manage allocations for user research groups.
+      tags:
+      - allocations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Allocation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Allocation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Allocation'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Allocation'
+          description: ''
+  /allocations/allocations/{id}/:
+    get:
+      operationId: allocations_allocations_retrieve
+      description: Manage allocations for user research groups.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this allocation.
+        required: true
+      tags:
+      - allocations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Allocation'
+          description: ''
+    put:
+      operationId: allocations_allocations_update
+      description: Manage allocations for user research groups.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this allocation.
+        required: true
+      tags:
+      - allocations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Allocation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Allocation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Allocation'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Allocation'
+          description: ''
+    patch:
+      operationId: allocations_allocations_partial_update
+      description: Manage allocations for user research groups.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this allocation.
+        required: true
+      tags:
+      - allocations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAllocation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAllocation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAllocation'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Allocation'
+          description: ''
+    delete:
+      operationId: allocations_allocations_destroy
+      description: Manage allocations for user research groups.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this allocation.
+        required: true
+      tags:
+      - allocations
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /allocations/clusters/:
+    get:
+      operationId: allocations_clusters_list
+      description: Configuration settings for managed Slurm clusters.
+      parameters:
+      - in: query
+        name: description
+        schema:
+          type: string
+      - in: query
+        name: enabled
+        schema:
+          type: boolean
+      - in: query
+        name: name
+        schema:
+          type: string
+      tags:
+      - allocations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Cluster'
+          description: ''
+    post:
+      operationId: allocations_clusters_create
+      description: Configuration settings for managed Slurm clusters.
+      tags:
+      - allocations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cluster'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Cluster'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Cluster'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cluster'
+          description: ''
+  /allocations/clusters/{id}/:
+    get:
+      operationId: allocations_clusters_retrieve
+      description: Configuration settings for managed Slurm clusters.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this cluster.
+        required: true
+      tags:
+      - allocations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cluster'
+          description: ''
+    put:
+      operationId: allocations_clusters_update
+      description: Configuration settings for managed Slurm clusters.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this cluster.
+        required: true
+      tags:
+      - allocations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cluster'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Cluster'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Cluster'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cluster'
+          description: ''
+    patch:
+      operationId: allocations_clusters_partial_update
+      description: Configuration settings for managed Slurm clusters.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this cluster.
+        required: true
+      tags:
+      - allocations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCluster'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCluster'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCluster'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cluster'
+          description: ''
+    delete:
+      operationId: allocations_clusters_destroy
+      description: Configuration settings for managed Slurm clusters.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this cluster.
+        required: true
+      tags:
+      - allocations
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /allocations/requests/:
+    get:
+      operationId: allocations_requests_list
+      description: Manage allocation requests submitted by user research groups.
+      parameters:
+      - in: query
+        name: active
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: description
+        schema:
+          type: string
+      - in: query
+        name: expire
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: group
+        schema:
+          type: integer
+      - in: query
+        name: status
+        schema:
+          type: string
+          title: Review Status
+          enum:
+          - AP
+          - CR
+          - DC
+          - PD
+        description: |-
+          * `PD` - Pending
+          * `AP` - Approved
+          * `DC` - Declined
+          * `CR` - Changes Requested
+      - in: query
+        name: submitted
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: title
+        schema:
+          type: string
+      tags:
+      - allocations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AllocationRequest'
+          description: ''
+    post:
+      operationId: allocations_requests_create
+      description: Manage allocation requests submitted by user research groups.
+      tags:
+      - allocations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AllocationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AllocationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AllocationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllocationRequest'
+          description: ''
+  /allocations/requests/{id}/:
+    get:
+      operationId: allocations_requests_retrieve
+      description: Manage allocation requests submitted by user research groups.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this allocation request.
+        required: true
+      tags:
+      - allocations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllocationRequest'
+          description: ''
+    put:
+      operationId: allocations_requests_update
+      description: Manage allocation requests submitted by user research groups.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this allocation request.
+        required: true
+      tags:
+      - allocations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AllocationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AllocationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AllocationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllocationRequest'
+          description: ''
+    patch:
+      operationId: allocations_requests_partial_update
+      description: Manage allocation requests submitted by user research groups.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this allocation request.
+        required: true
+      tags:
+      - allocations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAllocationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAllocationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAllocationRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllocationRequest'
+          description: ''
+    delete:
+      operationId: allocations_requests_destroy
+      description: Manage allocation requests submitted by user research groups.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this allocation request.
+        required: true
+      tags:
+      - allocations
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /allocations/reviews/:
+    get:
+      operationId: allocations_reviews_list
+      description: Manage reviews of allocation request submitted by administrators.
+      parameters:
+      - in: query
+        name: date_modified
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: private_comments
+        schema:
+          type: string
+      - in: query
+        name: public_comments
+        schema:
+          type: string
+      - in: query
+        name: request
+        schema:
+          type: integer
+      - in: query
+        name: reviewer
+        schema:
+          type: integer
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - AP
+          - CR
+          - DC
+        description: |-
+          * `AP` - Approved
+          * `DC` - Declined
+          * `CR` - Changes Requested
+      tags:
+      - allocations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AllocationRequestReview'
+          description: ''
+    post:
+      operationId: allocations_reviews_create
+      description: Create a new `AllocationRequestReview` object
+      tags:
+      - allocations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AllocationRequestReview'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AllocationRequestReview'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AllocationRequestReview'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllocationRequestReview'
+          description: ''
+  /allocations/reviews/{id}/:
+    get:
+      operationId: allocations_reviews_retrieve
+      description: Manage reviews of allocation request submitted by administrators.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this allocation request review.
+        required: true
+      tags:
+      - allocations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllocationRequestReview'
+          description: ''
+    put:
+      operationId: allocations_reviews_update
+      description: Manage reviews of allocation request submitted by administrators.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this allocation request review.
+        required: true
+      tags:
+      - allocations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AllocationRequestReview'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AllocationRequestReview'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AllocationRequestReview'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllocationRequestReview'
+          description: ''
+    patch:
+      operationId: allocations_reviews_partial_update
+      description: Manage reviews of allocation request submitted by administrators.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this allocation request review.
+        required: true
+      tags:
+      - allocations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAllocationRequestReview'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAllocationRequestReview'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAllocationRequestReview'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllocationRequestReview'
+          description: ''
+    delete:
+      operationId: allocations_reviews_destroy
+      description: Manage reviews of allocation request submitted by administrators.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this allocation request review.
+        required: true
+      tags:
+      - allocations
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /authentication/blacklist/:
+    post:
+      operationId: authentication_blacklist_create
+      description: |-
+        Takes a token and blacklists it. Must be used with the
+        `rest_framework_simplejwt.token_blacklist` app installed.
+      tags:
+      - authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenBlacklist'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenBlacklist'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenBlacklist'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenBlacklist'
+          description: ''
+  /authentication/new/:
+    post:
+      operationId: authentication_new_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenObtainPair'
+          description: ''
+  /authentication/refresh/:
+    post:
+      operationId: authentication_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /health/:
+    get:
+      operationId: health_list
+      description: |-
+        Return a JSON response detailing system status checks.
+
+        The returned status code will be 200 if all checks pass. If any checks
+        fail, the status code will be 500.
+      tags:
+      - health
+      security:
+      - jwtAuth: []
+      responses:
+        2XX:
+          description: No response body
+  /logs/apps/:
+    get:
+      operationId: logs_apps_list
+      description: Returns application log data
+      parameters:
+      - in: query
+        name: func
+        schema:
+          type: string
+      - in: query
+        name: level
+        schema:
+          type: string
+      - in: query
+        name: lineno
+        schema:
+          type: integer
+      - in: query
+        name: message
+        schema:
+          type: string
+      - in: query
+        name: name
+        schema:
+          type: string
+      - in: query
+        name: pathname
+        schema:
+          type: string
+      - in: query
+        name: sinfo
+        schema:
+          type: string
+      - in: query
+        name: time
+        schema:
+          type: string
+          format: date-time
+      tags:
+      - logs
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AppLog'
+          description: ''
+  /logs/apps/{id}/:
+    get:
+      operationId: logs_apps_retrieve
+      description: Returns application log data
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this app log.
+        required: true
+      tags:
+      - logs
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppLog'
+          description: ''
+  /logs/requests/:
+    get:
+      operationId: logs_requests_list
+      description: Returns HTTP request log data
+      parameters:
+      - in: query
+        name: body_request
+        schema:
+          type: string
+      - in: query
+        name: body_response
+        schema:
+          type: string
+      - in: query
+        name: date
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: endpoint
+        schema:
+          type: string
+      - in: query
+        name: method
+        schema:
+          type: string
+      - in: query
+        name: remote_address
+        schema:
+          type: string
+      - in: query
+        name: response_code
+        schema:
+          type: integer
+      - in: query
+        name: time
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: user
+        schema:
+          type: integer
+      tags:
+      - logs
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RequestLog'
+          description: ''
+  /logs/requests/{id}/:
+    get:
+      operationId: logs_requests_retrieve
+      description: Returns HTTP request log data
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this request log.
+        required: true
+      tags:
+      - logs
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestLog'
+          description: ''
+  /users/researchgroups/:
+    get:
+      operationId: users_researchgroups_list
+      description: Manage user membership in research groups
+      parameters:
+      - in: query
+        name: admins
+        schema:
+          type: array
+          items:
+            type: integer
+        explode: true
+        style: form
+      - in: query
+        name: members
+        schema:
+          type: array
+          items:
+            type: integer
+        explode: true
+        style: form
+      - in: query
+        name: name
+        schema:
+          type: string
+      - in: query
+        name: pi
+        schema:
+          type: integer
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResearchGroup'
+          description: ''
+    post:
+      operationId: users_researchgroups_create
+      description: Manage user membership in research groups
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResearchGroup'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ResearchGroup'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ResearchGroup'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResearchGroup'
+          description: ''
+  /users/researchgroups/{id}/:
+    get:
+      operationId: users_researchgroups_retrieve
+      description: Manage user membership in research groups
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this research group.
+        required: true
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResearchGroup'
+          description: ''
+    put:
+      operationId: users_researchgroups_update
+      description: Manage user membership in research groups
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this research group.
+        required: true
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResearchGroup'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ResearchGroup'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ResearchGroup'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResearchGroup'
+          description: ''
+    patch:
+      operationId: users_researchgroups_partial_update
+      description: Manage user membership in research groups
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this research group.
+        required: true
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedResearchGroup'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedResearchGroup'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedResearchGroup'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResearchGroup'
+          description: ''
+    delete:
+      operationId: users_researchgroups_destroy
+      description: Manage user membership in research groups
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this research group.
+        required: true
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /users/users/:
+    get:
+      operationId: users_users_list
+      description: Read only access to user datta.
+      parameters:
+      - in: query
+        name: date_joined
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: email
+        schema:
+          type: string
+      - in: query
+        name: first_name
+        schema:
+          type: string
+      - in: query
+        name: groups
+        schema:
+          type: array
+          items:
+            type: integer
+        explode: true
+        style: form
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - in: query
+        name: is_ldap_user
+        schema:
+          type: boolean
+      - in: query
+        name: is_staff
+        schema:
+          type: boolean
+      - in: query
+        name: is_superuser
+        schema:
+          type: boolean
+      - in: query
+        name: last_login
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: last_name
+        schema:
+          type: string
+      - in: query
+        name: password
+        schema:
+          type: string
+      - in: query
+        name: user_permissions
+        schema:
+          type: array
+          items:
+            type: integer
+        explode: true
+        style: form
+      - in: query
+        name: username
+        schema:
+          type: string
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+          description: ''
+    post:
+      operationId: users_users_create
+      description: Read only access to user datta.
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /users/users/{id}/:
+    get:
+      operationId: users_users_retrieve
+      description: Read only access to user datta.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user.
+        required: true
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    put:
+      operationId: users_users_update
+      description: Read only access to user datta.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user.
+        required: true
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    patch:
+      operationId: users_users_partial_update
+      description: Read only access to user datta.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user.
+        required: true
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    delete:
+      operationId: users_users_destroy
+      description: Read only access to user datta.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user.
+        required: true
+      tags:
+      - users
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+components:
+  schemas:
+    Allocation:
+      type: object
+      description: Object serializer for the `Allocation` class
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        requested:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Requested Service Units
+        awarded:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+          title: Awarded Service Units
+        final:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+          title: Final Usage
+        cluster:
+          type: integer
+        request:
+          type: integer
+      required:
+      - cluster
+      - id
+      - request
+      - requested
+    AllocationRequest:
+      type: object
+      description: Object serializer for the `AllocationRequest` class
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 250
+        description:
+          type: string
+          maxLength: 1600
+        submitted:
+          type: string
+          format: date
+          readOnly: true
+          title: Submission Date
+        status:
+          allOf:
+          - $ref: '#/components/schemas/AllocationRequestStatusEnum'
+          title: Review Status
+        active:
+          type: string
+          format: date
+          nullable: true
+          title: Active Date
+        expire:
+          type: string
+          format: date
+          nullable: true
+          title: Expiration Date
+        group:
+          type: integer
+      required:
+      - description
+      - group
+      - id
+      - submitted
+      - title
+    AllocationRequestReview:
+      type: object
+      description: Object serializer for the `AllocationRequestReview` class
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/AllocationRequestReviewStatusEnum'
+        public_comments:
+          type: string
+          nullable: true
+          maxLength: 1600
+        private_comments:
+          type: string
+          nullable: true
+          maxLength: 1600
+        date_modified:
+          type: string
+          format: date-time
+          readOnly: true
+        request:
+          type: integer
+        reviewer:
+          type: integer
+      required:
+      - date_modified
+      - id
+      - request
+      - status
+    AllocationRequestReviewStatusEnum:
+      enum:
+      - AP
+      - DC
+      - CR
+      type: string
+      description: |-
+        * `AP` - Approved
+        * `DC` - Declined
+        * `CR` - Changes Requested
+    AllocationRequestStatusEnum:
+      enum:
+      - PD
+      - AP
+      - DC
+      - CR
+      type: string
+      description: |-
+        * `PD` - Pending
+        * `AP` - Approved
+        * `DC` - Declined
+        * `CR` - Changes Requested
+    AppLog:
+      type: object
+      description: Object serializer for the `AppLog` class
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        level:
+          type: string
+          maxLength: 10
+        pathname:
+          type: string
+          maxLength: 260
+        lineno:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        message:
+          type: string
+        func:
+          type: string
+          nullable: true
+          maxLength: 80
+        sinfo:
+          type: string
+          nullable: true
+        time:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - id
+      - level
+      - lineno
+      - message
+      - name
+      - pathname
+      - time
+    Cluster:
+      type: object
+      description: Object serializer for the `Cluster` class
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+        description:
+          type: string
+          nullable: true
+          maxLength: 150
+        enabled:
+          type: boolean
+      required:
+      - id
+      - name
+    PatchedAllocation:
+      type: object
+      description: Object serializer for the `Allocation` class
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        requested:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Requested Service Units
+        awarded:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+          title: Awarded Service Units
+        final:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+          title: Final Usage
+        cluster:
+          type: integer
+        request:
+          type: integer
+    PatchedAllocationRequest:
+      type: object
+      description: Object serializer for the `AllocationRequest` class
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 250
+        description:
+          type: string
+          maxLength: 1600
+        submitted:
+          type: string
+          format: date
+          readOnly: true
+          title: Submission Date
+        status:
+          allOf:
+          - $ref: '#/components/schemas/AllocationRequestStatusEnum'
+          title: Review Status
+        active:
+          type: string
+          format: date
+          nullable: true
+          title: Active Date
+        expire:
+          type: string
+          format: date
+          nullable: true
+          title: Expiration Date
+        group:
+          type: integer
+    PatchedAllocationRequestReview:
+      type: object
+      description: Object serializer for the `AllocationRequestReview` class
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/AllocationRequestReviewStatusEnum'
+        public_comments:
+          type: string
+          nullable: true
+          maxLength: 1600
+        private_comments:
+          type: string
+          nullable: true
+          maxLength: 1600
+        date_modified:
+          type: string
+          format: date-time
+          readOnly: true
+        request:
+          type: integer
+        reviewer:
+          type: integer
+    PatchedCluster:
+      type: object
+      description: Object serializer for the `Cluster` class
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+        description:
+          type: string
+          nullable: true
+          maxLength: 150
+        enabled:
+          type: boolean
+    PatchedResearchGroup:
+      type: object
+      description: Object serializer for the `ResearchGroup` class
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        pi:
+          type: integer
+        admins:
+          type: array
+          items:
+            type: integer
+        members:
+          type: array
+          items:
+            type: integer
+    PatchedUser:
+      type: object
+      description: Object serializer for the `User` class
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        last_login:
+          type: string
+          format: date-time
+          nullable: true
+        is_superuser:
+          type: boolean
+          title: Superuser status
+          description: Designates that this user has all permissions without explicitly
+            assigning them.
+        username:
+          type: string
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        is_active:
+          type: boolean
+        is_staff:
+          type: boolean
+          title: Staff status
+        date_joined:
+          type: string
+          format: date-time
+        is_ldap_user:
+          type: boolean
+          title: LDAP User
+        groups:
+          type: array
+          items:
+            type: integer
+          description: The groups this user belongs to. A user will get all permissions
+            granted to each of their groups.
+        user_permissions:
+          type: array
+          items:
+            type: integer
+          description: Specific permissions for this user.
+    RequestLog:
+      type: object
+      description: Object serializer for the `RequestLog` class
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        endpoint:
+          type: string
+          nullable: true
+          maxLength: 100
+        response_code:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        method:
+          type: string
+          nullable: true
+          maxLength: 10
+        remote_address:
+          type: string
+          nullable: true
+          maxLength: 40
+        date:
+          type: string
+          format: date-time
+          readOnly: true
+        body_response:
+          type: string
+        body_request:
+          type: string
+        time:
+          type: string
+          format: date-time
+          readOnly: true
+        user:
+          type: integer
+          nullable: true
+      required:
+      - body_request
+      - body_response
+      - date
+      - id
+      - response_code
+      - time
+    ResearchGroup:
+      type: object
+      description: Object serializer for the `ResearchGroup` class
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        pi:
+          type: integer
+        admins:
+          type: array
+          items:
+            type: integer
+        members:
+          type: array
+          items:
+            type: integer
+      required:
+      - id
+      - name
+      - pi
+    TokenBlacklist:
+      type: object
+      properties:
+        refresh:
+          type: string
+          writeOnly: true
+      required:
+      - refresh
+    TokenObtainPair:
+      type: object
+      properties:
+        username:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - password
+      - refresh
+      - username
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          writeOnly: true
+      required:
+      - access
+      - refresh
+    User:
+      type: object
+      description: Object serializer for the `User` class
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        last_login:
+          type: string
+          format: date-time
+          nullable: true
+        is_superuser:
+          type: boolean
+          title: Superuser status
+          description: Designates that this user has all permissions without explicitly
+            assigning them.
+        username:
+          type: string
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        is_active:
+          type: boolean
+        is_staff:
+          type: boolean
+          title: Staff status
+        date_joined:
+          type: string
+          format: date-time
+        is_ldap_user:
+          type: boolean
+          title: LDAP User
+        groups:
+          type: array
+          items:
+            type: integer
+          description: The groups this user belongs to. A user will get all permissions
+            granted to each of their groups.
+        user_permissions:
+          type: array
+          items:
+            type: integer
+          description: Specific permissions for this user.
+      required:
+      - email
+      - first_name
+      - id
+      - last_name
+      - username
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

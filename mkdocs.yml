@@ -3,13 +3,16 @@ theme:
   name: material
   features:
     - navigation.sections
+plugins:
+    - render_swagger
 markdown_extensions:
   - admonition
   - pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true
 nav:
-  - Overview: index.md
+  - index.md
+  - API Specification: api.md
   - Installation:
       - install/slurm.md
       - install/docker.md

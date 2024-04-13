@@ -1,7 +1,7 @@
 # Deploying with Docker
 
 The Keystone API can be deployed as a single container using Docker, or as several containers using Docker Compose.
-Single container deployments are for those looking to test-drive Keystone's capabilities.
+Single container deployments are best suited for those looking to test-drive Keystone's capabilities.
 Deploying with Docker Compose is strongly recommended for HPC teams operating at scale.
 
 ## Using Docker Standalone

@@ -2,7 +2,9 @@
 
 The following section details useful information for application developers and contributors.
 
-## Debug Mode
+## Environment Setup
+
+## Running In Debug Mode
 
 The Django framework provides a debug mode which enables detailed error traceback directly in the browser.
 It also enables static file hosting (incluing page styling) and loosens various security restrictions.
@@ -12,7 +14,7 @@ To enable debug mode, specify the `DEBUG=true` setting.
 
     The `DEBUG` option is inherently insecure and should **never** be enabled in production settings.
 
-## Admin Utilities
+## Admin CLI Utilities
 
 The `keystone-api` utility includes a series of custom admin utilities for automating various development tasks.
 A brief summary is provided below.
