@@ -40,7 +40,7 @@ jobs:
           upload: true
   
   api-spec:
-    name: OpenAPI Specification
+    name: OpenAPI
     runs-on: ubuntu-latest
     steps:
       - name: Fetch image artifact
