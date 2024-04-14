@@ -1,18 +1,43 @@
 # Common Tasks
 
-The following section details useful information for application developers and contributors.
+The following sections outline common tasks for application developers and contributors.
 
-## Environment Setup
+## Python Environment Setup
+
+Start by cloning the project repository from GitHub.
+
+```bash
+git clone https://github.com/pitt-crc/keystone-api
+```
+
+Keystone-API uses [Poetry](https://python-poetry.org/docs/) to manage application dependencies.
+Certain dependencies, such as those required for building documentation, are optional.
+To install the project dependencies, execute the following from the root of the cloned repository:
+
+```bash
+poetry install --with docs
+```
+
+If the installation was successful, the packaged CLI tool will be available in your working environment.
+Use the `enable_autocomplete` command to enable autocomplete for the Bash shell.
+
+```bash
+keystone-api enable_autocomplete
+```
 
 ## Running In Debug Mode
 
-The Django framework provides a debug mode which enables detailed error traceback directly in the browser.
-It also enables static file hosting (incluing page styling) and loosens various security restrictions.
+The Django framework provides a debug mode which enables detailed error tracebacks directly in the browser.
+It also enables static file hosting (including page styling) and loosens various security restrictions.
 To enable debug mode, specify the `DEBUG=true` setting.
 
 !!! danger
 
     The `DEBUG` option is inherently insecure and should **never** be enabled in production settings.
+
+```bash
+DEBUG=True keystone-api runserver
+```
 
 ## Admin CLI Utilities
 
@@ -33,26 +58,41 @@ Application tests are run using the `test` command:
 keystone-api test
 ```
 
-Specific subsets of tests are run by specifying an app label.
-For example, tests for the `users` application are executed as:
+Specific subsets of tests are run by specifying an application module.
+For example, tests for the `users` module are executed as:
 
 ```bash
 keystone-api test apps.users
 ```
 
-The default django system checks can also be executed as standard:
+The default Django system checks can also be executed as standard:
 
 ```bash
 keystone-api check                   # Check for system configuration errors
 keystone-api makemigrations --check  # Check for missing database migrations
-keystone-api health_check            # Check the status of running backend services
+keystone-api health_check            # Check the status of backend services
 ```
 
-## API Schema Generation
+## Previewing Documentation
+
+Project documentation is written using [MkDocs](https://www.mkdocs.org/).
+The `serve` command will automatically compile the documentation into HTML launch a preview using local webserver.
+
+```bash
+mkdocs serve
+```
+
+Alternatively, the `build` command is used to compile HTML without launching a local webserver.
+
+```bash
+mkdocs build
+```
+
+## OpenAPI Generation
 
 The `spectacular` command will dynamically generate a complete OpenAPI schema.
 Rendering the specification into a human friendly format is left to the user and the documentation tool of their choice.  
 
 ```bash
-keystone-api spectacular >> api.yml
+keystone-api spectacular --file api.yml
 ```
