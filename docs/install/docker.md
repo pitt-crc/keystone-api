@@ -51,7 +51,7 @@ If successful, you will receive a response similar to the following:
 
     The default container instance is **not** suitable for production out of the box.
     Supporting services will not save data between container restarts and should be deployed separately to ensure data persistence. 
-    See the [Settings](../../settings/settings) page for a complete overview of configurable options and recommended settings.
+    See the [Settings](settings.md) page for a complete overview of configurable options and recommended settings.
 
 ## Using Docker Compose
 

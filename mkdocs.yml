@@ -25,4 +25,4 @@ nav:
       - install/python.md
       - install/settings.md
   - Developer Notes:
-      - developer/common.md
+      - Common Tasks: developer/common.md
