@@ -2,30 +2,33 @@
 
 The Keystone API can be deployed as a single container using Docker, or as several containers using Docker Compose.
 Single container deployments are best suited for those looking to test-drive Keystone's capabilities.
-Deploying with Docker Compose is strongly recommended for HPC teams operating at scale.
+Deploying with Docker Compose is strongly recommended for teams operating at scale.
 
 ## Using Docker Standalone
 
-Start by pulling the latest `keystone-api` image from the GitHub container registry.
+The following command will automatically pull and launch the latest application image from the GitHub container
+registry.
+In this example the image is launched as a container called `keystone` and the API is mapped from to port 8000 on the
+local machine.
 
 ```bash
-docker pull ghcr.io/pitt-crc/keystone-api
+docker run --detach --publish 8000:8000 --name keystone ghcr.io/pitt-crc/keystone-api
 ```
 
-When launching a new container, make sure to expose the internal API from port `8000` to an external port of your choosing.
-In the following example, the application is launched in a container named `keystone` with port `8000` mapped to port `80`.
+The health of the running API instance can be checked by querying the API `health` endpoint.
 
 ```bash
-docker run --detach --publish 8000:80 --name keystone ghcr.io/pitt-crc/keystone-api
+curl -L http://localhost:8000/health | jq .
 ```
 
-Create an administrative account by executing the `createsuperuser` command from within the container and follow the onscreen prompts.
+Once the container is ready, create a new administrative account using the `keystone-api` command line utility to
+execute the `createsuperuser` command.
 
 ```bash
-docker exec -it keystone keystone-api createsuperuser
+docker exec -t keystone keystone-api createsuperuser
 ```
 
-You can test the new credentials by using them to generate a pair of JWT tokens.
+You can test the new credentials by authenticating against the API and generating a pair of JWT tokens.
 
 ```bash
 curl \
@@ -52,14 +55,15 @@ If successful, you will receive a response similar to the following:
 
 ## Using Docker Compose
 
-The following compose recipe provides a general starting point for a production ready deployment.
-Users are responsible for customizing the deployment to meet their specific needs.
+The following compose recipe provides a functional starting point for a production ready deployment.
+Application dependencies are defined as separate services and settings values are configured using environmental
+variables in various `.env` files.
 
 ```yaml
 version: "3.7"
 
 services:
-  cache:
+  cache: # (1)!
     image: redis
     container_name: keystone-cache
     command: redis-server
@@ -67,7 +71,7 @@ services:
     volumes:
       - cache_data:/data
 
-  db:
+  db: # (2)!
     image: postgres
     container_name: keystone-db
     restart: always
@@ -76,7 +80,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
 
-  api:
+  api: # (3)!
     image: ghcr.io/pitt-crc/keystone-api
     container_name: keystone-api
     entrypoint: sh
@@ -97,8 +101,8 @@ services:
       - static_files:/app/static
       - uploaded_files:/app/upload_files
 
-  celery-worker:
-    image: ghcr.io/pitt-crc/keystone-api:${KEYSTONE_API_VERSION:-latest}
+  celery-worker: # (4)!
+    image: ghcr.io/pitt-crc/keystone-api
     container_name: keystone-celery-worker
     entrypoint: celery -A keystone_api.apps.scheduler worker --uid 900
     restart: always
@@ -109,8 +113,8 @@ services:
     env_file:
       - api.env
 
-  celery-beat:
-    image: ghcr.io/pitt-crc/keystone-api:${KEYSTONE_API_VERSION:-latest}
+  celery-beat: # (5)!
+    image: ghcr.io/pitt-crc/keystone-api
     container_name: keystone-celery-beat
     entrypoint: celery -A keystone_api.apps.scheduler beat --scheduler django_celery_beat.schedulers:DatabaseScheduler --uid 900
     restart: always
@@ -127,14 +131,21 @@ volumes:
   uploaded_files:
   postgres_data:
   cache_data:
+
 ```
 
-Application settings are configured using environmental variables defined in various `.env` files.
+1. The `cache` service acts as a job queue for background tasks. Note the mounting of cache data onto the host machine to ensure data persistence between container restarts.
+2. The `db` service defines the application database. User credentials are defined as environmental variables in the `db.env` file. Note the mounting of database data onto the host machine to ensure data persistence between container restarts.
+3. The `api` service instantiates the Keystone API application. It migrates the database schema, configures static file hosting, and launches the API behind a production quality web server.
+4. The `celery-worker` service executes background tasks for the API application. It executes using the same base image as the `api` service.
+5. The `celery-beat` service handles task scheduling for the `celery-worker` service. It executes using the same base image as the `api` service.
+
 The following example files provide preliminary settings for getting everything up and running.
+The `DJANGO_SETTINGS_MODULE="keystone_api.main.settings"` setting is required by the application.
 
 !!! important
 
-    The setting provided below are intended for demonstrative purposes only.
+    The settings provided below are intended for demonstrative purposes only.
     These values should be customized to meet the needs at hand and credentials should be changed to secure values.
 
 === "api.env"
