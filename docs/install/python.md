@@ -51,16 +51,29 @@ DEBUG=true keystone-api runserver
 Keystone requires several backend services to support operation in a production environment.
 Specific instructions are provided below on configuring each dependency to work with the Keystone API.
 
-### LDAP
+### LDAP (Optional)
+
+An LDAP server is only required if users are expected to authenticate with LDAP credentials.
+Setting up LDAP for use with Keystone-API doesn't require any special configuration.
+However, Keystone's API settings must be properly configured to ensure correct mapping between LDAP fields and Keystone user account attributes.
+See the [Settings](settings.md) page for more details.
 
 ### Redis
 
+Most Redis server instances will work out of the box so long as the connection and authentication values are set correctly in the Keystone-API settings.
+
 ### PostgreSQL
 
+Using PostgreSQL for the application database is strongly recommended.
+After deploying a PostgreSQL server, you will need to create a dedicated database and user account. 
+Start by launching a new SQL session with admin permissions: 
 
 ```bash
 sudo -u postgres psql
 ```
+
+Next, create the database and a Keystone service account.
+Making sure to replace the passwrd value below with a secure password.
 
 ```postgresql
 create database keystone;
@@ -70,15 +83,19 @@ grant all privileges on database keystone to keystone_sa;
 
 ### Celery
 
+Celery and Celery Beat are both included when pip installing the `keystne_api` package.
+Both applications should be launched using the settings below.
+
 ```bash
 celery -A keystone_api.apps.scheduler worker
 celery -A keystone_api.apps.scheduler beat --scheduler django_celery_beat.schedulers:DatabaseScheduler
 ```
 
+If running on a Linux machine, users may appreciate the convenience of managing Celery via the systemd service manager. 
+The following unit files are provided as a starting point for system administrators.
+
 ### Gunicorn
 
 ```bash
-keystone-api migrate --no-input
-keystone-api collectstatic --no-input
 gunicorn --bind 0.0.0.0:8000 keystone_api.main.wsgi:application
 ```
