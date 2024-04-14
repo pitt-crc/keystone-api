@@ -880,6 +880,22 @@ files = [
 ]
 
 [[package]]
+name = "mkdocs-render-swagger-plugin"
+version = "0.1.1"
+description = "MKDocs plugin for rendering swagger & openapi files."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "mkdocs_render_swagger_plugin-0.1.1-py3-none-any.whl", hash = "sha256:1b0f4f92bf69d7e0d56b13f520fdad072ddd1f4ccf031f11706d45d831d4df7b"},
+]
+
+[package.dependencies]
+mkdocs = ">=1.4"
+
+[package.extras]
+dev = ["coverage", "flake8", "mypy", "pyyaml"]
+
+[[package]]
 name = "packaging"
 version = "24.0"
 description = "Core utilities for Python packages"
@@ -1646,4 +1662,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "3d745b22789954e9bd88e2d89aa45289e886b8ea4295689818a7cd53cda805f8"
+content-hash = "17ac789e5bccb020e9c1df249d49986bd2421933924aa0e9e23fb907733a947c"

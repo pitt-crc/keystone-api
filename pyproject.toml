@@ -40,3 +40,4 @@ optional = true
 
 [tool.poetry.group.docs.dependencies]
 mkdocs-material = "^9.5.17"
+mkdocs-render-swagger-plugin = "^0.1.1"
