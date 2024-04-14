@@ -61,7 +61,7 @@ jobs:
           old_spec_content=$(cat $old_spec_path)
           
           new_spec_path="new_spec.yml"
-          docker run keystone-api spectacular > $new_spec_path
+          docker run keystone-api spectacular --fail-on-warn --file $new_spec_path
           new_spec_content=$(cat $new_spec_path)
           
           if [ "$old_spec_content" != "$new_spec_content" ]; then
