@@ -5,9 +5,9 @@ Individual settings are listed below by category and use case.
 
 ## Security Settings
 
-Security setting are used to configure application networking and request signing.
-Improperly configuring these settings can introduce dangerous vulnerabilities and may damage your production deployment.
-Settings should be chosen with care.
+Security settings are used to configure application networking and request signing.
+These values should be chosen with care.
+Improperly configured settings can introduce dangerous vulnerabilities and may damage your production deployment.
 
 | Setting Name              | Default Value            | Description                                                   |
 |---------------------------|--------------------------|---------------------------------------------------------------|
@@ -22,7 +22,7 @@ Settings should be chosen with care.
 
 ## General Configuration
 
-Keystone uses various static files and user content to facilitate operation and support user requests.
+Keystone uses various static files and user content to facilitate operation.
 By default, these files are stored in subdirectories of the installed application directory (`<app>`).
 
 | Setting Name              | Default Value            | Description                                                                                       |

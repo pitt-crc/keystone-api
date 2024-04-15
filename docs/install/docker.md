@@ -2,7 +2,7 @@
 
 The Keystone API can be deployed as a single container using Docker, or as several containers using Docker Compose.
 Single container deployments are best suited for those looking to test-drive Keystone's capabilities.
-Deploying with Docker Compose is strongly recommended for teams operating at scale.
+Deploying with Docker Compose (or some other container orchestration tool) is strongly recommended for teams operating at scale.
 
 ## Using Docker Standalone
 
@@ -21,7 +21,7 @@ The health of the running API instance can be checked by querying the API `healt
 curl -L http://localhost:8000/health | jq .
 ```
 
-Once the container is ready, create a new administrative account using the `keystone-api` command line utility to
+Once the container is ready, create a new administrative account using the `keystone-api` utility to
 execute the `createsuperuser` command.
 
 ```bash
@@ -55,7 +55,7 @@ If successful, you will receive a response similar to the following:
 
 ## Using Docker Compose
 
-The following compose recipe provides a functional starting point for a production ready deployment.
+The following compose recipe provides a functional starting point for building a production ready deployment.
 Application dependencies are defined as separate services and settings values are configured using environmental
 variables in various `.env` files.
 
@@ -140,7 +140,7 @@ volumes:
 4. The `celery-worker` service executes background tasks for the API application. It executes using the same base image as the `api` service.
 5. The `celery-beat` service handles task scheduling for the `celery-worker` service. It executes using the same base image as the `api` service.
 
-The following example files provide preliminary settings for getting everything up and running.
+The following example files define the minimal required settings for deploying the recipe.
 The `DJANGO_SETTINGS_MODULE="keystone_api.main.settings"` setting is required by the application.
 
 !!! important

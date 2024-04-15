@@ -1,11 +1,10 @@
 # Getting Started
 
 Keystone-API is the backend REST API for the Keystone web interface.
-Written in Python using the Django Rest Framework, it provides management utilities for HPC resources.
-Functionality includes:
+Written in Python using the Django Rest Framework, it provides allocation management utilities for:
 
 - The allocation of HPC compute resources across one or more clusters
-- The tracking of user research products including grants and publications
+- The tracking of user research products, including grants and publications
 - The management of user accounts, research groups, and access permissions
 
 For more information, see the resources below.

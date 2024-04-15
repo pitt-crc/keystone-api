@@ -9,6 +9,16 @@ hide:
   .scheme-container {
     display: none;
   }
+
+  .info {
+    margin: 0 !important;
+  }
+
+  h2 {
+    color: var(--md-default-fg-color--light) !important;
+    font-family: var(--md-text-font-family),sans-serif !important;
+    font-weight: 300 !important;
+  }
 </style>
 
 !!swagger api.yml!!

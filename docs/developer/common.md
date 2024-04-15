@@ -82,7 +82,7 @@ keystone-api health_check #(3)!
 ## Previewing Documentation
 
 Project documentation is written using [MkDocs](https://www.mkdocs.org/).
-The `serve` command will automatically compile the documentation into HTML launch a preview using local webserver.
+The `serve` command will automatically compile the documentation into HTML and launch a local webserver.
 
 ```bash
 mkdocs serve
@@ -96,8 +96,8 @@ mkdocs build
 
 ## OpenAPI Generation
 
-The `spectacular` command will dynamically generate a complete OpenAPI schema.
-Rendering the specification into a human friendly format is left to the user and the documentation tool of their choice.  
+The `spectacular` command will dynamically generate an OpenAPI schema in YAML format.
+Rendering the specification into HTML is left to the developer and the documentation tool of their choice.
 
 ```bash
 keystone-api spectacular --file api.yml
