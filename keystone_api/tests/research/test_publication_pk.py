@@ -19,8 +19,8 @@ class EndpointPermissions(APITestCase, CustomAsserts):
     | Authentication              | GET | HEAD | OPTIONS | POST | PUT | PATCH | DELETE | TRACE |
     |-----------------------------|-----|------|---------|------|-----|-------|--------|-------|
     | Anonymous User              | 401 | 401  | 401     | 401  | 401 | 401   | 401    | 401   |
-    | User accessing own group    | 200 | 200  | 200     | 403  | 200 | 200   | 204    | 403   |
-    | User accessing other group  | 404 | 404  | 200     | 403  | 403 | 403   | 403    | 403   |
+    | User accessing other group  | 404 | 404  | 200     | 405  | 404 | 404   | 404    | 403   |
+    | User accessing own group    | 200 | 200  | 200     | 405  | 200 | 200   | 204    | 403   |
     | Staff User                  | 200 | 200  | 200     | 405  | 200 | 200   | 204    | 405   |
     """
 
@@ -49,27 +49,6 @@ class EndpointPermissions(APITestCase, CustomAsserts):
             trace=status.HTTP_401_UNAUTHORIZED
         )
 
-    def test_authenticated_user_same_group(self) -> None:
-        """Test permissions for authenticated users accessing records owned by their research group"""
-
-        # Define a user / record endpoint from the SAME research groups
-        endpoint = self.endpoint_pattern.format(pk=1)
-        user = User.objects.get(username='member_1')
-        self.client.force_authenticate(user=user)
-
-        self.assert_http_responses(
-            endpoint,
-            get=status.HTTP_200_OK,
-            head=status.HTTP_200_OK,
-            options=status.HTTP_200_OK,
-            post=status.HTTP_403_FORBIDDEN,
-            put=status.HTTP_200_OK,
-            patch=status.HTTP_200_OK,
-            delete=status.HTTP_204_NO_CONTENT,
-            trace=status.HTTP_403_FORBIDDEN,
-            put_data={'pk': 1}
-        )
-
     def test_authenticated_user_different_group(self) -> None:
         """Test permissions for authenticated users accessing records owned by someone else's research group"""
 
@@ -83,11 +62,32 @@ class EndpointPermissions(APITestCase, CustomAsserts):
             get=status.HTTP_404_NOT_FOUND,
             head=status.HTTP_404_NOT_FOUND,
             options=status.HTTP_200_OK,
-            post=status.HTTP_403_FORBIDDEN,
-            put=status.HTTP_403_FORBIDDEN,
-            patch=status.HTTP_403_FORBIDDEN,
-            delete=status.HTTP_403_FORBIDDEN,
+            post=status.HTTP_405_METHOD_NOT_ALLOWED,
+            put=status.HTTP_404_NOT_FOUND,
+            patch=status.HTTP_404_NOT_FOUND,
+            delete=status.HTTP_404_NOT_FOUND,
+            trace=status.HTTP_403_FORBIDDEN
+        )
+
+    def test_authenticated_user_same_group(self) -> None:
+        """Test permissions for authenticated users accessing records owned by their research group"""
+
+        # Define a user / record endpoint from the SAME research groups
+        endpoint = self.endpoint_pattern.format(pk=1)
+        user = User.objects.get(username='member_1')
+        self.client.force_authenticate(user=user)
+
+        self.assert_http_responses(
+            endpoint,
+            get=status.HTTP_200_OK,
+            head=status.HTTP_200_OK,
+            options=status.HTTP_200_OK,
+            post=status.HTTP_405_METHOD_NOT_ALLOWED,
+            put=status.HTTP_200_OK,
+            patch=status.HTTP_200_OK,
+            delete=status.HTTP_204_NO_CONTENT,
             trace=status.HTTP_403_FORBIDDEN,
+            put_body=self.valid_record_data,
         )
 
     def test_staff_user_permissions(self) -> None:

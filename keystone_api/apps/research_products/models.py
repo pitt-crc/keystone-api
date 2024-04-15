@@ -18,12 +18,13 @@ __all__ = ['Grant', 'Publication']
 class Publication(models.Model):
     """Metadata for an academic publication"""
 
-    group = models.ForeignKey(ResearchGroup, on_delete=models.CASCADE)
     title = models.CharField(max_length=250)
     abstract = models.TextField()
     date = models.DateField('Publication Date')
     journal = models.CharField(max_length=100)
     doi = models.CharField(max_length=50, unique=True, null=True, blank=True)
+
+    group = models.ForeignKey(ResearchGroup, on_delete=models.CASCADE)
 
     objects = PublicationManager()
 
@@ -36,13 +37,14 @@ class Publication(models.Model):
 class Grant(models.Model):
     """Metadata for a funding grant"""
 
-    group = models.ForeignKey(ResearchGroup, on_delete=models.CASCADE)
     fiscal_year = models.IntegerField()
     start_date = models.DateField()
     end_date = models.DateField()
     amount = models.DecimalField(decimal_places=2, max_digits=19)
     agency = models.CharField(max_length=100)
     title = models.CharField(max_length=250)
+
+    group = models.ForeignKey(ResearchGroup, on_delete=models.CASCADE)
 
     objects = GrantManager()
 

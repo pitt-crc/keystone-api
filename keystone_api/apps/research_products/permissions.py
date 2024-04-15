@@ -17,8 +17,18 @@ from apps.users.models import ResearchGroup
 
 
 class CustomPermissionsBase(permissions.BasePermission):
+    """Base manager class for abstracting request processing logic"""
 
     def get_research_group(self, request) -> ResearchGroup | None:
+        """Return the research group indicated in the `group` filed of an incoming request
+
+        Args:
+            request: The HTTP request
+
+        Return:
+            The research group or None
+        """
+
         try:
             group_id = request.data.get('group', None)
             return ResearchGroup.objects.get(pk=group_id)
@@ -31,11 +41,11 @@ class GroupMemberAll(CustomPermissionsBase):
     def has_permission(self, request, view) -> bool:
         """Return whether the request has permissions to access the requested resource"""
 
-        if request.method in permissions.SAFE_METHODS:
-            return True
+        if request.method == 'TRACE' and not request.user.is_staff:
+            return False
 
         research_group = self.get_research_group(request)
-        return research_group and request.user in research_group.get_all_members()
+        return research_group is None or request.user in research_group.get_all_members()
 
     def has_object_permission(self, request, view, obj):
         """Return whether the incoming HTTP request has permission to access a database record"""
@@ -48,11 +58,11 @@ class GroupMemberReadGroupAdminWrite(CustomPermissionsBase):
     def has_permission(self, request, view) -> bool:
         """Return whether the request has permissions to access the requested resource"""
 
-        if request.method in permissions.SAFE_METHODS:
+        if request.method == 'TRACE' and not request.user.is_staff:
             return True
 
         research_group = self.get_research_group(request)
-        return research_group and request.user in research_group.get_privileged_members()
+        return research_group is None or request.user in research_group.get_privileged_members()
 
     def has_object_permission(self, request, view, obj):
         """Return whether the incoming HTTP request has permission to access a database record"""
