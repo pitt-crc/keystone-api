@@ -1,5 +1,7 @@
 """Tests for the `/research/publications/<pk>/` endpoint"""
 
+import datetime
+
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -24,6 +26,12 @@ class EndpointPermissions(APITestCase, CustomAsserts):
 
     endpoint_pattern = '/research/publications/{pk}/'
     fixtures = ['multi_research_group.yaml']
+    valid_record_data = {
+        'title': 'foo',
+        'abstract': 'bar',
+        'journal': 'baz',
+        'date': datetime.date(1990, 1, 1),
+        'group': 1}
 
     def test_anonymous_user_permissions(self) -> None:
         """Test unauthenticated users cannot access resources"""
@@ -99,6 +107,6 @@ class EndpointPermissions(APITestCase, CustomAsserts):
             patch=status.HTTP_200_OK,
             delete=status.HTTP_204_NO_CONTENT,
             trace=status.HTTP_405_METHOD_NOT_ALLOWED,
-            put_body={'cluster': 1, 'request': 1, 'requested': 1000},
-            patch_body={'awarded': 1000}
+            put_body=self.valid_record_data,
+            patch_body={'title': 'New Title'}
         )

@@ -10,6 +10,7 @@ from django.db import models
 from django.template.defaultfilters import truncatechars
 
 from apps.users.models import ResearchGroup
+from .managers import *
 
 __all__ = ['Grant', 'Publication']
 
@@ -23,6 +24,8 @@ class Publication(models.Model):
     date = models.DateField('Publication Date')
     journal = models.CharField(max_length=100)
     doi = models.CharField(max_length=50, unique=True, null=True, blank=True)
+
+    objects = PublicationManager()
 
     def __str__(self) -> str:
         """Return the publication title truncated to 50 characters"""
@@ -40,6 +43,8 @@ class Grant(models.Model):
     amount = models.DecimalField(decimal_places=2, max_digits=19)
     agency = models.CharField(max_length=100)
     title = models.CharField(max_length=250)
+
+    objects = GrantManager()
 
     def __str__(self) -> str:
         """Return the grant title truncated to 50 characters"""
