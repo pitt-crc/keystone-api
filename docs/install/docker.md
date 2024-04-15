@@ -150,7 +150,7 @@ The `DJANGO_SETTINGS_MODULE="keystone_api.main.settings"` setting is required by
 
 === "api.env"
 
-    ```
+    ```bash
     # General Settings
     DJANGO_SETTINGS_MODULE="keystone_api.main.settings"
     STORAGE_STATIC_DIR="/app/static"
@@ -172,7 +172,7 @@ The `DJANGO_SETTINGS_MODULE="keystone_api.main.settings"` setting is required by
 
 === "db.env"
 
-    ```
+    ```bash
     # Credential values must match api.env
     POSTGRES_DB="keystone"
     POSTGRES_USER="db_user"

@@ -1,7 +1,7 @@
 # Deploying with Python
 
 The Keystone REST API can be installed as a standard Python package using the pip package manager.
-Deploying a production instance via pip is only recommended as a fallback for situations where Docker is not available.
+This approach is only recommended as a fallback for situations where Docker is not available.
 Direct package installations typically require extra configuration and a working familiarity with system administration.
 
 ## Installing the API
@@ -46,7 +46,7 @@ keystone-api createsuperuser
 DEBUG=true keystone-api runserver
 ```
 
-## Deploying the Application
+## Deploying the Dependencies
 
 Keystone requires several backend services to support operation in a production environment.
 Specific instructions are provided below on configuring each dependency to work with the Keystone API.
@@ -73,7 +73,7 @@ sudo -u postgres psql
 ```
 
 Next, create the database and a Keystone service account.
-Making sure to replace the passwrd value below with a secure password.
+Making sure to replace the password field with a secure value.
 
 ```postgresql
 create database keystone;
@@ -91,11 +91,107 @@ celery -A keystone_api.apps.scheduler worker
 celery -A keystone_api.apps.scheduler beat --scheduler django_celery_beat.schedulers:DatabaseScheduler
 ```
 
-If running on a Linux machine, users may appreciate the convenience of managing Celery via the systemd service manager. 
-The following unit files are provided as a starting point for system administrators.
+The `celery` command executes as a foreground process by default.
+The following unit files are provided as a starting point for demonizing the process via the systemd service manager.
+
+
+=== "celery-worker.service"
+
+    ```toml
+    [Unit]
+    Description=Celery Worker Service
+    After=network.target
+    
+    [Service]
+    Type=forking
+    User=keystone # (1)!
+    Group=keystone
+    RuntimeDirectory=celery
+    WorkingDirectory=/home/keystone
+    EnvironmentFile=/home/keystone/keystone.env
+    ExecStart=/bin/sh -c '/home/keystone/.local/bin/celery multi start w1 -A keystone_api.apps.scheduler'
+    ExecStop=/bin/sh -c '/home/keystone/.local/bin/celery multi stopwait w1'
+    ExecReload=/bin/sh -c '/home/keystone/.local/bin/celery multi restart w1'
+    
+    [Install]
+    WantedBy=multi-user.target
+    ```
+
+=== "celery-beat.service"
+    
+    ```toml
+    [Unit]
+    Description=Celery Beat Service
+    After=network.target
+    
+    [Service]
+    Type=simple
+    User=keystone
+    Group=keystone
+    RuntimeDirectory=celery
+    WorkingDirectory=/home/keystone
+    EnvironmentFile=/home/keystone/keystone.env
+    ExecStart=/bin/sh -c '/home/keystone/.local/bin/celery -A keystone_api.apps.scheduler beat --scheduler django_celery_beat.schedulers:DatabaseScheduler'
+    Restart=always
+    
+    [Install]
+    WantedBy=multi-user.target
+    ```
+
+1. f
 
 ### Gunicorn
+
+Gunicorn is the recommended webserver for running the Keystone-API.
+When launching the webserver, use the WSGI entrypoint located under `keystone_api.main.wsgi:application`.
 
 ```bash
 gunicorn --bind 0.0.0.0:8000 keystone_api.main.wsgi:application
 ```
+
+The `gunicorn` command executes as a foreground process by default.
+The following unit files are provided as a starting point for demonizing the process via the systemd service manager.
+
+=== "gunicorn.service"
+
+    ```toml
+    [Unit]
+    Description=Gunicorn
+    Requires=gunicorn.socket
+    After=network.target
+    
+    [Service]
+    Type=notify
+    # the specific user that our service will run as
+    User=keystone
+    Group=keystone
+    RuntimeDirectory=gunicorn
+    WorkingDirectory=/home/keystone
+    EnvironmentFile=/home/keystone/keystone.env
+    ExecStartPre=/home/keystone/.local/bin/keystone-api migrate --no-input
+    ExecStartPre=/home/keystone/.local/bin/keystone-api collectstatic --no-input
+    ExecStart=/home/keystone/.local/bin/gunicorn keystone_api.main.wsgi
+    ExecReload=/bin/kill -s HUP $MAINPID
+    KillMode=mixed
+    TimeoutStopSec=5
+    PrivateTmp=true
+    
+    [Install]
+    WantedBy=multi-user.target
+    ```
+
+=== "gunicorn.socket"
+
+    ```toml
+    [Unit]
+    Description=gunicorn socket
+    
+    [Socket]
+    ListenStream=/run/gunicorn.sock
+    SocketUser=nginx
+    
+    [Install]
+    WantedBy=sockets.target
+    ```
+
+## Deploying the Application
