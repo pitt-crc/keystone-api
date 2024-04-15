@@ -8,7 +8,7 @@ Deploying with Docker Compose (or some other container orchestration tool) is st
 
 The following command will automatically pull and launch the latest application image from the GitHub container
 registry.
-In this example the image is launched as a container called `keystone` and the API is mapped from to port 8000 on the
+In this example the image is launched as a container called `keystone` and the API is mapped to port 8000 on the
 local machine.
 
 ```bash

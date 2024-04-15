@@ -1,15 +1,17 @@
 # Deploying with Python
 
-The Keystone REST API can be installed as a standard Python package using the pip package manager.
+Keystone-API can be installed directly onto a machine and managed using the systemd service manager.
+Installing the API in this way typically requires extra configuration and a working familiarity with system administration.
+For a simpler deployment, see the [Deplying with Docker](docker.md) documentation.
 
-!!! note
+## Preliminary Setup
 
-    These instructions are only recommended as a fallback for situations where Docker is not available.
-    Direct package installations typically require extra configuration and a working familiarity with system administration.
+These instructions assume you have administrative privileges and are managing system services via systemd.
+It is also assumed you are installing applications under a dedicated, unprivileged user account called `keystone`. 
 
 ## Installing the API
 
-Install the `keystone_api` package using pip.
+The `keystone_api` package can be installed using the pip package manager.
 
 ```bash
 pip install keystone-api
@@ -40,7 +42,7 @@ The following example creates a SQLite database, generates an admin user account
 !!! important
 
     The webserver launched by the `runserver` command is not suitable for production.
-    A production quality WSGI/ASGI web server should be used instead.
+    A production quality web server should be used instead.
 
 ```bash
 keystone-api migrate
@@ -141,8 +143,6 @@ The following unit files are provided as a starting point to daemonize the proce
 
 ## Deploying the Application
 
-### Gunicorn Webserver
-
 Gunicorn is the recommended webserver for running the Keystone-API.
 When launching the webserver, use the WSGI entrypoint located under `keystone_api.main.wsgi:application`.
 
@@ -192,7 +192,11 @@ The following unit files are provided as a starting point to daemonize the proce
     WantedBy=sockets.target
     ```
 
-### Grouping Systemd Services
+## Grouping Systemd Services
+
+Instead of managing each of Keystone's services independently, we create a dedicated service to manage them collectively.
+This service applies any necessary database migrations and configured static files before launching other services
+(i.e., Gunicorn, Celery, and Celery Beat).
 
 === "keystone.service"
 
@@ -213,3 +217,10 @@ The following unit files are provided as a starting point to daemonize the proce
     ExecStartPre=/home/keystone/.local/bin/keystone-api migrate --no-input
     ExecStartPre=/home/keystone/.local/bin/keystone-api collectstatic --no-input
     ```
+
+To upgrade the deployed application, install the new version and restart the top level systemd service.
+
+```bash
+pip install --upgrade keystone-api
+systemcl restart keystone
+```
