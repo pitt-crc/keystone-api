@@ -6,8 +6,7 @@ Direct package installations typically require extra configuration and a working
 
 ## Installing the API
 
-The `keystone_api` package and it's dependencies are pip installable.
-In keeping with best practice, it is recommended to install the package into a dedicated (virtual) environment.
+Install the `keystone_api` package using pip.
 
 ```bash
 pip install keystone-api
@@ -66,7 +65,7 @@ Most Redis server instances will work out of the box so long as the connection a
 
 Using PostgreSQL for the application database is strongly recommended.
 After deploying a PostgreSQL server, you will need to create a dedicated database and user account. 
-Start by launching a new SQL session with admin permissions: 
+Start by launching a new SQL session with admin permissions.
 
 ```bash
 sudo -u postgres psql
@@ -83,8 +82,8 @@ grant all privileges on database keystone to keystone_sa;
 
 ### Celery
 
-Celery and Celery Beat are both included when pip installing the `keystne_api` package.
-Both applications should be launched using the settings below.
+Celery and Celery Beat are both included when pip installing the `keystone_api` package.
+Both applications should be launched using the `keystone_api.apps.scheduler` as the target application.
 
 ```bash
 celery -A keystone_api.apps.scheduler worker
@@ -92,8 +91,7 @@ celery -A keystone_api.apps.scheduler beat --scheduler django_celery_beat.schedu
 ```
 
 The `celery` command executes as a foreground process by default.
-The following unit files are provided as a starting point for demonizing the process via the systemd service manager.
-
+The following unit files are provided as a starting point to daemonize the process via the systemd service manager.
 
 === "celery-worker.service"
 
@@ -104,7 +102,7 @@ The following unit files are provided as a starting point for demonizing the pro
     
     [Service]
     Type=forking
-    User=keystone # (1)!
+    User=keystone
     Group=keystone
     RuntimeDirectory=celery
     WorkingDirectory=/home/keystone
@@ -138,9 +136,9 @@ The following unit files are provided as a starting point for demonizing the pro
     WantedBy=multi-user.target
     ```
 
-1. f
+## Deploying the Application
 
-### Gunicorn
+### Gunicorn Webserver
 
 Gunicorn is the recommended webserver for running the Keystone-API.
 When launching the webserver, use the WSGI entrypoint located under `keystone_api.main.wsgi:application`.
@@ -150,7 +148,7 @@ gunicorn --bind 0.0.0.0:8000 keystone_api.main.wsgi:application
 ```
 
 The `gunicorn` command executes as a foreground process by default.
-The following unit files are provided as a starting point for demonizing the process via the systemd service manager.
+The following unit files are provided as a starting point to daemonize the process via the systemd service manager.
 
 === "gunicorn.service"
 
@@ -162,14 +160,11 @@ The following unit files are provided as a starting point for demonizing the pro
     
     [Service]
     Type=notify
-    # the specific user that our service will run as
     User=keystone
     Group=keystone
     RuntimeDirectory=gunicorn
     WorkingDirectory=/home/keystone
     EnvironmentFile=/home/keystone/keystone.env
-    ExecStartPre=/home/keystone/.local/bin/keystone-api migrate --no-input
-    ExecStartPre=/home/keystone/.local/bin/keystone-api collectstatic --no-input
     ExecStart=/home/keystone/.local/bin/gunicorn keystone_api.main.wsgi
     ExecReload=/bin/kill -s HUP $MAINPID
     KillMode=mixed
@@ -194,4 +189,24 @@ The following unit files are provided as a starting point for demonizing the pro
     WantedBy=sockets.target
     ```
 
-## Deploying the Application
+### Grouping Systemd Services
+
+=== "keystone.service"
+
+    ```toml
+    [Unit]
+    Description=Gunicorn
+    Before=gunicorn.socket
+    Before=celery-worker.service
+    Before=celery-beat.service
+    
+    [Service]
+    Type=notify
+    User=keystone
+    Group=keystone
+    RuntimeDirectory=keystone
+    WorkingDirectory=/home/keystone
+    EnvironmentFile=/home/keystone/keystone.env
+    ExecStartPre=/home/keystone/.local/bin/keystone-api migrate --no-input
+    ExecStartPre=/home/keystone/.local/bin/keystone-api collectstatic --no-input
+    ```

@@ -15,8 +15,10 @@ Certain dependencies, such as those required for building documentation, are opt
 To install the project dependencies, execute the following from the root of the cloned repository:
 
 ```bash
-poetry install --with docs
+poetry install --with docs #(1)!
 ```
+
+1. The `--with` option is used to specify optional dependency groups.
 
 If the installation was successful, the packaged CLI tool will be available in your working environment.
 Use the `enable_autocomplete` command to enable autocomplete for the Bash shell.
@@ -68,10 +70,14 @@ keystone-api test apps.users
 The default Django system checks can also be executed as standard:
 
 ```bash
-keystone-api check                   # Check for system configuration errors
-keystone-api makemigrations --check  # Check for missing database migrations
-keystone-api health_check            # Check the status of backend services
+keystone-api check #(1)! 
+keystone-api makemigrations --check #(2)! 
+keystone-api health_check #(3)! 
 ```
+
+1. Check for system configuration errors
+2. Check for missing database migrations
+3. Check the status of backend services
 
 ## Previewing Documentation
 
@@ -82,7 +88,7 @@ The `serve` command will automatically compile the documentation into HTML launc
 mkdocs serve
 ```
 
-Alternatively, the `build` command is used to compile HTML without launching a local webserver.
+To compile the HTML documentation without launching a webserver, use the `build` command.
 
 ```bash
 mkdocs build
