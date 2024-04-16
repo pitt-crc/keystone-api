@@ -13,6 +13,6 @@ class Quickstart(TestCase):
         """Test the `--gunicorn` flag executes a gunicorn server command"""
 
         with patch('subprocess.run') as mock_run:
-            call_command('quickstart', '--gunicorn', '--no-input')
+            call_command('quickstart', '--gunicorn')
             mock_run.assert_called_with(
                 ['gunicorn', '--bind', '0.0.0.0:8000', 'keystone_api.main.wsgi:application'], check=True)

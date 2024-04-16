@@ -30,4 +30,4 @@ RUN pip install ./src && rm -rf src
 # Setup and launch the application
 ENTRYPOINT ["keystone-api"]
 HEALTHCHECK CMD curl --fail --location localhost:8000/health/ || exit 1
-CMD ["quickstart", "--no-input", "--migrate", "--static", "--celery", "--gunicorn"]
+CMD ["quickstart", "--all"]
