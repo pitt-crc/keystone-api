@@ -1,5 +1,7 @@
 """Tests for the `/research/grants/` endpoint"""
 
+from datetime import date
+
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -16,7 +18,7 @@ class EndpointPermissions(APITestCase, CustomAsserts):
     |----------------|-----|------|---------|------|-----|-------|--------|-------|
     | Anonymous User | 401 | 401  | 401     | 401  | 401 | 401   | 401    | 401   |
     | Non-Member     | 200 | 200  | 200     | 403  | 405 | 405   | 405    | 403   |
-    | Group Member   | 200 | 200  | 200     | 201  | 405 | 405   | 405    | 403   |
+    | Group Member   | 200 | 200  | 200     | 403  | 405 | 405   | 405    | 403   |
     | Group Admin    | 200 | 200  | 200     | 201  | 405 | 405   | 405    | 403   |
     | Group PI       | 200 | 200  | 200     | 201  | 405 | 405   | 405    | 403   |
     | Staff User     | 200 | 200  | 200     | 201  | 405 | 405   | 405    | 405   |
@@ -24,6 +26,15 @@ class EndpointPermissions(APITestCase, CustomAsserts):
 
     endpoint = '/research/grants/'
     fixtures = ['multi_research_group.yaml']
+    valid_record_data = {
+        'title': "Grant (Group 2)",
+        'agency': "Agency Name",
+        'amount': 1000,
+        'fiscal_year': 2001,
+        'start_date': date(2000, 1, 1),
+        'end_date': date(2000, 1, 31),
+        'group': 1
+    }
 
     def test_anonymous_user_permissions(self) -> None:
         """Test unauthenticated users cannot access resources"""
@@ -46,7 +57,6 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         user = User.objects.get(username='generic_user')
         self.client.force_authenticate(user=user)
 
-        # Post data reflects a group ID for which the user is not a member
         self.assert_http_responses(
             self.endpoint,
             get=status.HTTP_200_OK,
@@ -56,7 +66,8 @@ class EndpointPermissions(APITestCase, CustomAsserts):
             put=status.HTTP_405_METHOD_NOT_ALLOWED,
             patch=status.HTTP_405_METHOD_NOT_ALLOWED,
             delete=status.HTTP_405_METHOD_NOT_ALLOWED,
-            trace=status.HTTP_403_FORBIDDEN
+            trace=status.HTTP_403_FORBIDDEN,
+            post_body=self.valid_record_data
         )
 
     def test_group_member_permissions(self) -> None:
@@ -65,17 +76,17 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         user = User.objects.get(username='member_1')
         self.client.force_authenticate(user=user)
 
-        # Post data reflects a group ID for which the user is a regular member
         self.assert_http_responses(
             self.endpoint,
             get=status.HTTP_200_OK,
             head=status.HTTP_200_OK,
             options=status.HTTP_200_OK,
-            post=status.HTTP_201_CREATED,
+            post=status.HTTP_403_FORBIDDEN,
             put=status.HTTP_405_METHOD_NOT_ALLOWED,
             patch=status.HTTP_405_METHOD_NOT_ALLOWED,
             delete=status.HTTP_405_METHOD_NOT_ALLOWED,
-            trace=status.HTTP_403_FORBIDDEN
+            trace=status.HTTP_403_FORBIDDEN,
+            post_body=self.valid_record_data
         )
 
     def test_group_admin_permissions(self) -> None:
@@ -84,7 +95,6 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         user = User.objects.get(username='group_admin_1')
         self.client.force_authenticate(user=user)
 
-        # Post data reflects a group ID for which the user is an admin
         self.assert_http_responses(
             self.endpoint,
             get=status.HTTP_200_OK,
@@ -94,7 +104,8 @@ class EndpointPermissions(APITestCase, CustomAsserts):
             put=status.HTTP_405_METHOD_NOT_ALLOWED,
             patch=status.HTTP_405_METHOD_NOT_ALLOWED,
             delete=status.HTTP_405_METHOD_NOT_ALLOWED,
-            trace=status.HTTP_403_FORBIDDEN
+            trace=status.HTTP_403_FORBIDDEN,
+            post_body=self.valid_record_data
         )
 
     def test_group_pi_permissions(self) -> None:
@@ -103,7 +114,6 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         user = User.objects.get(username='pi_1')
         self.client.force_authenticate(user=user)
 
-        # Post data reflects a group ID for which the user is a PI
         self.assert_http_responses(
             self.endpoint,
             get=status.HTTP_200_OK,
@@ -113,7 +123,8 @@ class EndpointPermissions(APITestCase, CustomAsserts):
             put=status.HTTP_405_METHOD_NOT_ALLOWED,
             patch=status.HTTP_405_METHOD_NOT_ALLOWED,
             delete=status.HTTP_405_METHOD_NOT_ALLOWED,
-            trace=status.HTTP_403_FORBIDDEN
+            trace=status.HTTP_403_FORBIDDEN,
+            post_body=self.valid_record_data
         )
 
     def test_staff_user(self) -> None:
@@ -131,5 +142,6 @@ class EndpointPermissions(APITestCase, CustomAsserts):
             put=status.HTTP_405_METHOD_NOT_ALLOWED,
             patch=status.HTTP_405_METHOD_NOT_ALLOWED,
             delete=status.HTTP_405_METHOD_NOT_ALLOWED,
-            trace=status.HTTP_405_METHOD_NOT_ALLOWED
+            trace=status.HTTP_405_METHOD_NOT_ALLOWED,
+            post_body=self.valid_record_data
         )

@@ -59,7 +59,7 @@ class GroupMemberReadGroupAdminWrite(CustomPermissionsBase):
         """Return whether the request has permissions to access the requested resource"""
 
         if request.method == 'TRACE' and not request.user.is_staff:
-            return True
+            return False
 
         research_group = self.get_research_group(request)
         return research_group is None or request.user in research_group.get_privileged_members()

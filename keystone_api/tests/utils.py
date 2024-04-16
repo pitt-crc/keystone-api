@@ -44,5 +44,5 @@ class CustomAsserts:
             if expected_status is not None:
                 request = http_method(endpoint, **http_args)
                 self.assertEqual(
-                    expected_status, request.status_code,
-                    f'{method} request received {request.status_code} instead of {expected_status}')
+                    request.status_code, expected_status,
+                    f'{method.upper()} request received {request.status_code} instead of {expected_status}')
