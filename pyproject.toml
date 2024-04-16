@@ -12,6 +12,8 @@ keywords = ["Pitt", "CRC", "HPC", "django"]
 
 [tool.poetry.scripts]
 keystone-api = "keystone_api.manage:main"
+celery = "keystone_api.plugins.celery.__main__:main"
+gunicorn = "gunicorn.plugins.celery.__main__:run"
 
 [tool.poetry.dependencies]
 python = "^3.11"
