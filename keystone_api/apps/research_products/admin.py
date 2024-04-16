@@ -39,7 +39,14 @@ class PublicationAdmin(admin.ModelAdmin):
 class GrantAdmin(admin.ModelAdmin):
     """Admin interface for the `Grant` class"""
 
-    list_display = ['group', 'fiscal_year', 'amount', 'agency', 'start_date', 'end_date']
+    @staticmethod
+    @admin.display
+    def amount(obj: Grant) -> str:
+        """Return the allocation's service units as a human friendly string"""
+
+        return f'${int(obj.amount):,}'
+
+    list_display = ['group', 'fiscal_year', amount, 'agency', 'start_date', 'end_date']
     list_display_links = list_display
     ordering = ['group', '-fiscal_year']
     search_fields = ['title', 'agency', 'fiscal_year', 'group__name']
