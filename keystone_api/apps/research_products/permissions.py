@@ -33,7 +33,7 @@ class CustomPermissionsBase(permissions.BasePermission):
             group_id = request.data.get('group', None)
             return ResearchGroup.objects.get(pk=group_id)
 
-        except (ResearchGroup.DoesNotExist, Exception):
+        except ResearchGroup.DoesNotExist:
             return None
 
 
