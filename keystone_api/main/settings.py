@@ -112,7 +112,7 @@ JAZZMIN_SETTINGS = {
     "site_title": "Keystone",
     "site_header": "Keystone",
     "site_brand": "Keystone",
-    "hide_apps": ["sites", "auth"],
+    "hide_apps": ["sites", "auth", "token_blacklist"],
     "order_with_respect_to": [
         "users",
         "allocations",
@@ -168,8 +168,9 @@ _redis_pass = env.str('REDIS_PASSWORD', '')
 REDIS_URL = f'redis://:{_redis_pass}@{_redis_host}:{_redis_port}'
 
 CELERY_BROKER_URL = REDIS_URL + f'/{_redis_db}'
-CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'django-cache'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_EXTENDED = True
 
 # Database
 

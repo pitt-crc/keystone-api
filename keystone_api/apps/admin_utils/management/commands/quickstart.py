@@ -12,7 +12,7 @@ to handle database migrations, static file collection, and web server deployment
 | --migrate  | Run database migrations                                          |
 | --celery   | Launch a Celery worker with a Redis backend                      |
 | --gunicorn | Run a web server using Gunicorn                                  |
-| --no-input | Do not prompt for user input of any kind                         |
+| --all      | Launch all available services                                    |
 """
 
 import subprocess
@@ -39,7 +39,7 @@ class Command(BaseCommand):
         group.add_argument('--migrate', action='store_true', help='Run database migrations.')
         group.add_argument('--celery', action='store_true', help='Launch a background Celery worker.')
         group.add_argument('--gunicorn', action='store_true', help='Run a web server using Gunicorn.')
-        group.add_argument('--no-input', action='store_false', help='Do not prompt for user input of any kind.')
+        group.add_argument('--all', action='store_true', help='Launch all available services.')
 
     def handle(self, *args, **options) -> None:
         """Handle the command execution
@@ -49,19 +49,21 @@ class Command(BaseCommand):
           **options: Additional keyword arguments
         """
 
-        if options['migrate']:
+        # Note: `no_input=False` indicates the user should not be prompted for input
+
+        if options['migrate'] or options['all']:
             self.stdout.write(self.style.SUCCESS('Running database migrations...'))
-            call_command('migrate', no_input=options['no_input'])
+            call_command('migrate', no_input=False)
 
-        if options['static']:
+        if options['static'] or options['all']:
             self.stdout.write(self.style.SUCCESS('Collecting static files...'))
-            call_command('collectstatic', no_input=options['no_input'])
+            call_command('collectstatic', no_input=False)
 
-        if options['celery']:
+        if options['celery'] or options['all']:
             self.stdout.write(self.style.SUCCESS('Starting Celery worker...'))
             self.run_celery()
 
-        if options['gunicorn']:
+        if options['gunicorn'] or options['all']:
             self.stdout.write(self.style.SUCCESS('Starting Gunicorn server...'))
             self.run_gunicorn()
 
@@ -70,8 +72,9 @@ class Command(BaseCommand):
         """Start a Celery worker"""
 
         subprocess.Popen(['redis-server'])
-        subprocess.Popen(['celery', '-A', 'keystone_api.apps.scheduler', 'beat', '--scheduler', 'django_celery_beat.schedulers:DatabaseScheduler'])
         subprocess.Popen(['celery', '-A', 'keystone_api.apps.scheduler', 'worker'])
+        subprocess.Popen(['celery', '-A', 'keystone_api.apps.scheduler', 'beat',
+                          '--scheduler', 'django_celery_beat.schedulers:DatabaseScheduler'])
 
     @staticmethod
     def run_gunicorn(host: str = '0.0.0.0', port: int = 8000) -> None:
