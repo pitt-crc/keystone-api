@@ -15,7 +15,7 @@ __all__ = ['LogRequestMiddleware']
 class LogRequestMiddleware:
     """Log metadata from incoming HTTP requests to the database"""
 
-    # __init__ signature required by DJango for dependency injection
+    # __init__ signature required by Django for dependency injection
     def __init__(self, get_response: callable) -> None:
         self.get_response = get_response
 
@@ -31,12 +31,12 @@ class LogRequestMiddleware:
 
         response = self.get_response(request)
         request_log = RequestLog(
+            method=request.method,
             endpoint=request.get_full_path(),
             response_code=response.status_code,
-            method=request.method,
-            remote_address=self.get_client_ip(request),
+            body_request=request.read().decode(),
             body_response=response.content.decode(),
-            body_request=request.read().decode()
+            remote_address=self.get_client_ip(request)
         )
 
         if not request.user.is_anonymous:
