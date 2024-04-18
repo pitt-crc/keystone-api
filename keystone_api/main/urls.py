@@ -13,6 +13,7 @@ urlpatterns = [
     path('authentication/', include('apps.authentication.urls', namespace='authentication')),
     path('health/', include('apps.health.urls', namespace='health')),
     path('logs/', include('apps.logging.urls', namespace='logs')),
+    path('research/', include('apps.research_products.urls', namespace='research')),
     path('users/', include('apps.users.urls', namespace='users')),
     path('version', lambda *args: HttpResponse(settings.VERSION), name='version'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
