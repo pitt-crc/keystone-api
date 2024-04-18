@@ -27,7 +27,7 @@ django-jazzmin = "2.6.1"
 djangorestframework = "3.15.1"
 djangorestframework-simplejwt = "5.3.1"
 drf_spectacular = { version = "0.27.1", extras = ["sidecar"] }
-gunicorn = "21.2.0"
+gunicorn = "22.0.0"
 psycopg2-binary = "2.9.9"
 pyyaml = "6.0.1"
 redis = "5.0.3"
