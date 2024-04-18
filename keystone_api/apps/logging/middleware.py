@@ -15,6 +15,7 @@ __all__ = ['LogRequestMiddleware']
 class LogRequestMiddleware:
     """Log metadata from incoming HTTP requests to the database"""
 
+    # __init__ signature required by DJango for dependency injection
     def __init__(self, get_response: callable) -> None:
         self.get_response = get_response
 
