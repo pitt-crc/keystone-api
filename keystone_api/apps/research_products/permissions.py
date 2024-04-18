@@ -38,6 +38,8 @@ class CustomPermissionsBase(permissions.BasePermission):
 
 
 class GroupMemberAll(CustomPermissionsBase):
+    """Permissions class for supplying read and write access to all users within the research group"""
+
     def has_permission(self, request, view) -> bool:
         """Return whether the request has permissions to access the requested resource"""
 
@@ -54,6 +56,8 @@ class GroupMemberAll(CustomPermissionsBase):
 
 
 class GroupMemberReadGroupAdminWrite(CustomPermissionsBase):
+    """Permissions class for supplying read access to regular users and read/write access to admin users within the
+    research group"""
 
     def has_permission(self, request, view) -> bool:
         """Return whether the request has permissions to access the requested resource"""
