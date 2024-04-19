@@ -29,13 +29,12 @@ class AppLog(models.Model):
 class RequestLog(models.Model):
     """Log entry for an incoming HTTP request"""
 
-    endpoint = models.CharField(max_length=100, null=True)
+    method = models.CharField(max_length=10)
+    endpoint = models.CharField(max_length=100)
     response_code = models.PositiveSmallIntegerField()
-    method = models.CharField(max_length=10, null=True)
-    remote_address = models.CharField(max_length=40, null=True)
-    date = models.DateTimeField(auto_now=True)
-    body_response = models.TextField()
     body_request = models.TextField()
+    body_response = models.TextField()
+    remote_address = models.CharField(max_length=40, null=True)
     time = models.DateTimeField(auto_now_add=True)
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
