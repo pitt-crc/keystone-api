@@ -71,9 +71,9 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'apps.admin_utils',
     'apps.allocations',
-    'apps.docs',
     'apps.health',
     'apps.logging',
+    'apps.openapi',
     'apps.research_products',
     'apps.scheduler',
     'apps.users',
@@ -157,6 +157,7 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': SUMMARY,
     'VERSION': VERSION,
     'SERVE_INCLUDE_SCHEMA': False,
+    'SERVE_PERMISSIONS': ['rest_framework.permissions.IsAuthenticated'],
 }
 
 # Redis backend and Celery scheduler
