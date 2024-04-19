@@ -1,8 +1,8 @@
 """System checks for verifying proper application configuration.
 
-System checks extend Django's built-in inspection framework. Checks are used
-to inspect the state and configuration of the parent application and raise
-an exception when errors are found.
+System checks are used to report configuration errors in the parent
+application. See the `apps.py` file for their registration with the
+Django System Checks framework.
 """
 
 from django.core.checks import Error

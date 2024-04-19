@@ -17,6 +17,6 @@ class SchedulerConfig(AppConfig):
     name = 'apps.scheduler'
 
     def ready(self):
-        """Executed once the as the Django application registry is fully populated."""
+        """Executed as soon as the Django application registry is fully populated."""
 
         register(check_celery_is_importable)
