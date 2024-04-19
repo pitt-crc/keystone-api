@@ -33,7 +33,7 @@ class LogFileDeletion(TestCase):
     def test_log_files_rotated(self) -> None:
         """Test expired log files are deleted"""
 
-        # Create a set of older nd younger record
+        # Create a set of older and younger records
         self.create_dummy_records()
         sleep(2)
         self.create_dummy_records()
@@ -42,7 +42,9 @@ class LogFileDeletion(TestCase):
         self.assertEqual(2, AppLog.objects.count())
         self.assertEqual(2, RequestLog.objects.count())
 
-        sleep(2)  # Wait for first set of records to expire
+        # Wait for first set of records to expire
+        # Assert only the expired records are removed
+        sleep(2)
         rotate_log_files()
         self.assertEqual(1, AppLog.objects.count())
         self.assertEqual(1, RequestLog.objects.count())

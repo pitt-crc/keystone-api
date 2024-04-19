@@ -13,7 +13,7 @@ from apps.logging.models import RequestLog
 class LoggingToDatabase(TestCase):
     """Test the logging of requests to the database"""
 
-    def test_logs_authenticated_user(self) -> None:
+    def test_authenticated_user(self) -> None:
         """Test requests are logged for authenticated users"""
 
         rf = RequestFactory()
@@ -26,7 +26,7 @@ class LoggingToDatabase(TestCase):
         self.assertEqual(RequestLog.objects.count(), 1)
         self.assertEqual(RequestLog.objects.first().user, request.user)
 
-    def test_middleware_logs_request_with_anonymous_user(self) -> None:
+    def test_anonymous_user(self) -> None:
         """Test requests are logged for anonymous users"""
 
         rf = RequestFactory()
@@ -62,7 +62,7 @@ class GetClientIP(TestCase):
         self.assertEqual(client_ip, '192.168.1.1')
 
     def test_ip_without_headers(self) -> None:
-        """Test the return value is None when neither `HTTP_X_FORWARDED_FOR` nor `REMOTE_ADDR` is specified"""
+        """Test the return value is None when no headers are specified"""
 
         request = HttpRequest()
         client_ip = LogRequestMiddleware.get_client_ip(request)
