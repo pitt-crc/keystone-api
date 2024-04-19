@@ -47,12 +47,12 @@ class EndpointPermissions(TransactionTestCase):
         health_check_log.setLevel(log_level)
 
     def test_anonymous_user_permissions(self) -> None:
-        """Test unauthenticated users have read-only access"""
+        """Test unauthenticated users have read-only permissions"""
 
         self.assert_read_only_responses()
 
     def test_authenticated_user_permissions(self) -> None:
-        """Test general authenticated users are returned a 403 status code for all request types"""
+        """Test authenticated users have read-only permissions"""
 
         create_test_user(username='foo', password='foobar123!')
         self.assertTrue(self.client.login(username='foo', password='foobar123!'))
