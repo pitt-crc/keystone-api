@@ -72,8 +72,7 @@ class AllocationRequest(RGModelInterface, models.Model):
     title = models.CharField(max_length=250)
     description = models.TextField(max_length=1600)
     submitted = models.DateField('Submission Date', auto_now=True)
-    status = models.CharField('Review Status', max_length=2, choices=StatusChoices.choices,
-                              default=StatusChoices.PENDING)
+    status = models.CharField('Review Status', max_length=2, choices=StatusChoices.choices, default=StatusChoices.PENDING)
     active = models.DateField('Active Date', null=True, blank=True)
     expire = models.DateField('Expiration Date', null=True, blank=True)
 
