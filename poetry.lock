@@ -214,13 +214,13 @@ dev = ["polib"]
 
 [[package]]
 name = "django"
-version = "5.0.3"
+version = "5.0.4"
 description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 optional = false
 python-versions = ">=3.10"
 files = [
-    {file = "Django-5.0.3-py3-none-any.whl", hash = "sha256:5c7d748ad113a81b2d44750ccc41edc14e933f56581683db548c9257e078cc83"},
-    {file = "Django-5.0.3.tar.gz", hash = "sha256:5fb37580dcf4a262f9258c1f4373819aacca906431f505e4688e37f3a99195df"},
+    {file = "Django-5.0.4-py3-none-any.whl", hash = "sha256:916423499d75d62da7aa038d19aef23d23498d8df229775eb0a6309ee1013775"},
+    {file = "Django-5.0.4.tar.gz", hash = "sha256:4bd01a8c830bb77a8a3b0e7d8b25b887e536ad17a81ba2dce5476135c73312bd"},
 ]
 
 [package.dependencies]
@@ -234,13 +234,13 @@ bcrypt = ["bcrypt"]
 
 [[package]]
 name = "django-auth-ldap"
-version = "4.7.0"
+version = "4.8.0"
 description = "Django LDAP authentication backend"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "django-auth-ldap-4.7.0.tar.gz", hash = "sha256:8dea65376b8b2fa1beee52348760e3082e642939a5038cbe881a5e6381b65b8a"},
-    {file = "django_auth_ldap-4.7.0-py3-none-any.whl", hash = "sha256:de02c36e9f9025be9242cd40b5617403a886c72e3c5e0dd489b9b3db996dc875"},
+    {file = "django-auth-ldap-4.8.0.tar.gz", hash = "sha256:604250938ddc9fda619f247c7a59b0b2f06e53a7d3f46a156f28aa30dd71a738"},
+    {file = "django_auth_ldap-4.8.0-py3-none-any.whl", hash = "sha256:4b4b944f3c28bce362f33fb6e8db68429ed8fd8f12f0c0c4b1a4344a7ef225ce"},
 ]
 
 [package.dependencies]
@@ -345,17 +345,17 @@ test = ["celery", "pytest", "pytest-cov", "pytest-django", "redis"]
 
 [[package]]
 name = "django-jazzmin"
-version = "2.6.1"
+version = "3.0.0"
 description = "Drop-in theme for django admin, that utilises AdminLTE 3 & Bootstrap 4 to make yo' admin look jazzy"
 optional = false
-python-versions = ">=3.6.2"
+python-versions = ">=3.8"
 files = [
-    {file = "django_jazzmin-2.6.1-py3-none-any.whl", hash = "sha256:666cfdbafa59723becef35541698b28e4c97a5c1eba67ef139d4f1c9c615830a"},
-    {file = "django_jazzmin-2.6.1.tar.gz", hash = "sha256:d2c05307302cbf4335002a1b709e2ab2c2129322db43c14bdbfd8c28bdde5a81"},
+    {file = "django_jazzmin-3.0.0-py3-none-any.whl", hash = "sha256:95ef5d7571519c4c53c24083ec417a0db126aaf1d7dc7311e034a90e430392b3"},
+    {file = "django_jazzmin-3.0.0.tar.gz", hash = "sha256:424ac3e0f7bfd9ce973b581a66abde92035ba6c5b17605615fdf6bd97c4dcb33"},
 ]
 
 [package.dependencies]
-django = ">=2.2"
+django = ">=4.2"
 
 [[package]]
 name = "django-timezone-field"
@@ -411,13 +411,13 @@ test = ["cryptography", "freezegun", "pytest", "pytest-cov", "pytest-django", "p
 
 [[package]]
 name = "drf-spectacular"
-version = "0.27.1"
+version = "0.27.2"
 description = "Sane and flexible OpenAPI 3 schema generation for Django REST framework"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "drf-spectacular-0.27.1.tar.gz", hash = "sha256:452e0cff3c12ee057b897508a077562967b9e62717992eeec10e62dbbc7b5a33"},
-    {file = "drf_spectacular-0.27.1-py3-none-any.whl", hash = "sha256:0a4cada4b7136a0bf17233476c066c511a048bc6a485ae2140326ac7ba4003b2"},
+    {file = "drf-spectacular-0.27.2.tar.gz", hash = "sha256:a199492f2163c4101055075ebdbb037d59c6e0030692fc83a1a8c0fc65929981"},
+    {file = "drf_spectacular-0.27.2-py3-none-any.whl", hash = "sha256:b1c04bf8b2fbbeaf6f59414b4ea448c8787aba4d32f76055c3b13335cf7ec37b"},
 ]
 
 [package.dependencies]
@@ -1048,4 +1048,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "96d3dd038ee258c2a8a55b9aeb02d5783478868bc4e4921186c1e84ab917dc6b"
+content-hash = "c257b5e98f4351aafe467a9a22912656deee58bb2c50e923e768432b568c9c78"
