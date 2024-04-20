@@ -33,6 +33,7 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         'fiscal_year': 2001,
         'start_date': date(2000, 1, 1),
         'end_date': date(2000, 1, 31),
+        'grant_number': 'abc-123',
         'group': 1
     }
 
