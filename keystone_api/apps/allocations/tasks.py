@@ -20,23 +20,28 @@ log = logging.getLogger(__name__)
 
 
 @shared_task()
-def update_limits() -> None:
-    """Adjust TRES billing limits for all Slurm accounts on all enabled clusters"""
+def update_limits(debugmode: bool = False) -> None:
+    """Adjust TRES billing limits for all Slurm accounts on all enabled clusters
+
+    Args:
+        debugmode: boolean value for whether the task is running in debugmode
+    """
 
     log.info(f"Begin updating TRES billing hour limits for all Slurm Accounts")
     for cluster in Cluster.objects.filter(enabled=True).all():
         log.info(f"Updating TRES billing hour limits for cluster {cluster.name}")
-        update_limits_for_cluster(cluster)
+        update_limits_for_cluster(cluster, debugmode=debugmode)
 
 
 @shared_task()
-def update_limits_for_cluster(cluster: Cluster) -> None:
+def update_limits_for_cluster(cluster: Cluster, debugmode: bool = False) -> None:
     """Adjust TRES billing limits for all Slurm accounts on a given Slurm cluster
 
     The account `root` is automatically ignored.
 
     Args:
         cluster: The name of the Slurm cluster
+        debugmode: boolean value for whether the task is running in debugmode
     """
 
     for account_name in get_slurm_account_names(cluster.name):
@@ -44,12 +49,18 @@ def update_limits_for_cluster(cluster: Cluster) -> None:
             continue
 
         log.debug(f"Updating TRES billing hour limits for account {account_name}")
-        update_limit_for_account(account_name, cluster)
+        update_limit_for_account(account_name, cluster, debugmode=debugmode)
 
 
 @shared_task()
-def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
-    """Update the TRES billing usage limits for an individual Slurm account, closing out any expired allocations"""
+def update_limit_for_account(account_name: str, cluster: Cluster, debugmode: bool = False) -> None:
+    """Update the TRES billing usage limits for an individual Slurm account, closing out any expired allocations
+
+    Args:
+        account_name: string containing Slurm account name
+        cluster: The name of the Slurm cluster
+        debugmode: boolean value for whether the task is running in debugmode
+    """
 
     try:
         # Check the Slurm account has a database entry
@@ -58,7 +69,12 @@ def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
     except ResearchGroup.DoesNotExist:
         #  Lock the missing user by setting their usage limit to their current usage
         log.warning(f"No existing ResearchGroup for account {account_name}, locking {account_name} on {cluster.name}")
-        set_cluster_limit(account_name, cluster.name, get_cluster_usage(account_name, cluster.name))
+
+        if debugmode:
+            log.debug(f"DEBUGMODE: limit would have been set to {get_cluster_usage(account_name, cluster.name)}")
+        else:
+            set_cluster_limit(account_name, cluster.name, get_cluster_usage(account_name, cluster.name))
+
         return
 
     # Base query for approved Allocations under the given account on the given cluster
@@ -82,7 +98,11 @@ def update_limit_for_account(account_name: str, cluster: Cluster) -> None:
 
     # Set the new account usage limit using the updated historical usage from expired allocations
     updated_historical_usage = acct_alloc_query.filter(request__expire__lte=date.today()).aggregate(Sum("final"))['final__sum'] or 0
-    set_cluster_limit(account_name, cluster.name, limit=updated_historical_usage + active_sus)
+
+    if debugmode:
+        log.debug(f"DEBUGMODE: limit would have been set to {updated_historical_usage + active_sus}")
+    else:
+        set_cluster_limit(account_name, cluster.name, limit=updated_historical_usage + active_sus)
 
 
 def close_expired_allocations(closing_allocations: Collection[Allocation], current_usage: int) -> None:
@@ -94,6 +114,6 @@ def close_expired_allocations(closing_allocations: Collection[Allocation], curre
     """
 
     for allocation in closing_allocations:
-        log.debug(f"Closing allocation {allocation.id}")
+        log.debug(f"Closing allocation {allocation.id} due to reaching it's expiration date")
         allocation.final = min(current_usage, allocation.awarded)
         current_usage -= allocation.final
