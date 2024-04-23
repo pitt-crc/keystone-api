@@ -12,8 +12,6 @@ settings.JAZZMIN_SETTINGS['icons'].update({
     'django_celery_beat.IntervalSchedule': 'fa fa-redo',
     'django_celery_beat.SolarSchedule': 'fa fa-sun',
     'django_celery_beat.PeriodicTask': 'fa fa-check',
-    'django_celery_results.TaskResult': 'fa fa-tasks',
-    'django_celery_results.GroupResult': 'fa fa-list-alt',
 })
 
 settings.JAZZMIN_SETTINGS['order_with_respect_to'].extend([
@@ -22,6 +20,4 @@ settings.JAZZMIN_SETTINGS['order_with_respect_to'].extend([
     'django_celery_beat.ClockedSchedule',
     'django_celery_beat.CrontabSchedule',
     'django_celery_beat.SolarSchedule',
-    'django_celery_results.TaskResult',
-    'django_celery_results.GroupResult',
 ])
