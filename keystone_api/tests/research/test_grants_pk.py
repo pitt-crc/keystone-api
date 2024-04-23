@@ -33,6 +33,7 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         'fiscal_year': 2001,
         'start_date': date(2000, 1, 1),
         'end_date': date(2000, 1, 31),
+        'grant_number': 'abc-123',
         'group': 1
     }
 
@@ -89,8 +90,7 @@ class EndpointPermissions(APITestCase, CustomAsserts):
             put=status.HTTP_403_FORBIDDEN,
             patch=status.HTTP_403_FORBIDDEN,
             delete=status.HTTP_403_FORBIDDEN,
-            trace=status.HTTP_403_FORBIDDEN,
-            put_body=self.valid_record_data,
+            trace=status.HTTP_403_FORBIDDEN
         )
 
     def test_staff_user_permissions(self) -> None:
