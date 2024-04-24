@@ -262,9 +262,10 @@ LOGGING = {
             "level": env.str('CONFIG_LOG_LEVEL', 'WARNING'),
             "handlers": ["db"],
         },
-        "apps.allocations.tasks": {
+        "apps": {
             "level": env.str('CONFIG_LOG_LEVEL', 'WARNING'),
             "handlers": ["db"],
+            "propagate": False,
         },
     }
 }
