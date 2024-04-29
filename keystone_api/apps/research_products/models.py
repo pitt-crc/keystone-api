@@ -21,6 +21,7 @@ class Grant(models.Model):
     title = models.CharField(max_length=250)
     agency = models.CharField(max_length=100)
     amount = models.DecimalField(decimal_places=2, max_digits=14)
+    grant_number = models.CharField(max_length=250)
     fiscal_year = models.IntegerField()
     start_date = models.DateField()
     end_date = models.DateField()

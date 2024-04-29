@@ -6,11 +6,12 @@ Each model reflects a different database and defines low-level defaults for how
 the associated table/fields/records are presented by parent interfaces.
 """
 
+import django_celery_results.models
 from django.db import models
 
 from apps.users.models import User
 
-__all__ = ['AppLog', 'RequestLog']
+__all__ = ['AppLog', 'RequestLog', 'TaskResult']
 
 
 class AppLog(models.Model):
@@ -38,3 +39,12 @@ class RequestLog(models.Model):
     time = models.DateTimeField(auto_now_add=True)
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+
+
+class TaskResult(django_celery_results.models.TaskResult):
+    """Proxy model for the Celery task result backend"""
+
+    class Meta:
+        """Database model settings"""
+
+        proxy = True

@@ -178,6 +178,7 @@
     fiscal_year: 2001
     start_date: "2000-01-01"
     end_date: "2000-01-31"
+    grant_number: "abc-123"
     group: 1
 - model: research_products.grant
   pk: 2
@@ -188,4 +189,5 @@
     fiscal_year: 2001
     start_date: "2000-01-01"
     end_date: "2000-01-31"
+    grant_number: "abc-123"
     group: 2
