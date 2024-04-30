@@ -71,7 +71,7 @@ def update_limit_for_account(account_name: str, cluster: Cluster, debugmode: boo
         log.warning(f"No existing ResearchGroup for account {account_name}, locking {account_name} on {cluster.name}")
 
         if debugmode:
-            log.debug(f"DEBUGMODE: limit would have been set to {get_cluster_usage(account_name, cluster.name)}")
+            log.debug(f"limit would have been set to {get_cluster_usage(account_name, cluster.name)}")
         else:
             set_cluster_limit(account_name, cluster.name, get_cluster_usage(account_name, cluster.name))
 
@@ -93,19 +93,21 @@ def update_limit_for_account(account_name: str, cluster: Cluster, debugmode: boo
     # Calculate the total usage to count against expiring allocations and close them
     closing_sus = closing_query.aggregate(Sum("awarded"))['awarded__sum'] or 0
     historical_usage_from_limit = get_cluster_limit(account.name, cluster.name) - active_sus - closing_sus
-    current_usage = get_cluster_usage(account.name, cluster.name) - historical_usage_from_limit
-    close_expired_allocations(closing_query.all(), current_usage)
+    current_usage = close_expired_allocations(closing_query.all(), get_cluster_usage(account.name, cluster.name) - historical_usage_from_limit)
+
+    if current_usage > active_sus:
+        log.debug(f"The current usage is somehow higher than the limit for {account_name}!")
 
     # Set the new account usage limit using the updated historical usage from expired allocations
     updated_historical_usage = acct_alloc_query.filter(request__expire__lte=date.today()).aggregate(Sum("final"))['final__sum'] or 0
 
     if debugmode:
-        log.debug(f"DEBUGMODE: limit would have been set to {updated_historical_usage + active_sus}")
+        log.debug(f"limit would have been set to {updated_historical_usage + active_sus}")
     else:
         set_cluster_limit(account_name, cluster.name, limit=updated_historical_usage + active_sus)
 
 
-def close_expired_allocations(closing_allocations: Collection[Allocation], current_usage: int) -> None:
+def close_expired_allocations(closing_allocations: Collection[Allocation], current_usage: int) -> int:
     """Set the final usage for expired allocations that have not been closed out yet
 
     Args:
@@ -117,3 +119,6 @@ def close_expired_allocations(closing_allocations: Collection[Allocation], curre
         log.debug(f"Closing allocation {allocation.id} due to reaching it's expiration date")
         allocation.final = min(current_usage, allocation.awarded)
         current_usage -= allocation.final
+        allocation.save()
+
+    return current_usage
