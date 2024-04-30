@@ -11,7 +11,7 @@ from django.db import models
 
 from apps.users.models import ResearchGroup
 
-__all__ = ['AllocationManager', 'AllocationRequestManager', 'AllocationRequestReviewManager']
+__all__ = ['AllocationManager', 'AllocationRequestManager', 'AllocationRequestReviewManager', 'ClusterManager']
 
 
 class AllocationManager(models.Manager):
@@ -63,3 +63,16 @@ class AllocationRequestReviewManager(models.Manager):
 
         research_groups = ResearchGroup.objects.groups_for_user(user)
         return self.get_queryset().filter(request__group__in=research_groups)
+
+
+class ClusterManager(models.Manager):
+    """Object manager for the `Cluster` database model"""
+
+    def is_enabled(self) -> models.QuerySet:
+        """Get all enabled clusters
+
+        Return:
+            A filtered queryset
+        """
+
+        return self.get_queryset().filter(enabled=True)
