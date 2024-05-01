@@ -88,6 +88,7 @@ def update_limit_for_account(account: ResearchGroup, cluster: Cluster) -> None:
 
     # Set the new account usage limit using the updated historical usage after closing any expired allocations
     updated_historical_usage = approved_query.filter(request__expire__lte=date.today()).aggregate(Sum("final"))['final__sum'] or 0
+    log.debug(f"Setting limit to {updated_historical_usage + active_sus} (historical: {updated_historical_usage}, active: {active_sus})")
     set_cluster_limit(account.name, cluster.name, limit=updated_historical_usage + active_sus)
 
 
@@ -99,10 +100,13 @@ def close_expired_allocations(allocations: Collection[Allocation], current_usage
         current_usage: The total TRES billing hour usage to apply across all allocations being closed out
     """
 
+    summary = f"Current Usage before closing: {current_usage}\n"
     for allocation in allocations:
-        log.debug(f"Closing allocation {allocation.id} due to reaching it's expiration date")
         allocation.final = min(current_usage, allocation.awarded)
+        summary += f"Allocation {allocation.id}: {current_usage} - {allocation.final} -> {current_usage - allocation.final}\n"
         current_usage -= allocation.final
         allocation.save()
+
+    log.debug(summary + f"Current Usage after closing: {current_usage}")
 
     return current_usage
