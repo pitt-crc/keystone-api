@@ -14,79 +14,66 @@ from django.db.models import Sum
 
 from apps.allocations.models import Allocation, Cluster
 from apps.users.models import ResearchGroup
-from keystone_api.plugins.slurm import get_cluster_limit, get_cluster_usage, get_slurm_account_names, set_cluster_limit
+from keystone_api.plugins.slurm import *
 
 log = logging.getLogger(__name__)
 
 
 @shared_task()
-def update_limits(debugmode: bool = False) -> None:
-    """Adjust TRES billing limits for all Slurm accounts on all enabled clusters
+def update_limits() -> None:
+    """Adjust TRES billing limits for all Slurm accounts on all enabled clusters"""
 
-    Args:
-        debugmode: boolean value for whether the task is running in debugmode
-    """
-
-    log.info(f"Begin updating TRES billing hour limits for all Slurm Accounts")
+    log.debug(f"Begin updating TRES billing hour limits for all Slurm Accounts")
     for cluster in Cluster.objects.filter(enabled=True).all():
-        log.info(f"Updating TRES billing hour limits for cluster {cluster.name}")
-        update_limits_for_cluster(cluster, debugmode=debugmode)
+        log.debug(f"Updating TRES billing hour limits for cluster {cluster.name}")
+        update_limits_for_cluster(cluster)
 
 
 @shared_task()
-def update_limits_for_cluster(cluster: Cluster, debugmode: bool = False) -> None:
+def update_limits_for_cluster(cluster: Cluster) -> None:
     """Adjust TRES billing limits for all Slurm accounts on a given Slurm cluster
 
-    The account `root` is automatically ignored.
+    The Slurm accounts for `root` and any that are missing from Keystone are automatically ignored.
 
     Args:
         cluster: The name of the Slurm cluster
-        debugmode: boolean value for whether the task is running in debugmode
     """
 
     for account_name in get_slurm_account_names(cluster.name):
+
+        # Skip root
         if account_name in ['root']:
             continue
+        log.debug(f"Attempting to update TRES billing hour limits for account {account_name} on {cluster.name}")
+        try:
+            # Check the Slurm account has representation in Keystone
+            account = ResearchGroup.objects.get(name=account_name)
+        except ResearchGroup.DoesNotExist:
+            log.warning(f"No existing ResearchGroup for account {account_name} on {cluster.name}, skipping for now")
+            return
 
-        log.debug(f"Updating TRES billing hour limits for account {account_name}")
-        update_limit_for_account(account_name, cluster, debugmode=debugmode)
+        update_limit_for_account(account, cluster)
 
 
 @shared_task()
-def update_limit_for_account(account_name: str, cluster: Cluster, debugmode: bool = False) -> None:
+def update_limit_for_account(account: ResearchGroup, cluster: Cluster) -> None:
     """Update the TRES billing usage limits for an individual Slurm account, closing out any expired allocations
 
     Args:
-        account_name: string containing Slurm account name
-        cluster: The name of the Slurm cluster
-        debugmode: boolean value for whether the task is running in debugmode
+        account: ResearchGroup object for the account
+        cluster: Cluster object corresponding to the Slurm cluster
     """
 
-    try:
-        # Check the Slurm account has a database entry
-        account = ResearchGroup.objects.get(name=account_name)
-
-    except ResearchGroup.DoesNotExist:
-        #  Lock the missing user by setting their usage limit to their current usage
-        log.warning(f"No existing ResearchGroup for account {account_name}, locking {account_name} on {cluster.name}")
-
-        if debugmode:
-            log.debug(f"limit would have been set to {get_cluster_usage(account_name, cluster.name)}")
-        else:
-            set_cluster_limit(account_name, cluster.name, get_cluster_usage(account_name, cluster.name))
-
-        return
-
     # Base query for approved Allocations under the given account on the given cluster
-    acct_alloc_query = Allocation.objects.filter(request__group=account, cluster=cluster, request__status='AP')
+    approved_query = Allocation.objects.filter(request__group=account, cluster=cluster, request__status='AP')
 
     # Query for allocations that have expired but do not have a final usage value
-    closing_query = acct_alloc_query \
+    closing_query = approved_query \
         .filter(final=None, request__expire__lte=date.today()) \
         .order_by("request__expire")
 
     # Query for allocations that are active, and determine their total service unit contribution
-    active_sus = acct_alloc_query \
+    active_sus = approved_query \
         .filter(request__active__lte=date.today(), request__expire__gt=date.today()) \
         .aggregate(Sum("awarded"))['awarded__sum'] or 0
 
@@ -95,27 +82,24 @@ def update_limit_for_account(account_name: str, cluster: Cluster, debugmode: boo
     historical_usage_from_limit = get_cluster_limit(account.name, cluster.name) - active_sus - closing_sus
     current_usage = close_expired_allocations(closing_query.all(), get_cluster_usage(account.name, cluster.name) - historical_usage_from_limit)
 
+    # This shouldn't happen but if it does somehow, create a warning so an admin will notice
     if current_usage > active_sus:
-        log.debug(f"The current usage is somehow higher than the limit for {account_name}!")
+        log.warning(f"The current usage is somehow higher than the limit for {account.name}!")
 
-    # Set the new account usage limit using the updated historical usage from expired allocations
-    updated_historical_usage = acct_alloc_query.filter(request__expire__lte=date.today()).aggregate(Sum("final"))['final__sum'] or 0
-
-    if debugmode:
-        log.debug(f"limit would have been set to {updated_historical_usage + active_sus}")
-    else:
-        set_cluster_limit(account_name, cluster.name, limit=updated_historical_usage + active_sus)
+    # Set the new account usage limit using the updated historical usage after closing any expired allocations
+    updated_historical_usage = approved_query.filter(request__expire__lte=date.today()).aggregate(Sum("final"))['final__sum'] or 0
+    set_cluster_limit(account.name, cluster.name, limit=updated_historical_usage + active_sus)
 
 
-def close_expired_allocations(closing_allocations: Collection[Allocation], current_usage: int) -> int:
+def close_expired_allocations(allocations: Collection[Allocation], current_usage: int) -> int:
     """Set the final usage for expired allocations that have not been closed out yet
 
     Args:
-        closing_allocations: list of `Allocation` objects to set the final usage for
+        allocations: list of `Allocation` objects to set the final usage for
         current_usage: The total TRES billing hour usage to apply across all allocations being closed out
     """
 
-    for allocation in closing_allocations:
+    for allocation in allocations:
         log.debug(f"Closing allocation {allocation.id} due to reaching it's expiration date")
         allocation.final = min(current_usage, allocation.awarded)
         current_usage -= allocation.final
