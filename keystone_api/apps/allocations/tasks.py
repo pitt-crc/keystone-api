@@ -23,9 +23,7 @@ log = logging.getLogger(__name__)
 def update_limits() -> None:
     """Adjust TRES billing limits for all Slurm accounts on all enabled clusters"""
 
-    log.debug(f"Begin updating TRES billing hour limits for all Slurm Accounts")
     for cluster in Cluster.objects.filter(enabled=True).all():
-        log.debug(f"Updating TRES billing hour limits for cluster {cluster.name}")
         update_limits_for_cluster(cluster)
 
 
@@ -44,7 +42,7 @@ def update_limits_for_cluster(cluster: Cluster) -> None:
         # Skip root
         if account_name in ['root']:
             continue
-        log.debug(f"Attempting to update TRES billing hour limits for account {account_name} on {cluster.name}")
+
         try:
             # Check the Slurm account has representation in Keystone
             account = ResearchGroup.objects.get(name=account_name)
@@ -67,20 +65,29 @@ def update_limit_for_account(account: ResearchGroup, cluster: Cluster) -> None:
     # Base query for approved Allocations under the given account on the given cluster
     approved_query = Allocation.objects.filter(request__group=account, cluster=cluster, request__status='AP')
 
-    # Query for allocations that have expired but do not have a final usage value
-    closing_query = approved_query \
-        .filter(final=None, request__expire__lte=date.today()) \
-        .order_by("request__expire")
+    # Query for allocations that have expired but do not have a final usage value, determine their SU contribution
+    closing_query = approved_query.filter(final=None, request__expire__lte=date.today()).order_by("request__expire")
+    closing_sus = closing_query.aggregate(Sum("awarded"))['awarded__sum'] or 0
 
     # Query for allocations that are active, and determine their total service unit contribution
-    active_sus = approved_query \
-        .filter(request__active__lte=date.today(), request__expire__gt=date.today()) \
-        .aggregate(Sum("awarded"))['awarded__sum'] or 0
+    active_query = approved_query.filter(request__active__lte=date.today(), request__expire__gt=date.today())
+    active_sus = active_query.aggregate(Sum("awarded"))['awarded__sum'] or 0
 
-    # Calculate the total usage to count against expiring allocations and close them
-    closing_sus = closing_query.aggregate(Sum("awarded"))['awarded__sum'] or 0
-    historical_usage_from_limit = get_cluster_limit(account.name, cluster.name) - active_sus - closing_sus
-    current_usage = close_expired_allocations(closing_query.all(), get_cluster_usage(account.name, cluster.name) - historical_usage_from_limit)
+    # Determine the historical contribution to the current limit
+    current_limit = get_cluster_limit(account.name, cluster.name)
+    historical_usage_from_limit = current_limit - active_sus - closing_sus
+
+    # Close expired allocations and determine the current usage
+    current_usage = get_cluster_usage(account.name, cluster.name) - historical_usage_from_limit
+
+    closing_summary = (f"Summary of closing allocations:\n"
+                       f"    Current Usage before closing: {current_usage}\n")
+    for allocation in closing_query.all():
+        allocation.final = min(current_usage, allocation.awarded)
+        closing_summary += f"    Allocation {allocation.id}: {current_usage} - {allocation.final} -> {current_usage - allocation.final}\n"
+        current_usage -= allocation.final
+        allocation.save()
+    closing_summary + f"    Current Usage after closing: {current_usage}"
 
     # This shouldn't happen but if it does somehow, create a warning so an admin will notice
     if current_usage > active_sus:
@@ -88,25 +95,15 @@ def update_limit_for_account(account: ResearchGroup, cluster: Cluster) -> None:
 
     # Set the new account usage limit using the updated historical usage after closing any expired allocations
     updated_historical_usage = approved_query.filter(request__expire__lte=date.today()).aggregate(Sum("final"))['final__sum'] or 0
-    log.debug(f"Setting limit to {updated_historical_usage + active_sus} (historical: {updated_historical_usage}, active: {active_sus})")
-    set_cluster_limit(account.name, cluster.name, limit=updated_historical_usage + active_sus)
 
+    updated_limit = updated_historical_usage + active_sus
+    set_cluster_limit(account.name, cluster.name, updated_limit)
 
-def close_expired_allocations(allocations: Collection[Allocation], current_usage: int) -> int:
-    """Set the final usage for expired allocations that have not been closed out yet
-
-    Args:
-        allocations: list of `Allocation` objects to set the final usage for
-        current_usage: The total TRES billing hour usage to apply across all allocations being closed out
-    """
-
-    summary = f"Current Usage before closing: {current_usage}\n"
-    for allocation in allocations:
-        allocation.final = min(current_usage, allocation.awarded)
-        summary += f"Allocation {allocation.id}: {current_usage} - {allocation.final} -> {current_usage - allocation.final}\n"
-        current_usage -= allocation.final
-        allocation.save()
-
-    log.debug(summary + f"Current Usage after closing: {current_usage}")
-
-    return current_usage
+    # Log summary of changes during limits update for this Slurm account on this cluster
+    log.debug(f"Summary of limits update for {account.name} on {cluster.name}:\n"
+              f"    Approved allocations found: {len(approved_query)}\n"
+              f"    Service units from {len(active_query)} active allocations: {active_sus}\n"
+              f"    Service units from {len(closing_query)} closing allocations: {closing_sus}\n"
+              f"    {closing_summary}"
+              f"    historical usage change: {historical_usage_from_limit} -> {updated_historical_usage}\n"
+              f"    limit change: {current_limit} -> {updated_limit}")
