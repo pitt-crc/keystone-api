@@ -1,11 +1,9 @@
 """Tests for the `/health/` endpoint"""
 
-import logging
-
 from django.test import TransactionTestCase
 from rest_framework import status
 
-from apps.users.tests.utils import create_test_user
+from apps.users.models import User
 
 
 class EndpointPermissions(TransactionTestCase):
@@ -45,13 +43,13 @@ class EndpointPermissions(TransactionTestCase):
     def test_authenticated_user_permissions(self) -> None:
         """Test authenticated users have read-only permissions"""
 
-        create_test_user(username='foo', password='foobar123!')
-        self.assertTrue(self.client.login(username='foo', password='foobar123!'))
+        user = User.objects.get(username='generic_user')
+        self.client.force_authenticate(user=user)
         self.assert_read_only_responses()
 
     def test_staff_user_permissions(self) -> None:
         """Test staff users have read-only permissions"""
 
-        create_test_user(username='foo', password='foobar123!')
-        self.assertTrue(self.client.login(username='foo', password='foobar123!'))
+        user = User.objects.get(username='staff_user')
+        self.client.force_authenticate(user=user)
         self.assert_read_only_responses()
