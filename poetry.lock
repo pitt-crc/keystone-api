@@ -559,20 +559,6 @@ files = [
 ]
 
 [[package]]
-name = "prometheus-client"
-version = "0.20.0"
-description = "Python client for the Prometheus monitoring system."
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "prometheus_client-0.20.0-py3-none-any.whl", hash = "sha256:cde524a85bce83ca359cc837f28b8c0db5cac7aa653a588fd7e84ba061c329e7"},
-    {file = "prometheus_client-0.20.0.tar.gz", hash = "sha256:287629d00b147a32dcb2be0b9df905da599b2d82f80377083ec8463309a4bb89"},
-]
-
-[package.extras]
-twisted = ["twisted"]
-
-[[package]]
 name = "prompt-toolkit"
 version = "3.0.43"
 description = "Library for building powerful interactive command lines in Python"
@@ -1063,4 +1049,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "b3daffdff1277059e16f4d4e6f461514b492c0a3fee6597199f46409fa1e2192"
+content-hash = "0ab26b96192014826de19a19af73f0c717eed473e1f32c6b4e5921d9bda0a092"

@@ -5,89 +5,86 @@ appropriately rendered HTML template or other HTTP response.
 """
 
 from django.http import HttpResponse, JsonResponse
-from drf_spectacular.utils import extend_schema, inline_serializer
-from health_check.backends import BaseHealthCheckBackend
 from health_check.mixins import CheckMixin
-from prometheus_client import CollectorRegistry, Gauge, generate_latest
-from rest_framework.request import Request
-from rest_framework.viewsets import ViewSet
+from rest_framework.views import APIView
 
-__all__ = ['HealthCheckJsonViewSet', 'HealthCheckPrometheusViewSet']
+__all__ = ['HealthCheckView', 'HealthCheckJsonView', 'HealthCheckPrometheusView']
 
 
-class HealthCheckJsonViewSet(ViewSet, CheckMixin):
-    """View for rendering system status messages"""
+class HealthCheckView(APIView, CheckMixin):
+    """Return a 200 status code if all system checks pass and 500 otherwise"""
 
     permission_classes = []
 
-    @staticmethod
-    def render_to_response_json(plugins: dict[str, BaseHealthCheckBackend], status: int) -> JsonResponse:
-        """Render a JSON response summarizing the status for a list of plugins
+    def get(self, request, *args, **kwargs) -> HttpResponse:
+        """Return a 200 status code if all system checks pass and 500 otherwise
 
         Args:
-            plugins: A list of plugins to render the status for
-            status: The overall system status
+            request: The incoming HTTP request
+
+        Returns:
+            An Http response
+        """
+
+        for plugin_name, plugin in self.plugins.items():
+            plugin.check_status()
+            if plugin.status != 1:
+                return HttpResponse(status=500)
+
+        return HttpResponse()
+
+
+class HealthCheckJsonView(APIView, CheckMixin):
+    """View for rendering system health checks in JSON format"""
+
+    permission_classes = []
+
+    def get(self, request, *args, **kwargs) -> JsonResponse:
+        """Render a JSON response summarizing system health checks
+
+        Args:
+            request: The incoming HTTP request
 
         Returns:
             A JSON HTTP response
         """
 
+        self.check()
+
         data = dict()
-        for plugin_name, plugin in plugins.items():
+        for plugin_name, plugin in self.plugins.items():
             data[plugin_name] = {
-                'status': 200 if plugin.status else 500,
+                'status': 200 if plugin.status == 1 else 500,
                 'message': plugin.pretty_status(),
-                'time': plugin.time_taken,
                 'critical_service': plugin.critical_service
             }
 
-        return JsonResponse(data=data, status=status)
-
-    @extend_schema(responses={'2XX': inline_serializer('success', dict())})
-    def list(self, request: Request, *args, **kwargs) -> JsonResponse:
-        """Return a JSON response detailing system status checks.
-
-        The returned status code will be 200 if all checks pass. If any checks
-        fail, the status code will be 500.
-        """
-
-        # This method functions similarly to the overloaded parent method,
-        # except responses are forced to be JSON and never rendered HTML.
-
-        status_code = 500 if self.errors else 200
-        return self.render_to_response_json(self.plugins, status_code)
+        return JsonResponse(data=data, status=200)
 
 
-class HealthCheckPrometheusViewSet(ViewSet, CheckMixin):
+class HealthCheckPrometheusView(APIView, CheckMixin):
+    """View for rendering system health checks in Prometheus format"""
+
     permission_classes = []
 
-    @staticmethod
-    def render_to_response_prometheus(plugins: dict[str, BaseHealthCheckBackend], status: int) -> HttpResponse:
-        """Render a prometheus compatible HTTP response summarizing the status for a list of plugins
+    def get(self, request, *args, **kwargs) -> HttpResponse:
+        """Render an HTTP response summarizing system health checks
 
         Args:
-            plugins: A list of plugins to render the status for
-            status: The overall system status
+            request: The incoming HTTP request
 
         Returns:
             An HTTP response
         """
 
-        registry = CollectorRegistry(auto_describe=True)
-        for plugin_name, plugin in plugins.items():
-            gauge = Gauge(plugin_name, f'Keystone API health check for {plugin_name}', ['message', 'critical_service'])
-            gauge.labels(plugin.pretty_status(), plugin.critical_service).set(200 if plugin.status else 500)
-            registry.register(gauge)
+        self.check()
+        status_data = [
+            '{name}{{critical_service="{critical_service}",message="{message}"}} {status:.1f}'.format(
+                name=plugin_name,
+                critical_service=plugin.critical_service,
+                message=plugin.pretty_status(),
+                status=200 if plugin.status else 500
+            ) for plugin_name, plugin in self.plugins.items()
+        ]
 
-        return HttpResponse(generate_latest(registry), status=status, content_type="text/plain")
-
-    @extend_schema(responses={'2XX': inline_serializer('success', dict())})
-    def list(self, request: Request, *args, **kwargs) -> HttpResponse:
-        """Return a text response detailing system status checks.
-
-        The returned status code will be 200 if all checks pass. If any checks
-        fail, the status code will be 500.
-        """
-
-        status_code = 500 if self.errors else 200
-        return self.render_to_response_prometheus(self.plugins, status_code)
+        return HttpResponse('\n'.join(status_data), status=200, content_type="text/plain")
