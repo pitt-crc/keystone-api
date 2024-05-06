@@ -5,6 +5,8 @@ appropriately rendered HTML template or other HTTP response.
 """
 
 from django.http import HttpResponse, JsonResponse
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from health_check.mixins import CheckMixin
 from rest_framework.views import APIView
 
@@ -16,6 +18,7 @@ class HealthCheckView(APIView, CheckMixin):
 
     permission_classes = []
 
+    @method_decorator(cache_page(60))
     def get(self, request, *args, **kwargs) -> HttpResponse:
         """Return a 200 status code if all system checks pass and 500 otherwise
 
@@ -39,6 +42,7 @@ class HealthCheckJsonView(APIView, CheckMixin):
 
     permission_classes = []
 
+    @method_decorator(cache_page(60))
     def get(self, request, *args, **kwargs) -> JsonResponse:
         """Render a JSON response summarizing system health checks
 
@@ -67,6 +71,7 @@ class HealthCheckPrometheusView(APIView, CheckMixin):
 
     permission_classes = []
 
+    @method_decorator(cache_page(60))
     def get(self, request, *args, **kwargs) -> HttpResponse:
         """Render an HTTP response summarizing system health checks
 
