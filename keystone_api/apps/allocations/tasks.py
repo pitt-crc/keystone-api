@@ -75,10 +75,22 @@ def update_limit_for_account(account: ResearchGroup, cluster: Cluster) -> None:
 
     # Determine the historical contribution to the current limit
     current_limit = get_cluster_limit(account.name, cluster.name)
-    historical_usage_from_limit = current_limit - active_sus - closing_sus
+
+    historical_usage = current_limit - active_sus - closing_sus
+    if historical_usage < 0:
+        log.warning(f"Negative Historical usage found for {account.name} on {cluster.name}:\n"
+                    f"historical: {historical_usage} = current limit: {current_limit} - active: {active_sus} - closing: {closing_sus}\n"
+                    f"Assuming zero...")
+        historical_usage = 0
 
     # Close expired allocations and determine the current usage
-    current_usage = get_cluster_usage(account.name, cluster.name) - historical_usage_from_limit
+    total_usage = get_cluster_usage(account.name, cluster.name)
+    current_usage = total_usage - historical_usage
+    if current_usage < 0:
+        log.warning(f"Negative Current usage found for {account.name} on {cluster.name}:\n"
+                    f"current: {current_usage} = total: {total_usage} - historical: {historical_usage}\n"
+                    f"Setting to historical usage: {historical_usage}...")
+        current_usage = historical_usage
 
     closing_summary = (f"Summary of closing allocations:\n"
                        f"    Current Usage before closing: {current_usage}\n")
@@ -105,5 +117,5 @@ def update_limit_for_account(account: ResearchGroup, cluster: Cluster) -> None:
               f"    Service units from {len(active_query)} active allocations: {active_sus}\n"
               f"    Service units from {len(closing_query)} closing allocations: {closing_sus}\n"
               f"    {closing_summary}"
-              f"    historical usage change: {historical_usage_from_limit} -> {updated_historical_usage}\n"
+              f"    historical usage change: {historical_usage} -> {updated_historical_usage}\n"
               f"    limit change: {current_limit} -> {updated_limit}")
