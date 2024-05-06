@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 from django.http import JsonResponse
 from django.test import TestCase
 
-from apps.health.views import HealthChecks
+from apps.health.views import HealthCheckJsonViewSet
 
 
 class TestHealthChecks(TestCase):
@@ -61,7 +61,7 @@ class TestHealthChecks(TestCase):
             'plugin2': self.create_mock_plugin(**expected_data['plugin2'])
         }
 
-        response = HealthChecks.render_to_response_json(health_checks, 500)
+        response = HealthCheckJsonViewSet.render_to_response_json(health_checks, 500)
         self.assertIsInstance(response, JsonResponse)
         self.assertEqual(response.status_code, 500)
 
@@ -90,6 +90,6 @@ class TestHealthChecks(TestCase):
             'plugin2': self.create_mock_plugin(**expected_data['plugin2'])
         }
 
-        response = HealthChecks.render_to_response_json(health_checks, 500)
+        response = HealthCheckJsonViewSet.render_to_response_json(health_checks, 500)
         self.assertIsInstance(response, JsonResponse)
         self.assertEqual(response.status_code, 500)

@@ -7,6 +7,8 @@ from .views import *
 app_name = 'health'
 
 router = DefaultRouter()
-router.register('', HealthChecks, basename='health')
+router.register('', HealthCheckJsonViewSet, basename='health')
+router.register('json', HealthCheckJsonViewSet, basename='health-json')
+router.register('prometheus', HealthCheckPrometheusViewSet, basename='health-prometheus')
 
 urlpatterns = router.urls
