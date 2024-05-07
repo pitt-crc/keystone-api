@@ -25,7 +25,7 @@ class BaseView(APIView, CheckMixin, metaclass=abc.ABCMeta):
 
     @method_decorator(cache_page(60))
     def get(self, request, *args, **kwargs) -> HttpResponse:
-        """Return a 200 status code if all system checks pass and 500 otherwise
+        """Render system health checks into an HTTP response
 
         Args:
             request: The incoming HTTP request
@@ -39,13 +39,13 @@ class BaseView(APIView, CheckMixin, metaclass=abc.ABCMeta):
 
 
 class HealthCheckView(BaseView):
-    """Return a 200 status code if all system checks pass and 500 otherwise"""
+    """Return a 200 status code if all health checks pass and 500 otherwise"""
 
     permission_classes = []
 
     @staticmethod
     def render_response(plugins: dict) -> HttpResponse:
-        """Return an HTTP response with a status cde matching system health checks
+        """Return an HTTP response with a status code matching system health checks
 
         Args:
             plugins: A mapping of healthcheck names to health check objects
