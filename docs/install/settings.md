@@ -9,16 +9,18 @@ Security settings are used to configure application networking and request signi
 These values should be chosen with care.
 Improperly configured settings can introduce dangerous vulnerabilities and may damage your production deployment.
 
-| Setting Name              | Default Value            | Description                                                   |
-|---------------------------|--------------------------|---------------------------------------------------------------|
-| `SECURE_SECRET_KEY`       | Randomly generated       | Key value used to enforce cryptographic signing.              |
-| `SECURE_ALLOWED_HOSTS`    | `localhost,127.0.0.1`    | Comma-separated list of accepted host/domain names.           |
-| `SECURE_SSL_REDIRECT`     | `False`                  | Automatically redirect all HTTP traffic to HTTPS.             |
-| `SECURE_SESSION_TOKENS`   | `False`                  | Only issue session/CSRF tokens over secure connections.       |
-| `SECURE_CSRF_ORIGINS`     | `[]`                     | Domains (with protocol) to accept CSRF headers from.          |
-| `SECURE_HSTS_SECONDS`     | `0` (Disabled)           | HSTS cache duration in seconds.                               |
-| `SECURE_HSTS_SUBDOMAINS`  | `False`                  | Enable HSTS for subdomains.                                   |
-| `SECURE_HSTS_PRELOAD`     | `False`                  | Enable HSTS preload functionality.                            |
+| Setting Name                    | Default Value         | Description                                                   |
+|---------------------------------|-----------------------|---------------------------------------------------------------|
+| `SECURE_SECRET_KEY`             | Randomly generated    | Key value used to enforce cryptographic signing.              |
+| `SECURE_ALLOWED_HOSTS`          | `localhost,127.0.0.1` | Comma-separated list of accepted host/domain names.           |
+| `SECURE_SSL_REDIRECT`           | `False`               | Automatically redirect all HTTP traffic to HTTPS.             |
+| `SECURE_SESSION_TOKENS`         | `False`               | Only issue session/CSRF tokens over secure connections.       |
+| `SECURE_CSRF_ORIGINS`           | `[]`                  | Domains (with protocol) to accept CSRF headers from.          |
+| `SECURE_HSTS_SECONDS`           | `0` (Disabled)        | HSTS cache duration in seconds.                               |
+| `SECURE_HSTS_SUBDOMAINS`        | `False`               | Enable HSTS for subdomains.                                   |
+| `SECURE_HSTS_PRELOAD`           | `False`               | Enable HSTS preload functionality.                            |
+| `SECURE_ACCESS_TOKEN_LIFETIME`  | `300` (5 Minutes)     | JWT Access token lifetime in seconds.                         |
+| `SECURE_REFRESH_TOKEN_LIFETIME` | `86400` (1 Day)       | JWT Refresh token lifetime in seconds.                        |
 
 ## General Configuration
 
