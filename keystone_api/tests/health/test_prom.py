@@ -1,13 +1,13 @@
 """Tests for the `/health/prom/` endpoint"""
 
-from django.test import TransactionTestCase
 from rest_framework import status
+from rest_framework.test import APITestCase
 
 from apps.users.models import User
 from tests.utils import CustomAsserts
 
 
-class EndpointPermissions(TransactionTestCase, CustomAsserts):
+class EndpointPermissions(APITestCase, CustomAsserts):
     """Test endpoint user permissions
 
     Endpoint permissions are tested against the following matrix of HTTP responses.
