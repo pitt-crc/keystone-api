@@ -12,7 +12,7 @@ from apps.health.views import HealthCheckJsonView
 class RenderResponse(TestCase):
     """Tests for the `render_response` function"""
 
-    def test_json_matches_health_checks(self) -> None:
+    def test_return_matches_health_checks(self) -> None:
         """Test the rendering of application health checks as JSON data"""
 
         health_checks = {
