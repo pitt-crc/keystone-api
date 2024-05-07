@@ -148,8 +148,6 @@ class Cluster(models.Model):
     description = models.TextField(max_length=150, null=True, blank=True)
     enabled = models.BooleanField(default=True)
 
-    objects = ClusterManager()
-
     def __str__(self) -> str:
         """Return the cluster name as a string"""
 

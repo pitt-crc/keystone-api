@@ -48,7 +48,7 @@ def update_limits_for_cluster(cluster: Cluster) -> None:
             account = ResearchGroup.objects.get(name=account_name)
         except ResearchGroup.DoesNotExist:
             log.warning(f"No existing ResearchGroup for account {account_name} on {cluster.name}, skipping for now")
-            return
+            continue
 
         update_limit_for_account(account, cluster)
 
@@ -99,7 +99,7 @@ def update_limit_for_account(account: ResearchGroup, cluster: Cluster) -> None:
         closing_summary += f"    Allocation {allocation.id}: {current_usage} - {allocation.final} -> {current_usage - allocation.final}\n"
         current_usage -= allocation.final
         allocation.save()
-    closing_summary + f"    Current Usage after closing: {current_usage}"
+    closing_summary += f"    Current Usage after closing: {current_usage}"
 
     # This shouldn't happen but if it does somehow, create a warning so an admin will notice
     if current_usage > active_sus:
