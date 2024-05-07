@@ -1,13 +1,13 @@
 """Tests for the `/health/prom/` endpoint"""
 
 from rest_framework import status
-from rest_framework.test import APITestCase
+from rest_framework.test import APITransactionTestCase
 
 from apps.users.models import User
 from tests.utils import CustomAsserts
 
 
-class EndpointPermissions(APITestCase, CustomAsserts):
+class EndpointPermissions(APITransactionTestCase, CustomAsserts):
     """Test endpoint user permissions
 
     Endpoint permissions are tested against the following matrix of HTTP responses.

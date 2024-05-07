@@ -54,7 +54,7 @@ class HealthCheckView(BaseView):
             An HTTPResponse with status 200 if all checks are passing or 500 otherwise
         """
 
-        for plugin_name, plugin in plugins.items():
+        for plugin in plugins.values():
             if plugin.status != 1:
                 return HttpResponse(status=500)
 
