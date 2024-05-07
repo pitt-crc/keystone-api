@@ -30,9 +30,9 @@ def update_limits() -> None:
 @shared_task()
 def update_limits_for_cluster(cluster: Cluster) -> None:
     """Adjust TRES billing limits for all Slurm accounts on a given Slurm cluster
-    
+
     The Slurm accounts for `root` and any that are missing from Keystone are automatically ignored.
-    
+
     Args:
         cluster: The name of the Slurm cluster
     """
