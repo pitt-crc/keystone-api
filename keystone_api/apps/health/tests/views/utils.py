@@ -1,3 +1,5 @@
+"""General utilities for setting up and supporting tests."""
+
 from unittest.mock import MagicMock
 
 

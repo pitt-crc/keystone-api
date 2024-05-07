@@ -21,7 +21,7 @@ class BaseView(APIView, CheckMixin, metaclass=abc.ABCMeta):
     @staticmethod
     @abc.abstractmethod
     def render_response(plugins: dict) -> HttpResponse:
-        ...
+        """Summarize a list of health checks in an HTTP response"""
 
     @method_decorator(cache_page(60))
     def get(self, request, *args, **kwargs) -> HttpResponse:
@@ -68,7 +68,7 @@ class HealthCheckJsonView(BaseView):
 
     @staticmethod
     def render_response(plugins: dict) -> JsonResponse:
-        """Return an JSON response summarizing a collection of health checks
+        """Return a JSON response summarizing a collection of health checks
 
         Args:
             plugins: A mapping of healthcheck names to health check objects
