@@ -5,10 +5,11 @@ asynchronously from the rest of the application and log their results in the
 application database.
 """
 
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from celery import shared_task
 from django.conf import settings
+from django.utils import timezone
 
 from .models import *
 
@@ -20,6 +21,6 @@ def rotate_log_files() -> None:
     if settings.LOG_RECORD_ROTATION == 0:
         return
 
-    max_record_age = datetime.now() - timedelta(seconds=settings.LOG_RECORD_ROTATION)
+    max_record_age = timezone.now() - timedelta(seconds=settings.LOG_RECORD_ROTATION)
     AppLog.objects.filter(time__lt=max_record_age).delete()
     RequestLog.objects.filter(time__lt=max_record_age).delete()
