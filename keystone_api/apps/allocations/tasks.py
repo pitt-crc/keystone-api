@@ -1,11 +1,14 @@
 """Scheduled tasks executed in parallel by Celery.
+
 Tasks are scheduled and executed in the background by Celery. They operate
 asynchronously from the rest of the application and log their results in the
 application database.
 """
+
 import logging
 from datetime import date
 from typing import Collection
+
 from celery import shared_task
 from django.db.models import Sum
 
@@ -14,6 +17,7 @@ from apps.users.models import ResearchGroup
 from keystone_api.plugins.slurm import *
 
 log = logging.getLogger(__name__)
+
 
 @shared_task()
 def update_limits() -> None:
@@ -26,7 +30,9 @@ def update_limits() -> None:
 @shared_task()
 def update_limits_for_cluster(cluster: Cluster) -> None:
     """Adjust TRES billing limits for all Slurm accounts on a given Slurm cluster
+    
     The Slurm accounts for `root` and any that are missing from Keystone are automatically ignored.
+    
     Args:
         cluster: The name of the Slurm cluster
     """
