@@ -108,17 +108,18 @@ Administrators should adhere to the following general guidelines:
 The `SECURE_SECRET_KEY` value may be changed at any given time. However, doing so may invalidate any active user
 sessions and require users to reauthenticate.
 
-| Setting Name             | Default Value         | Description                                             |
-|--------------------------|-----------------------|---------------------------------------------------------|
-| `SECURE_SECRET_KEY`      | Randomly generated    | Secret key used to enforce cryptographic signing.       |
-| `SECURE_ALLOWED_HOSTS`   | `localhost,127.0.0.1` | Comma-separated list of accepted host/domain names.     |
-| `SECURE_SSL_REDIRECT`    | `False`               | Automatically redirect all HTTP traffic to HTTPS.       |
-| `SECURE_SESSION_TOKENS`  | `False`               | Only issue session/CSRF tokens over secure connections. |
-| `SECURE_CSRF_ORIGINS`    | `[]`                  | Domains (with protocol) to accept CSRF headers from.    |
-| `SECURE_HSTS_SECONDS`    | `0` (Disabled)        | HSTS cache duration in seconds.                         |
-| `SECURE_HSTS_SUBDOMAINS` | `False`               | Enable HSTS for subdomains.                             |
-| `SECURE_HSTS_PRELOAD`    | `False`               | Enable HSTS preload functionality.                      |
-| `SECURE_TOKEN_LIFETIME`  | `900`                 | JWT token lifetime in seconds.                          |
+| Setting Name                    | Default Value         | Description                                             |
+|---------------------------------|-----------------------|---------------------------------------------------------|
+| `SECURE_SECRET_KEY`             | Randomly generated    | Secret key used to enforce cryptographic signing.       |
+| `SECURE_ALLOWED_HOSTS`          | `localhost,127.0.0.1` | Comma-separated list of accepted host/domain names.     |
+| `SECURE_SSL_REDIRECT`           | `False`               | Automatically redirect all HTTP traffic to HTTPS.       |
+| `SECURE_SESSION_TOKENS`         | `False`               | Only issue session/CSRF tokens over secure connections. |
+| `SECURE_CSRF_ORIGINS`           | `[]`                  | Domains (with protocol) to accept CSRF headers from.    |
+| `SECURE_HSTS_SECONDS`           | `0` (Disabled)        | HSTS cache duration in seconds.                         |
+| `SECURE_HSTS_SUBDOMAINS`        | `False`               | Enable HSTS for subdomains.                             |
+| `SECURE_HSTS_PRELOAD`           | `False`               | Enable HSTS preload functionality.                      |
+| `SECURE_ACCESS_TOKEN_LIFETIME`  | `300` (5 Minutes)     | JWT Access token lifetime in seconds.                   |
+| `SECURE_REFRESH_TOKEN_LIFETIME` | `86400` (1 Day)       | JWT Refresh token lifetime in seconds.                  |
 
 
 ### General Configuration
