@@ -43,3 +43,6 @@ class ResearchGroupAdmin(admin.ModelAdmin):
 
     list_display = ['name', 'pi']
     filter_horizontal = ('admins', 'members')
+    ordering = ['name',]
+    search_fields = ['name', 'pi__username']
+
