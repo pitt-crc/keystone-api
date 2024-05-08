@@ -87,7 +87,7 @@ class AllocationRequest(RGModelInterface, models.Model):
             ValidationError: When the model instance data is not valid
         """
 
-        if self.active >= self.expire:
+        if self.active and self.expire and self.active >= self.expire:
             raise ValidationError('The expiration date must come after the activation date.')
 
     def get_research_group(self) -> ResearchGroup:
