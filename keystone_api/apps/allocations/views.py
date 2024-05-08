@@ -24,7 +24,13 @@ class AllocationViewSet(viewsets.ModelViewSet):
 
     permission_classes = [permissions.IsAuthenticated, StaffWriteGroupRead]
     serializer_class = AllocationSerializer
-    filterset_fields = '__all__'
+    filterset_fields = {
+        'requested': ['exact', 'in', 'lt', 'lte', 'gt', 'gte'],
+        'awarded': ['exact', 'in', 'lt', 'lte', 'gt', 'gte'],
+        'final': ['exact', 'in', 'lt', 'lte', 'gt', 'gte'],
+        'cluster': ['exact', 'in'],
+        'request': ['exact', 'in'],
+    }
 
     def get_queryset(self) -> list[Allocation]:
         """Return a list of allocations for the currently authenticated user"""
@@ -40,7 +46,15 @@ class AllocationRequestViewSet(viewsets.ModelViewSet):
 
     permission_classes = [permissions.IsAuthenticated, GroupAdminCreateGroupRead]
     serializer_class = AllocationRequestSerializer
-    filterset_fields = '__all__'
+    filterset_fields = {
+        'title': ['exact', 'in', 'contains', 'icontains'],
+        'description': ['exact', 'in', 'contains', 'icontains'],
+        'submitted': ['exact', 'in', 'contains', 'icontains'],
+        'status': ['exact', 'in'],
+        'active': ['exact', 'in', 'lt', 'lte', 'gt', 'gte'],
+        'expire': ['exact', 'in', 'lt', 'lte', 'gt', 'gte'],
+        'group': ['exact', 'in'],
+    }
 
     def get_queryset(self) -> list[AllocationRequest]:
         """Return a list of allocation requests for the currently authenticated user"""
@@ -56,7 +70,14 @@ class AllocationRequestReviewViewSet(viewsets.ModelViewSet):
 
     permission_classes = [permissions.IsAuthenticated, StaffWriteGroupRead]
     serializer_class = AllocationRequestReviewSerializer
-    filterset_fields = '__all__'
+    filterset_fields = {
+        'status': ['exact', 'in'],
+        'public_comments': ['exact', 'in', 'contains', 'icontains'],
+        'private_comments': ['exact', 'in', 'contains', 'icontains'],
+        'date_modified': ['exact', 'in', 'lt', 'lte', 'gt', 'gte'],
+        'request': ['exact', 'in'],
+        'reviewer': ['exact', 'in'],
+    }
 
     def get_queryset(self) -> list[Allocation]:
         """Return a list of allocation reviews for the currently authenticated user"""
@@ -86,4 +107,8 @@ class ClusterViewSet(viewsets.ModelViewSet):
     queryset = Cluster.objects.all()
     permission_classes = [permissions.IsAuthenticated, StaffWriteAuthenticatedRead]
     serializer_class = ClusterSerializer
-    filterset_fields = '__all__'
+    filterset_fields = {
+        'name': ['exact', 'in', 'contains', 'icontains'],
+        'description': ['exact', 'in', 'contains', 'icontains'],
+        'enabled': ['exact', 'in'],
+    }
