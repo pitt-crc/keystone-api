@@ -145,7 +145,7 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
     ],
     'DEFAULT_FILTER_BACKENDS': (
-        'plugins.filter.BackendFilter',
+        'plugins.filter.AdvancedFilterBackend',
     ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }

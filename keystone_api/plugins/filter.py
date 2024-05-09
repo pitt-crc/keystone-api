@@ -4,11 +4,11 @@ Filter backends define the default behavior when filtering database queries
 for REST API calls based on URL parameters.
 """
 
-from django.db.models import fields
+from django.db import models
 from django_filters.rest_framework import DjangoFilterBackend
 
 
-class BackendFilter(DjangoFilterBackend):
+class AdvancedFilterBackend(DjangoFilterBackend):
     """Custom filter backend for Django REST framework
 
     This filter backend automatically generates filters for Django model fields based on their types.
@@ -21,47 +21,34 @@ class BackendFilter(DjangoFilterBackend):
     _time_filters = _default_filters + ['hour', 'minute', 'second']
 
     _field_filter_map = {
-        fields.AutoField: _numeric_filters,
-        fields.BigAutoField: _numeric_filters,
-        fields.BigIntegerField: _numeric_filters,
-        fields.BinaryField: _default_filters,
-        fields.BooleanField: _default_filters,
-        fields.CharField: _text_filters,
-        fields.CommaSeparatedIntegerField: _default_filters,
-        fields.DateField: _date_filters,
-        fields.DateTimeField: _date_filters + _time_filters,
-        fields.DecimalField: _numeric_filters,
-        fields.DurationField: _default_filters,
-        fields.EmailField: _text_filters,
-        fields.FilePathField: _text_filters,
-        fields.FloatField: _numeric_filters,
-        fields.GenericIPAddressField: _default_filters,
-        fields.IPAddressField: _default_filters,
-        fields.IntegerField: _numeric_filters,
-        fields.NullBooleanField: _default_filters,
-        fields.PositiveBigIntegerField: _numeric_filters,
-        fields.PositiveIntegerField: _numeric_filters,
-        fields.PositiveSmallIntegerField: _numeric_filters,
-        fields.SlugField: _text_filters,
-        fields.SmallAutoField: _numeric_filters,
-        fields.SmallIntegerField: _numeric_filters,
-        fields.TextField: _text_filters,
-        fields.TimeField: _time_filters,
-        fields.URLField: _text_filters,
-        fields.UUIDField: _default_filters
+        models.AutoField: _numeric_filters,
+        models.BigAutoField: _numeric_filters,
+        models.BigIntegerField: _numeric_filters,
+        models.BooleanField: _default_filters,
+        models.CharField: _text_filters,
+        models.CommaSeparatedIntegerField: _default_filters,
+        models.DateField: _date_filters,
+        models.DateTimeField: _date_filters + _time_filters,
+        models.DecimalField: _numeric_filters,
+        models.DurationField: _default_filters,
+        models.EmailField: _text_filters,
+        models.FilePathField: _text_filters,
+        models.FloatField: _numeric_filters,
+        models.GenericIPAddressField: _default_filters,
+        models.IPAddressField: _default_filters,
+        models.IntegerField: _numeric_filters,
+        models.NullBooleanField: _default_filters,
+        models.PositiveBigIntegerField: _numeric_filters,
+        models.PositiveIntegerField: _numeric_filters,
+        models.PositiveSmallIntegerField: _numeric_filters,
+        models.SlugField: _text_filters,
+        models.SmallAutoField: _numeric_filters,
+        models.SmallIntegerField: _numeric_filters,
+        models.TextField: _text_filters,
+        models.TimeField: _time_filters,
+        models.URLField: _text_filters,
+        models.UUIDField: _default_filters,
     }
-
-    def get_filter_type(self, field: fields.Field) -> list[str]:
-        """Get the appropriate filter types for a given field type
-
-         Args:
-             field: A Django model field
-
-         Returns:
-             A list of filter types applicable to the given field
-         """
-
-        return self._field_filter_map.get(type(field), self._default_filters)
 
     def get_filterset_class(self, view, queryset=None):
         """Get the filterSet class for a given view
@@ -79,9 +66,15 @@ class BackendFilter(DjangoFilterBackend):
         if filterset_class := super().get_filterset_class(view, queryset=queryset):
             return filterset_class
 
+        # Map field names to a list of appropriate filters
+        field_filters = dict()
+        for field in queryset.model._meta.get_fields():
+            if filters := self._field_filter_map.get(type(field), None):
+                field_filters[field.name] = filters
+
         class AutoFilterSet(self.filterset_base):
             class Meta:
                 model = queryset.model
-                fields = {field.name: self.get_filter_type(field) for field in queryset.model._meta.get_fields()}
+                fields = field_filters
 
         return AutoFilterSet
