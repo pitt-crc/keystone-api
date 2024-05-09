@@ -58,7 +58,7 @@ class BackendFilter(DjangoFilterBackend):
              field: A Django model field
 
          Returns:
-             List of filter types applicable to the given field
+             A list of filter types applicable to the given field
          """
 
         return self._field_filter_map.get(type(field), self._default_filters)
