@@ -15,10 +15,10 @@ class AdvancedFilterBackend(DjangoFilterBackend):
     """
 
     _default_filters = ['exact', 'in', 'isnull']
-    _numeric_filters = _default_filters + ['exact', 'in', 'lt', 'lte', 'gt', 'gte']
-    _text_filters = _default_filters + ['exact', 'iexact', 'contains', 'icontains', 'startswith', 'istartswith', 'endswith', 'iendswith']
-    _date_filters = _default_filters + ['year', 'month', 'day', 'week', 'week_day']
-    _time_filters = _default_filters + ['hour', 'minute', 'second']
+    _numeric_filters = _default_filters + ['lt', 'lte', 'gt', 'gte']
+    _text_filters = _default_filters + ['contains', 'startswith', 'endswith']
+    _date_filters = _default_filters + _numeric_filters + ['year', 'month', 'day', 'week', 'week_day']
+    _time_filters = _default_filters + _numeric_filters + ['hour', 'minute', 'second']
 
     _field_filter_map = {
         models.AutoField: _numeric_filters,
@@ -28,7 +28,7 @@ class AdvancedFilterBackend(DjangoFilterBackend):
         models.CharField: _text_filters,
         models.CommaSeparatedIntegerField: _default_filters,
         models.DateField: _date_filters,
-        models.DateTimeField: _date_filters + _time_filters,
+        models.DateTimeField: list(set(_date_filters + _time_filters)),
         models.DecimalField: _numeric_filters,
         models.DurationField: _default_filters,
         models.EmailField: _text_filters,
