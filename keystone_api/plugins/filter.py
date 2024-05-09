@@ -18,7 +18,7 @@ class BackendFilter(DjangoFilterBackend):
     _numeric_filters = _default_filters + ['exact', 'in', 'lt', 'lte', 'gt', 'gte']
     _text_filters = _default_filters + ['exact', 'iexact', 'contains', 'icontains', 'startswith', 'istartswith', 'endswith', 'iendswith']
     _date_filters = _default_filters + ['year', 'month', 'day', 'week', 'week_day']
-    _time_filters = _default_filters + ['hout', 'minute', 'second']
+    _time_filters = _default_filters + ['hour', 'minute', 'second']
 
     _field_filter_map = {
         fields.AutoField: _numeric_filters,
