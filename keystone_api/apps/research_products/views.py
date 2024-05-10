@@ -18,7 +18,6 @@ class PublicationViewSet(viewsets.ModelViewSet):
 
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser | GroupMemberAll]
     serializer_class = PublicationSerializer
-    filterset_fields = '__all__'
 
     def get_queryset(self) -> list[Publication]:
         """Return a list of allocation requests for the currently authenticated user"""
@@ -34,7 +33,6 @@ class GrantViewSet(viewsets.ModelViewSet):
 
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser | GroupMemberReadGroupAdminWrite]
     serializer_class = GrantSerializer
-    filterset_fields = '__all__'
 
     def get_queryset(self) -> list[Grant]:
         """Return a list of allocation requests for the currently authenticated user"""
