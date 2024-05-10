@@ -5,9 +5,7 @@ asynchronously from the rest of the application and log their results in the
 application database.
 """
 
-import logging
 from datetime import date
-from typing import Collection
 
 from celery import shared_task
 from django.db.models import Sum
