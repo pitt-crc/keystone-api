@@ -4,6 +4,7 @@ theme:
   features:
     - navigation.sections
     - content.code.annotate
+    - content.tabs.link
 plugins:
     - render_swagger
 markdown_extensions:
@@ -18,6 +19,7 @@ markdown_extensions:
       alternate_style: true
 nav:
   - index.md
+  - using.md
   - API Specification: api.md
   - Installation:
       - install/slurm.md

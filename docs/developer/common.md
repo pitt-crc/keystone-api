@@ -12,7 +12,7 @@ git clone https://github.com/pitt-crc/keystone-api
 
 Keystone-API uses [Poetry](https://python-poetry.org/docs/) to manage application dependencies.
 Certain dependencies, such as those required for building documentation, are optional.
-To install the project dependencies, execute the following from the root of the cloned repository:
+To install the project dependencies, execute the following command from the root of the cloned repository:
 
 ```bash
 poetry install --with docs #(1)!
@@ -20,12 +20,36 @@ poetry install --with docs #(1)!
 
 1. The `--with` option is used to specify optional dependency groups.
 
+The API package itself is installed using the `pip` command.
+The use of editable mode (`-e`) is recommended:
+
+```bash
+pip install -e .
+```
+
 If the installation was successful, the packaged CLI tool will be available in your working environment.
 Use the `enable_autocomplete` command to enable autocomplete for the Bash shell.
 
 ```bash
 keystone-api enable_autocomplete
 ```
+
+## CLI Utilities
+
+Keystone-API comes bundled with the `keystone-api` utility which wraps the standard Django management script.
+Use the `runserver` command to launch a development API server:
+
+```bash
+keystone-api runserver
+```
+
+In addition to the standard Django commands, `keystone-api` includes the following custom commands for automating development tasks.
+Use the `keystone-api <command> --help` option for specific usage information.
+
+| Command                   | Description                                                                              |
+|---------------------------|------------------------------------------------------------------------------------------|
+| `clean`                   | Clean up files generated when launching a new application instance.                      |
+| `quickstart`              | A helper utility for quickly migrating/deploying an application instance.                |
 
 ## Running In Debug Mode
 
@@ -41,33 +65,22 @@ To enable debug mode, specify the `DEBUG=true` setting.
 DEBUG=True keystone-api runserver
 ```
 
-## Admin CLI Utilities
-
-The `keystone-api` utility includes a series of custom admin utilities for automating various development tasks.
-A brief summary is provided below.
-Use the `keystone-api <command> --help` option for specific usage information.
-
-| Command                   | Description                                                                              |
-|---------------------------|------------------------------------------------------------------------------------------|
-| `clean`                   | Clean up files generated when launching a new application instance.                      |
-| `quickstart`              | A helper utility for quickly migrating/deploying an application instance.                |
-
 ## Tests and System Checks
 
-Application tests are run using the `test` command:
+Application tests are executed using the `test` command:
 
 ```bash
 keystone-api test
 ```
 
-Specific subsets of tests are run by specifying an application module.
-For example, tests for the `users` module are executed as:
+Subsets of tests are run by specifying the desired application module(s) relative to the package root.
+For example, tests under the `apps/users` and `apps/allocations` directories are executed as:
 
 ```bash
-keystone-api test apps.users
+keystone-api test apps.users apps.allocations
 ```
 
-The default Django system checks can also be executed as standard:
+Higher level system checks are available using the standard Django commands:
 
 ```bash
 keystone-api check #(1)! 

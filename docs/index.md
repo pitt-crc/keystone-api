@@ -1,11 +1,12 @@
-# Getting Started
+# Introduction
 
-Keystone-API is the backend REST API for the Keystone web interface.
-Written in Python using the Django Rest Framework, it provides allocation management utilities for:
+Keystone-API is a Python based REST API designed to support the Keystone web interface.
+It provides management utilities for:
 
 - The allocation of HPC compute resources across one or more clusters
 - The tracking of user research products, including grants and publications
 - The management of user accounts, research groups, and access permissions
+- Administrative activities, including health check monitoring and application logging
 
 For more information, see the resources below.
 
@@ -15,15 +16,15 @@ For more information, see the resources below.
 
     ---
 
-    Launch a local application demo in 5 minutes or less using Docker.
+    Launch a demo application in 5 minutes or less using Docker.
 
     [:octicons-arrow-right-24: Deploying with Docker](install/docker.md)
 
--   :octicons-gear-16: **See How it Works**
+-   :octicons-gear-16: **Learn How it Works**
 
     ---
 
-    See how Keystone integrates directly with Slurm to manage HPC resources. 
+    Learn how Keystone integrates directly with Slurm to manage HPC resources. 
 
     [:octicons-arrow-right-24: Slurm Documentation](install/slurm.md)
 
