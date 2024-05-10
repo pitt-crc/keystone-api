@@ -1,5 +1,5 @@
 # This test fixture creates two research groups on the same cluster.
-# Each group has a single allocation request with a single allocation.
+# Each group has a single allocation request with a single allocation, grant, and publication.
 #
 # Research Group 1:
 #   - pi_1          (Research group PI)
@@ -12,7 +12,7 @@
 #   - member_2      (Generic group member)
 #
 # Accounts not affiliated with a group:
-#   - super_user  (Super user account)
+#   - super_user  (Superuser account)
 #   - staff_user  (Staff user account)
 #   - common_user (Generic user account)
 
@@ -149,3 +149,45 @@
     cluster: 1
     requested: 10000
     awarded: 10000
+
+# Publications
+- model: research_products.publication
+  pk: 1
+  fields:
+    title: "Publication (Group 1)"
+    abstract: "Abstract Text"
+    date: "2000-01-01"
+    journal: "Journal Name"
+    group: 1
+- model: research_products.publication
+  pk: 2
+  fields:
+    title: "Publication (Group 2)"
+    abstract: "Abstract text."
+    date: "2000-01-01"
+    journal: "Journal Name"
+    group: 2
+
+# Grants
+- model: research_products.grant
+  pk: 1
+  fields:
+    title: "Grant (Group 1)"
+    agency: "Agency Name"
+    amount: 1000
+    fiscal_year: 2001
+    start_date: "2000-01-01"
+    end_date: "2000-01-31"
+    grant_number: "abc-123"
+    group: 1
+- model: research_products.grant
+  pk: 2
+  fields:
+    title: "Grant (Group 2)"
+    agency: "Agency Name"
+    amount: 1000
+    fiscal_year: 2001
+    start_date: "2000-01-01"
+    end_date: "2000-01-31"
+    grant_number: "abc-123"
+    group: 2

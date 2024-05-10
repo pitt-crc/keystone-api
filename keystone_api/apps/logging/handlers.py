@@ -12,15 +12,6 @@ from logging import Handler
 class DBHandler(Handler):
     """Logging handler for storing log records in the application database"""
 
-    def __init__(self, level: int = logging.NOTSET) -> None:
-        """Configure the log handler
-
-        Args:
-            level: Only save log records with a logging level above this value
-        """
-
-        super().__init__(level=level)
-
     def emit(self, record: logging.LogRecord) -> None:
         """Record a log record to the database
 
@@ -31,7 +22,7 @@ class DBHandler(Handler):
         # Models cannot be imported until Django has loaded the app registry
         from .models import AppLog
 
-        if record.levelno > self.level:
+        if record.levelno >= self.level:
             AppLog(
                 name=record.name,
                 level=record.levelname,

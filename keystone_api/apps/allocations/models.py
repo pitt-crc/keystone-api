@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import abc
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.template.defaultfilters import truncatechars
 
@@ -78,6 +79,16 @@ class AllocationRequest(RGModelInterface, models.Model):
     group: ResearchGroup = models.ForeignKey(ResearchGroup, on_delete=models.CASCADE)
 
     objects = AllocationRequestManager()
+
+    def clean(self) -> None:
+        """Validate the model instance
+
+        Raises:
+            ValidationError: When the model instance data is not valid
+        """
+
+        if self.active and self.expire and self.active >= self.expire:
+            raise ValidationError('The expiration date must come after the activation date.')
 
     def get_research_group(self) -> ResearchGroup:
         """Return the research group tied to the current record"""

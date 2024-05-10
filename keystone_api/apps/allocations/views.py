@@ -24,7 +24,6 @@ class AllocationViewSet(viewsets.ModelViewSet):
 
     permission_classes = [permissions.IsAuthenticated, StaffWriteGroupRead]
     serializer_class = AllocationSerializer
-    filterset_fields = '__all__'
 
     def get_queryset(self) -> list[Allocation]:
         """Return a list of allocations for the currently authenticated user"""
@@ -40,7 +39,6 @@ class AllocationRequestViewSet(viewsets.ModelViewSet):
 
     permission_classes = [permissions.IsAuthenticated, GroupAdminCreateGroupRead]
     serializer_class = AllocationRequestSerializer
-    filterset_fields = '__all__'
 
     def get_queryset(self) -> list[AllocationRequest]:
         """Return a list of allocation requests for the currently authenticated user"""
@@ -56,7 +54,6 @@ class AllocationRequestReviewViewSet(viewsets.ModelViewSet):
 
     permission_classes = [permissions.IsAuthenticated, StaffWriteGroupRead]
     serializer_class = AllocationRequestReviewSerializer
-    filterset_fields = '__all__'
 
     def get_queryset(self) -> list[Allocation]:
         """Return a list of allocation reviews for the currently authenticated user"""
@@ -86,4 +83,3 @@ class ClusterViewSet(viewsets.ModelViewSet):
     queryset = Cluster.objects.all()
     permission_classes = [permissions.IsAuthenticated, StaffWriteAuthenticatedRead]
     serializer_class = ClusterSerializer
-    filterset_fields = '__all__'

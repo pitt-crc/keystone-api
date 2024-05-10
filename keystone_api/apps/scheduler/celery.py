@@ -29,4 +29,9 @@ celery_app.conf.beat_schedule = {
         'schedule': crontab(hour='0', minute='0'),
         'description': 'This task clears the JWT token blacklist.'
     },
+    'apps.allocations.tasks.update_limits': {
+        'task': 'apps.allocations.tasks.update_limits',
+        'schedule': crontab(hour='0', minute='0'),
+        'description': 'This task updates the per cluser usage limits in Slurm for each Research Group based on the state of their allocations.'
+    },
 }

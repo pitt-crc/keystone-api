@@ -4,12 +4,12 @@ View objects handle the processing of incoming HTTP requests and return the
 appropriately rendered HTML template or other HTTP response.
 """
 
-from rest_framework import viewsets, permissions
+from rest_framework import permissions, viewsets
 
 from .models import *
 from .serializers import *
 
-__all__ = ['AppLogViewSet', 'RequestLogViewSet']
+__all__ = ['AppLogViewSet', 'RequestLogViewSet', 'TaskResultViewSet']
 
 
 class AppLogViewSet(viewsets.ReadOnlyModelViewSet):
@@ -17,7 +17,6 @@ class AppLogViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = AppLog.objects.all()
     serializer_class = AppLogSerializer
-    filterset_fields = '__all__'
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
 
 
@@ -26,5 +25,12 @@ class RequestLogViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = RequestLog.objects.all()
     serializer_class = RequestLogSerializer
-    filterset_fields = '__all__'
+    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+
+
+class TaskResultViewSet(viewsets.ReadOnlyModelViewSet):
+    """Returns results from scheduled background tasks"""
+
+    queryset = TaskResult.objects.all()
+    serializer_class = TaskResultSerializer
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
