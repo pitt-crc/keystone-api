@@ -1,14 +1,12 @@
 """Tests for the `/health/` endpoint"""
 
-import logging
-
-from django.test import TransactionTestCase
 from rest_framework import status
+from rest_framework.test import APITransactionTestCase
 
-from apps.users.tests.utils import create_test_user
+from apps.users.models import User
 
 
-class EndpointPermissions(TransactionTestCase):
+class EndpointPermissions(APITransactionTestCase):
     """Test endpoint user permissions
 
     Endpoint permissions are tested against the following matrix of HTTP responses.
@@ -27,12 +25,6 @@ class EndpointPermissions(TransactionTestCase):
     def assert_read_only_responses(self) -> None:
         """Assert the currently authenticated user has read only permissions"""
 
-        # Temporarily disable health check logging
-        # Avoids spamming the console with health check messages
-        health_check_log = logging.getLogger('health-check')
-        log_level = health_check_log.level
-        health_check_log.setLevel(1000)
-
         self.assertIn(self.client.get(self.endpoint).status_code, self.valid_responses)
         self.assertIn(self.client.head(self.endpoint).status_code, self.valid_responses)
         self.assertIn(self.client.options(self.endpoint).status_code, self.valid_responses)
@@ -43,24 +35,21 @@ class EndpointPermissions(TransactionTestCase):
         self.assertEqual(self.client.delete(self.endpoint).status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
         self.assertEqual(self.client.trace(self.endpoint).status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
-        # Restore the health chck logger
-        health_check_log.setLevel(log_level)
-
     def test_anonymous_user_permissions(self) -> None:
-        """Test unauthenticated users have read-only access"""
+        """Test unauthenticated users have read-only permissions"""
 
         self.assert_read_only_responses()
 
     def test_authenticated_user_permissions(self) -> None:
-        """Test general authenticated users are returned a 403 status code for all request types"""
+        """Test authenticated users have read-only permissions"""
 
-        create_test_user(username='foo', password='foobar123!')
-        self.assertTrue(self.client.login(username='foo', password='foobar123!'))
+        user = User.objects.get(username='generic_user')
+        self.client.force_authenticate(user=user)
         self.assert_read_only_responses()
 
     def test_staff_user_permissions(self) -> None:
         """Test staff users have read-only permissions"""
 
-        create_test_user(username='foo', password='foobar123!')
-        self.assertTrue(self.client.login(username='foo', password='foobar123!'))
+        user = User.objects.get(username='staff_user')
+        self.client.force_authenticate(user=user)
         self.assert_read_only_responses()

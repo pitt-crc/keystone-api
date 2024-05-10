@@ -71,9 +71,10 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'apps.admin_utils',
     'apps.allocations',
-    'apps.docs',
     'apps.health',
     'apps.logging',
+    'apps.openapi',
+    'apps.research_products',
     'apps.scheduler',
     'apps.users',
 ]
@@ -156,6 +157,7 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': SUMMARY,
     'VERSION': VERSION,
     'SERVE_INCLUDE_SCHEMA': False,
+    'SERVE_PERMISSIONS': ['rest_framework.permissions.IsAuthenticated'],
 }
 
 # Redis backend and Celery scheduler
@@ -227,6 +229,11 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(seconds=env.int('SECURE_ACCESS_TOKEN_LIFETIME', 5 * 60)),
+    'REFRESH_TOKEN_LIFETIME': timedelta(seconds=env.int('SECURE_REFRESH_TOKEN_LIFETIME', 24 * 60 * 60))
+}
+
 # Static file handling (CSS, JavaScript, Images)
 
 STATIC_URL = 'static/'
@@ -259,6 +266,11 @@ LOGGING = {
         "": {
             "level": env.str('CONFIG_LOG_LEVEL', 'WARNING'),
             "handlers": ["db"],
+        },
+        "apps": {
+            "level": env.str('CONFIG_LOG_LEVEL', 'WARNING'),
+            "handlers": ["db"],
+            "propagate": False,
         },
     }
 }
