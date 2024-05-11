@@ -68,26 +68,14 @@ class AllocationAdmin(admin.ModelAdmin):
 
     @staticmethod
     @admin.display
-    def requested(obj: Allocation) -> str:
-        """Return the allocation's service units as a human friendly string"""
+    def request(obj :Allocation) -> str:
 
-        return f'{obj.requested:,}'
+        return obj.request.title
 
-    @staticmethod
-    @admin.display
-    def awarded(obj: Allocation) -> str:
-        """Return the allocation's service units as a human friendly string"""
+    group.admin_order_field = 'request__group__name'
+    request.admin_order_field = 'request__title'
 
-        return f'{obj.awarded:,}' if obj.awarded else '--'
-
-    @staticmethod
-    @admin.display
-    def final_usage(obj: Allocation) -> str:
-        """Return the allocation's final usage as a human friendly string"""
-
-        return f'{obj.final:,}' if obj.final else '--'
-
-    list_display = [group, 'request', 'cluster', requested, awarded, final_usage, status]
+    list_display = [group, request, 'cluster', 'requested', 'awarded', 'final', status]
     list_display_links = list_display
     ordering = ['request__group__name', 'cluster']
     search_fields = ['request__group__name', 'request__title', 'cluster__name']

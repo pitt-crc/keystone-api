@@ -38,9 +38,9 @@ class RGModelInterface:
 class Allocation(RGModelInterface, models.Model):
     """User service unit allocation"""
 
-    requested = models.PositiveIntegerField('Requested Service Units')
-    awarded = models.PositiveIntegerField('Awarded Service Units', null=True, blank=True)
-    final = models.PositiveIntegerField('Final Usage', null=True, blank=True)
+    requested = models.PositiveIntegerField()
+    awarded = models.PositiveIntegerField(null=True, blank=True)
+    final = models.PositiveIntegerField(null=True, blank=True)
 
     cluster: Cluster = models.ForeignKey('Cluster', on_delete=models.CASCADE)
     request: AllocationRequest = models.ForeignKey('AllocationRequest', on_delete=models.CASCADE)
@@ -72,7 +72,7 @@ class AllocationRequest(RGModelInterface, models.Model):
     title = models.CharField(max_length=250)
     description = models.TextField(max_length=1600)
     submitted = models.DateField('Submission Date', auto_now=True)
-    status = models.CharField('Review Status', max_length=2, choices=StatusChoices.choices, default=StatusChoices.PENDING)
+    status = models.CharField(max_length=2, choices=StatusChoices.choices, default=StatusChoices.PENDING)
     active = models.DateField('Active Date', null=True, blank=True)
     expire = models.DateField('Expiration Date', null=True, blank=True)
 

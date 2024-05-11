@@ -109,6 +109,7 @@ TEMPLATES = [
 
 # Base styling for the Admin UI
 
+USE_THOUSAND_SEPARATOR=True
 JAZZMIN_SETTINGS = {
     "site_title": "Keystone",
     "site_header": "Keystone",
