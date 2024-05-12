@@ -74,6 +74,7 @@ class AllocationAdmin(admin.ModelAdmin):
 
     group.admin_order_field = 'request__group__name'
     request.admin_order_field = 'request__title'
+    status.admin_order_field = 'request__status'
 
     list_display = [group, request, 'cluster', 'requested', 'awarded', 'final', status]
     list_display_links = list_display
