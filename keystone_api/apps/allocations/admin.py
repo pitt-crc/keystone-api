@@ -62,6 +62,8 @@ class AllocationAdmin(admin.ModelAdmin):
     @staticmethod
     @admin.display
     def request(obj: Allocation) -> str:
+        """Return the title of the allocation's corresponding request"""
+
         return obj.request.title
 
     @staticmethod
