@@ -61,22 +61,29 @@ class AllocationAdmin(admin.ModelAdmin):
 
     @staticmethod
     @admin.display
+    def request(obj: Allocation) -> str:
+        return obj.request.title
+
+    @staticmethod
+    @admin.display
+    def cluster(obj: Allocation) -> str:
+        """Return the name of the cluster the allocation is assigned to"""
+
+        return obj.cluster.name
+
+    @staticmethod
+    @admin.display
     def status(obj: Allocation) -> str:
         """Return the status of the corresponding allocation request"""
 
         return obj.request.StatusChoices(obj.request.status).label
 
-    @staticmethod
-    @admin.display
-    def request(obj :Allocation) -> str:
-
-        return obj.request.title
-
     group.admin_order_field = 'request__group__name'
     request.admin_order_field = 'request__title'
+    cluster.admin_order_field = 'cluster__name'
     status.admin_order_field = 'request__status'
 
-    list_display = [group, request, 'cluster', 'requested', 'awarded', 'final', status]
+    list_display = [group, request, cluster, 'requested', 'awarded', 'final', status]
     list_display_links = list_display
     ordering = ['request__group__name', 'cluster']
     search_fields = ['request__group__name', 'request__title', 'cluster__name']
