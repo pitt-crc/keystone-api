@@ -24,7 +24,20 @@ settings.JAZZMIN_SETTINGS['order_with_respect_to'].extend([
 class UserAdmin(auth.admin.UserAdmin):
     """Admin interface for managing user accounts"""
 
+    @admin.action
+    def activate_selected_users(self, request, queryset) -> None:
+        """Mark selected users as active"""
+
+        queryset.update(is_active=True)
+
+    @admin.action
+    def deactivate_selected_users(self, request, queryset) -> None:
+        """Mark selected users as inactive"""
+
+        queryset.update(is_active=False)
+
     readonly_fields = ("last_login", "date_joined", "is_ldap_user")
+    actions = [activate_selected_users, deactivate_selected_users]
     fieldsets = (
         ("User Info", {"fields": ("first_name", "last_name", "email", "last_login", "date_joined", 'is_ldap_user')}),
         ("Credentials", {"fields": ("username", "password")}),
