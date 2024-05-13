@@ -41,7 +41,16 @@ class UserAdmin(auth.admin.UserAdmin):
 class ResearchGroupAdmin(admin.ModelAdmin):
     """Admin interface for managing research group delegates"""
 
-    list_display = ['name', 'pi']
+    @staticmethod
+    @admin.display
+    def pi(obj: ResearchGroup) -> str:
+        """Return the username of the research group PI"""
+
+        return obj.pi.username
+
+    pi.admin_order_field = 'pi__username'
+
+    list_display = ['name', pi]
     filter_horizontal = ('admins', 'members')
     ordering = ['name', ]
     search_fields = ['name', 'pi__username']
