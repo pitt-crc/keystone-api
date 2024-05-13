@@ -100,10 +100,10 @@ class AllocationRequestAdmin(admin.ModelAdmin):
 
     @staticmethod
     @admin.display
-    def title(obj: AllocationRequest) -> str:
-        """Return a request title as a human friendly string"""
+    def group(obj: Allocation) -> str:
+        """Return the name of the group the allocation is assigned to"""
 
-        return str(obj)
+        return obj.group.name
 
     @staticmethod
     @admin.display
@@ -112,7 +112,9 @@ class AllocationRequestAdmin(admin.ModelAdmin):
 
         return sum(1 for _ in obj.allocationrequestreview_set.all())
 
-    list_display = ['group', title, 'submitted', 'active', 'expire', 'reviews', 'status']
+    group.admin_order_field = 'group__name'
+
+    list_display = [group, 'title', 'submitted', 'active', 'expire', 'reviews', 'status']
     list_display_links = list_display
     search_fields = ['title', 'description', 'group__name']
     ordering = ['submitted']
