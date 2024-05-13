@@ -13,7 +13,7 @@ from .models import *
 __all__ = ['AppLogSerializer', 'RequestLogSerializer', 'TaskResultSerializer']
 
 
-class AppLogSerializer(serializers.ModelSerializer):
+class AppLogSerializer(serializers.HyperlinkedModelSerializer):
     """Object serializer for the `AppLog` class"""
 
     class Meta:
@@ -23,7 +23,7 @@ class AppLogSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class RequestLogSerializer(serializers.ModelSerializer):
+class RequestLogSerializer(serializers.HyperlinkedModelSerializer):
     """Object serializer for the `RequestLog` class"""
 
     class Meta:
@@ -33,7 +33,7 @@ class RequestLogSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class TaskResultSerializer(serializers.ModelSerializer):
+class TaskResultSerializer(serializers.HyperlinkedModelSerializer):
     """Object serializer for the `TaskResult` class"""
 
     class Meta:

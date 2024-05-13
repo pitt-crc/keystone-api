@@ -13,7 +13,7 @@ from .models import *
 __all__ = ['GrantSerializer', 'PublicationSerializer']
 
 
-class PublicationSerializer(serializers.ModelSerializer):
+class PublicationSerializer(serializers.HyperlinkedModelSerializer):
     """Object serializer for the `Publication` class"""
 
     class Meta:
@@ -24,7 +24,7 @@ class PublicationSerializer(serializers.ModelSerializer):
         read_only = ['group']
 
 
-class GrantSerializer(serializers.ModelSerializer):
+class GrantSerializer(serializers.HyperlinkedModelSerializer):
     """Object serializer for the `Grant` class"""
 
     class Meta:

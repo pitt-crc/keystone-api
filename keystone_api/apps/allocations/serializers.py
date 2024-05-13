@@ -19,7 +19,7 @@ __all__ = [
 ]
 
 
-class AllocationSerializer(serializers.ModelSerializer):
+class AllocationSerializer(serializers.HyperlinkedModelSerializer):
     """Object serializer for the `Allocation` class"""
 
     class Meta:
@@ -29,7 +29,7 @@ class AllocationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class AllocationRequestSerializer(serializers.ModelSerializer):
+class AllocationRequestSerializer(serializers.HyperlinkedModelSerializer):
     """Object serializer for the `AllocationRequest` class"""
 
     class Meta:
@@ -39,7 +39,7 @@ class AllocationRequestSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class AllocationRequestReviewSerializer(serializers.ModelSerializer):
+class AllocationRequestReviewSerializer(serializers.HyperlinkedModelSerializer):
     """Object serializer for the `AllocationRequestReview` class"""
 
     class Meta:
@@ -58,7 +58,7 @@ class AllocationRequestReviewSerializer(serializers.ModelSerializer):
         return value
 
 
-class ClusterSerializer(serializers.ModelSerializer):
+class ClusterSerializer(serializers.HyperlinkedModelSerializer):
     """Object serializer for the `Cluster` class"""
 
     class Meta:

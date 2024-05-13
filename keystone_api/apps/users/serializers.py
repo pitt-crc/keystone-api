@@ -16,7 +16,7 @@ __all__ = [
 ]
 
 
-class ResearchGroupSerializer(serializers.ModelSerializer):
+class ResearchGroupSerializer(serializers.HyperlinkedModelSerializer):
     """Object serializer for the `ResearchGroup` class"""
 
     class Meta:
@@ -26,7 +26,7 @@ class ResearchGroupSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.HyperlinkedModelSerializer):
     """Object serializer for the `User` class"""
 
     class Meta:
