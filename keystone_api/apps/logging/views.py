@@ -17,7 +17,6 @@ class AppLogViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = AppLog.objects.all()
     serializer_class = AppLogSerializer
-    filterset_fields = '__all__'
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
 
 
@@ -26,7 +25,6 @@ class RequestLogViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = RequestLog.objects.all()
     serializer_class = RequestLogSerializer
-    filterset_fields = '__all__'
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
 
 
@@ -35,5 +33,4 @@ class TaskResultViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = TaskResult.objects.all()
     serializer_class = TaskResultSerializer
-    filterset_fields = '__all__'
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]

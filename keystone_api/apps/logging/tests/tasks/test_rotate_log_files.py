@@ -2,8 +2,7 @@
 
 from time import sleep
 
-from django.test import override_settings
-from django.test import TestCase
+from django.test import override_settings, TestCase
 
 from apps.logging.models import *
 from apps.logging.tasks import rotate_log_files
