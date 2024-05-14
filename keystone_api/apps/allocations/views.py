@@ -24,14 +24,15 @@ from ..users.models import ResearchGroup
 class AllocationViewSet(viewsets.ModelViewSet):
     """Manage allocations for user research groups."""
 
-    permission_classes = [permissions.IsAuthenticated, StaffWriteGroupRead]
+    queryset = Allocation.objects.all()
     serializer_class = AllocationSerializer
+    permission_classes = [permissions.IsAuthenticated, StaffWriteGroupRead]
 
     def get_queryset(self) -> list[Allocation]:
         """Return a list of allocations for the currently authenticated user"""
 
         if self.request.user.is_staff or self.request.user.is_superuser:
-            return Allocation.objects.all()
+            return self.queryset
 
         research_groups = ResearchGroup.objects.groups_for_user(self.request.user)
         return Allocation.objects.filter(request__group__in=research_groups)
@@ -40,14 +41,15 @@ class AllocationViewSet(viewsets.ModelViewSet):
 class AllocationRequestViewSet(viewsets.ModelViewSet):
     """Manage allocation requests submitted by user research groups."""
 
-    permission_classes = [permissions.IsAuthenticated, GroupAdminCreateGroupRead]
+    queryset = AllocationRequest.objects.all()
     serializer_class = AllocationRequestSerializer
+    permission_classes = [permissions.IsAuthenticated, GroupAdminCreateGroupRead]
 
     def get_queryset(self) -> list[AllocationRequest]:
         """Return a list of allocation requests for the currently authenticated user"""
 
         if self.request.user.is_staff or self.request.user.is_superuser:
-            return AllocationRequest.objects.all()
+            return self.queryset
 
         research_groups = ResearchGroup.objects.groups_for_user(self.request.user)
         return AllocationRequest.objects.filter(group__in=research_groups)
@@ -56,14 +58,15 @@ class AllocationRequestViewSet(viewsets.ModelViewSet):
 class AllocationRequestReviewViewSet(viewsets.ModelViewSet):
     """Manage reviews of allocation request submitted by administrators."""
 
-    permission_classes = [permissions.IsAuthenticated, StaffWriteGroupRead]
+    queryset = AllocationRequestReview.objects.all()
     serializer_class = AllocationRequestReviewSerializer
+    permission_classes = [permissions.IsAuthenticated, StaffWriteGroupRead]
 
     def get_queryset(self) -> list[Allocation]:
         """Return a list of allocation reviews for the currently authenticated user"""
 
         if self.request.user.is_staff or self.request.user.is_superuser:
-            return AllocationRequestReview.objects.all()
+            return self.queryset
 
         research_groups = ResearchGroup.objects.groups_for_user(self.request.user)
         return AllocationRequestReview.objects.filter(request__group__in=research_groups)
@@ -86,5 +89,5 @@ class ClusterViewSet(viewsets.ModelViewSet):
     """Configuration settings for managed Slurm clusters."""
 
     queryset = Cluster.objects.all()
-    permission_classes = [permissions.IsAuthenticated, StaffWriteAuthenticatedRead]
     serializer_class = ClusterSerializer
+    permission_classes = [permissions.IsAuthenticated, StaffWriteAuthenticatedRead]
