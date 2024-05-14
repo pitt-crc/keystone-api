@@ -18,6 +18,8 @@ __all__ = [
     'ClusterViewSet'
 ]
 
+from ..users.models import ResearchGroup
+
 
 class AllocationViewSet(viewsets.ModelViewSet):
     """Manage allocations for user research groups."""
@@ -31,7 +33,8 @@ class AllocationViewSet(viewsets.ModelViewSet):
         if self.request.user.is_staff or self.request.user.is_superuser:
             return Allocation.objects.all()
 
-        return Allocation.objects.affiliated_with_user(self.request.user).all()
+        research_groups = ResearchGroup.objects.groups_for_user(self.request.user)
+        return Allocation.objects.filter(request__group__in=research_groups)
 
 
 class AllocationRequestViewSet(viewsets.ModelViewSet):
@@ -46,7 +49,8 @@ class AllocationRequestViewSet(viewsets.ModelViewSet):
         if self.request.user.is_staff or self.request.user.is_superuser:
             return AllocationRequest.objects.all()
 
-        return AllocationRequest.objects.affiliated_with_user(self.request.user).all()
+        research_groups = ResearchGroup.objects.groups_for_user(self.request.user)
+        return AllocationRequest.objects.filter(group__in=research_groups)
 
 
 class AllocationRequestReviewViewSet(viewsets.ModelViewSet):
@@ -61,7 +65,8 @@ class AllocationRequestReviewViewSet(viewsets.ModelViewSet):
         if self.request.user.is_staff or self.request.user.is_superuser:
             return AllocationRequestReview.objects.all()
 
-        return AllocationRequestReview.objects.affiliated_with_user(self.request.user).all()
+        research_groups = ResearchGroup.objects.groups_for_user(self.request.user)
+        return AllocationRequestReview.objects.filter(request__group__in=research_groups)
 
     def create(self, request, *args, **kwargs) -> Response:
         """Create a new `AllocationRequestReview` object"""

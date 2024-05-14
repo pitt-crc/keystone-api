@@ -16,8 +16,11 @@ __all__ = ['GrantViewSet', 'PublicationViewSet']
 class PublicationViewSet(viewsets.ModelViewSet):
     """Manage metadata for research publications."""
 
-    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser | GroupMemberAll]
     serializer_class = PublicationSerializer
+    permission_classes = [
+        permissions.IsAuthenticated,
+        permissions.IsAdminUser | GroupMemberAll
+    ]
 
     def get_queryset(self) -> list[Publication]:
         """Return a list of allocation requests for the currently authenticated user"""
@@ -31,8 +34,11 @@ class PublicationViewSet(viewsets.ModelViewSet):
 class GrantViewSet(viewsets.ModelViewSet):
     """Track funding awards and grant information."""
 
-    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser | GroupMemberReadGroupAdminWrite]
     serializer_class = GrantSerializer
+    permission_classes = [
+        permissions.IsAuthenticated,
+        permissions.IsAdminUser | GroupMemberReadGroupAdminWrite
+    ]
 
     def get_queryset(self) -> list[Grant]:
         """Return a list of allocation requests for the currently authenticated user"""

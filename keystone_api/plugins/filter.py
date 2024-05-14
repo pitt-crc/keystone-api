@@ -62,7 +62,7 @@ class AdvancedFilterBackend(DjangoFilterBackend):
         """
 
         # Default to user provided filterset class
-        # Super method returns `None` if not defined
+        # The super class method returns `None` if not defined
         if filterset_class := super().get_filterset_class(view, queryset=queryset):
             return filterset_class
 
