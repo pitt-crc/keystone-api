@@ -237,7 +237,7 @@ bcrypt = ["bcrypt"]
 name = "django-auth-ldap"
 version = "4.8.0"
 description = "Django LDAP authentication backend"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "django-auth-ldap-4.8.0.tar.gz", hash = "sha256:604250938ddc9fda619f247c7a59b0b2f06e53a7d3f46a156f28aa30dd71a738"},
@@ -657,7 +657,7 @@ files = [
 name = "pyasn1"
 version = "0.6.0"
 description = "Pure-Python implementation of ASN.1 types and DER/BER/CER codecs (X.208)"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "pyasn1-0.6.0-py2.py3-none-any.whl", hash = "sha256:cca4bb0f2df5504f02f6f8a775b6e416ff9b0b3b16f7ee80b5a3153d9b804473"},
@@ -668,7 +668,7 @@ files = [
 name = "pyasn1-modules"
 version = "0.4.0"
 description = "A collection of ASN.1-based protocols modules"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "pyasn1_modules-0.4.0-py3-none-any.whl", hash = "sha256:be04f15b66c206eed667e0bb5ab27e2b1855ea54a842e5037738099e8ca4ae0b"},
@@ -731,7 +731,7 @@ six = ">=1.5"
 name = "python-ldap"
 version = "3.4.4"
 description = "Python modules for implementing LDAP clients"
-optional = false
+optional = true
 python-versions = ">=3.6"
 files = [
     {file = "python-ldap-3.4.4.tar.gz", hash = "sha256:7edb0accec4e037797705f3a05cbf36a9fde50d08c8f67f2aef99a2628fab828"},
@@ -1046,7 +1046,10 @@ files = [
 [package.extras]
 brotli = ["Brotli"]
 
+[extras]
+ldap = ["django-auth-ldap"]
+
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "475d0592054630beb1d532edc15b21601c58f6c894f38e8d57c728d8869e849a"
+content-hash = "357fe6e6fd4d373d6cf96557f062b922622d7479c7f26729831079f5cf70fa50"
