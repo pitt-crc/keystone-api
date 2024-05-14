@@ -6,7 +6,7 @@
 |------------|------------------------------------------------------------------|
 | --static   | Delete the static root directory                                 |
 | --uploads  | Delete all user uploaded file data                              |
-| --db       | Delete all sqlite database files                                 |
+| --sqlite   | Delete all sqlite database files                                 |
 | --all      | Shorthand for deleting everything                                |
 """
 
@@ -33,18 +33,18 @@ class Command(BaseCommand):
         group = parser.add_argument_group('clean options')
         group.add_argument('--static', action='store_true', help='Delete the static root directory')
         group.add_argument('--uploads', action='store_true', help='Delete all user uploaded file data')
-        group.add_argument('--db', action='store_true', help='Delete all sqlite database files')
+        group.add_argument('--sqlite', action='store_true', help='Delete all sqlite database files')
         group.add_argument('--all', action='store_true', help='Shorthand for deleting all targets')
 
     def handle(self, *args, **options) -> None:
-        """Handle the command execution.
+        """Handle the command execution
 
         Args:
           *args: Additional positional arguments.
           **options: Additional keyword arguments.
         """
 
-        if not any([options['static'], options['db'], options['all']]):
+        if not any([options['static'], options['uploads'], options['sqlite'], options['all']]):
             self.stderr.write('At least one deletion target is required. `See clean --help` for details.')
 
         if options['static'] or options['all']:
@@ -55,7 +55,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS('Removing user uploads...'))
             shutil.rmtree(settings.MEDIA_ROOT, ignore_errors=True)
 
-        if options['db'] or options['all']:
+        if options['sqlite'] or options['all']:
             self.stdout.write(self.style.SUCCESS('Removing sqlite files...'))
             for db_settings in settings.DATABASES.values():
                 if 'sqlite' in db_settings['ENGINE']:

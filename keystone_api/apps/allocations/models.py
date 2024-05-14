@@ -15,7 +15,6 @@ from django.db import models
 from django.template.defaultfilters import truncatechars
 
 from apps.users.models import ResearchGroup, User
-from .managers import *
 
 __all__ = [
     'Allocation',
@@ -44,8 +43,6 @@ class Allocation(RGModelInterface, models.Model):
 
     cluster: Cluster = models.ForeignKey('Cluster', on_delete=models.CASCADE)
     request: AllocationRequest = models.ForeignKey('AllocationRequest', on_delete=models.CASCADE)
-
-    objects = AllocationManager()
 
     def get_research_group(self) -> ResearchGroup:
         """Return the research group tied to the current record"""
@@ -77,8 +74,6 @@ class AllocationRequest(RGModelInterface, models.Model):
     expire = models.DateField(null=True, blank=True)
 
     group: ResearchGroup = models.ForeignKey(ResearchGroup, on_delete=models.CASCADE)
-
-    objects = AllocationRequestManager()
 
     def clean(self) -> None:
         """Validate the model instance
@@ -118,8 +113,6 @@ class AllocationRequestReview(RGModelInterface, models.Model):
 
     request: AllocationRequest = models.ForeignKey(AllocationRequest, on_delete=models.CASCADE)
     reviewer: User = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    objects = AllocationRequestReviewManager()
 
     def get_research_group(self) -> ResearchGroup:
         """Return the research group tied to the current record"""

@@ -19,6 +19,10 @@ __all__ = ['ResearchGroup', 'User']
 class User(auth_models.AbstractBaseUser, auth_models.PermissionsMixin):
     """Proxy model for the built-in django `User` model"""
 
+    USERNAME_FIELD = 'username'
+    EMAIL_FIELD = "email"
+    REQUIRED_FIELDS = ['email', 'first_name', 'last_name']
+
     username = models.CharField('username', max_length=150, unique=True, validators=[UnicodeUsernameValidator()])
     first_name = models.CharField('first name', max_length=150)
     last_name = models.CharField('last name', max_length=150)
@@ -31,10 +35,6 @@ class User(auth_models.AbstractBaseUser, auth_models.PermissionsMixin):
     is_ldap_user = models.BooleanField('LDAP User', default=False)
 
     objects = UserManager()
-
-    USERNAME_FIELD = 'username'
-    EMAIL_FIELD = "email"
-    REQUIRED_FIELDS = ['email', 'first_name', 'last_name']
 
 
 class ResearchGroup(models.Model):
