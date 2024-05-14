@@ -5,7 +5,7 @@ from rest_framework.routers import DefaultRouter
 from .views import *
 
 router = DefaultRouter()
-router.register(r'publications', PublicationViewSet, basename='publication')
-router.register(r'grants', GrantViewSet, basename='grant')
+router.register(r'publications', PublicationViewSet)
+router.register(r'grants', GrantViewSet)
 
 urlpatterns = router.urls
