@@ -24,7 +24,7 @@ For more information, see the resources below.
 
     ---
 
-    Learn how Keystone integrates directly with Slurm to manage HPC resources. 
+    Learn how Keystone integrates with Slurm to manage HPC resources. 
 
     [:octicons-arrow-right-24: Slurm Documentation](install/slurm.md)
 
@@ -32,7 +32,7 @@ For more information, see the resources below.
 
     ---
 
-    Built to follow modern best practices in API design and development.
+    Get started with the REST API, designed and built using modern bst practices.
 
     [:octicons-arrow-right-24: API Reference](api.md)
 

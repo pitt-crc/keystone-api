@@ -1,21 +1,39 @@
 # Deploying with Python
 
-Keystone-API can be installed directly onto a machine and managed using the systemd service manager.
-Installing the API in this way typically requires extra configuration and a working familiarity with system administration.
-For a simpler deployment, see the [Deplying with Docker](docker.md) documentation.
-
-## Preliminary Setup
-
-These instructions assume you have administrative privileges and are managing system services via systemd.
+These instructions install Keystone-API directly onto a machine and manage resulting services using the systemd service manager.
+It is assumed you have administrative privileges and are managing system services via systemd.
 It is also assumed you are installing applications under a dedicated, unprivileged user account called `keystone`. 
 
 ## Installing the API
 
-The `keystone_api` package can be installed using the pip package manager.
+The `keystone_api` package can be installed using the `pip` or `pipx` package managers.
 
-```bash
-pip install keystone-api
-```
+=== "pip"
+
+    ```bash
+    pip install keystone-api
+    ```
+
+=== "pipx"
+
+    ```bash
+    pipx install --include-deps keystone-api
+    ```
+
+If you intend to authenticate users via LDAP credentials, you will need to manually specify LDAP support in the install command.
+This will require the LDAP development binaries to be available on the host machine.
+
+=== "pip"
+
+    ```bash
+    pip install keystone-api[ldap]
+    ```
+
+=== "pipx"
+
+    ```bash
+    pipx install --include-deps keystone-api[ldap]
+    ```
 
 If the installation was successful, the packaged CLI tool will be available in your working environment.
 Use the `--help` option to view the available commands.
@@ -29,25 +47,6 @@ To enable autocomplete for the Bash shell, use the `enable_autocomplete` command
 
 ```bash
 keystone-api enable_autocomplete
-```
-
-You can test the installed package by deploying a development instance of the application.
-The following example creates a SQLite database, generates an admin user account, and launches the API server in debug mode.
-
-!!! danger
-
-    Debug mode is inherently insecure and should **never** be enabled in production.
-    It's use is reserved for development and demonstrative purposes only.
-
-!!! important
-
-    The webserver launched by the `runserver` command is not suitable for production.
-    A production quality web server should be used instead.
-
-```bash
-keystone-api migrate
-keystone-api createsuperuser
-DEBUG=true keystone-api runserver
 ```
 
 ## Deploying Dependencies
@@ -76,7 +75,7 @@ Start by launching a new SQL session with admin permissions.
 sudo -u postgres psql
 ```
 
-Next, create the database and a Keystone service account.
+Next, create a database and a Keystone service account.
 Make sure to replace the password field with a secure value.
 
 ```postgresql
@@ -87,8 +86,8 @@ grant all privileges on database keystone to keystone_sa;
 
 ### Celery
 
-Celery and Celery Beat are both included when pip installing the `keystone_api` package.
-Both applications should be launched using the `keystone_api.apps.scheduler` as the target application.
+Celery and Celery Beat are both included when installing the `keystone_api` package.
+Both applications should be launched using `keystone_api.apps.scheduler` as the target application.
 
 ```bash
 celery -A keystone_api.apps.scheduler worker
@@ -102,7 +101,7 @@ The following unit files are provided as a starting point to daemonize the proce
 
     ```toml
     [Unit]
-    Description=Keystone Celery Worker
+    Description=Celery workers for Keystone
     After=network.target
     
     [Service]
@@ -124,14 +123,14 @@ The following unit files are provided as a starting point to daemonize the proce
     
     ```toml
     [Unit]
-    Description=Keystone Celery Beat
+    Description=Celery Beat scheduler for keystone
     After=network.target
     
     [Service]
     Type=simple
     User=keystone
     Group=keystone
-    RuntimeDirectory=celery
+    RuntimeDirectory=beat
     WorkingDirectory=/home/keystone
     EnvironmentFile=/home/keystone/keystone.env
     ExecStart=/bin/sh -c '/home/keystone/.local/bin/celery -A keystone_api.apps.scheduler beat --scheduler django_celery_beat.schedulers:DatabaseScheduler'
@@ -157,8 +156,8 @@ The following unit files are provided as a starting point to daemonize the proce
 
     ```toml
     [Unit]
-    Description=Keystone Gunicorn Server
-    Requires=gunicorn.socket
+    Description=Gunicorn server daemon for Keystone
+    Requires=keystone-server.socket
     After=network.target
     
     [Service]
@@ -182,7 +181,7 @@ The following unit files are provided as a starting point to daemonize the proce
 
     ```toml
     [Unit]
-    Description=gunicorn socket
+    Description=Gunicorn socket for Keystone
     
     [Socket]
     ListenStream=/run/gunicorn.sock
@@ -203,9 +202,9 @@ This service applies any necessary database migrations and configured static fil
     ```toml
     [Unit]
     Description=Keystone API
-    Before=gunicorn.socket
-    Before=celery-worker.service
-    Before=celery-beat.service
+    Before=keystone-server.socket
+    Before=keystone-worker.service
+    Before=keystone-beat.service
     
     [Service]
     Type=notify
@@ -218,7 +217,7 @@ This service applies any necessary database migrations and configured static fil
     ExecStartPre=/home/keystone/.local/bin/keystone-api collectstatic --no-input
     ```
 
-To upgrade the deployed application, install the new version and restart the top level systemd service.
+Grouping systemd services in this way simplifies application upgrades and restarts:
 
 ```bash
 pip install --upgrade keystone-api

@@ -19,12 +19,13 @@ markdown_extensions:
       alternate_style: true
 nav:
   - index.md
-  - using.md
-  - API Specification: api.md
   - Installation:
       - install/slurm.md
       - install/docker.md
       - install/python.md
       - install/settings.md
+  - REST API:
+    - api/getting_started.md
+    - API Specification: api/api.md
   - Developer Notes:
       - Common Tasks: developer/common.md

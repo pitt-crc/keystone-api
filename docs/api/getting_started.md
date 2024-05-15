@@ -1,4 +1,4 @@
-# Using the API
+# Getting Started
 
 This page provides a general guide for getting the most out of the Keystone REST API.
 See the [OpenAPI specification](api.md) for the full API schema.

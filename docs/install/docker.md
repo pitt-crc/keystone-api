@@ -6,10 +6,8 @@ Deploying with Docker Compose (or some other container orchestration tool) is st
 
 ## Using Docker Standalone
 
-The following command will automatically pull and launch the latest application image from the GitHub container
-registry.
-In this example the image is launched as a container called `keystone` and the API is mapped to port 8000 on the
-local machine.
+The following command will automatically pull and launch the latest application image from the GitHub container registry.
+In this example the image is launched as a container called `keystone` and the API is mapped to port 8000 on the local machine.
 
 ```bash
 docker run --detach --publish 8000:8000 --name keystone ghcr.io/pitt-crc/keystone-api
@@ -21,8 +19,8 @@ The health of the running API instance can be checked by querying the API `healt
 curl -L http://localhost:8000/health | jq .
 ```
 
-Once the container is ready, create a new administrative account using the `keystone-api` utility to
-execute the `createsuperuser` command.
+Once the container is ready, create a new administrator account by running the `keystone-api` utility from
+within the container.
 
 ```bash
 docker exec -t keystone keystone-api createsuperuser
@@ -55,7 +53,7 @@ If successful, you will receive a response similar to the following:
 
 ## Using Docker Compose
 
-The following compose recipe provides a functional starting point for building a production ready deployment.
+The following compose recipe provides a functional starting point for building a scalable API deployment.
 Application dependencies are defined as separate services and settings values are configured using environmental
 variables in various `.env` files.
 
@@ -136,17 +134,17 @@ volumes:
 
 1. The `cache` service acts as a job queue for background tasks. Note the mounting of cache data onto the host machine to ensure data persistence between container restarts.
 2. The `db` service defines the application database. User credentials are defined as environmental variables in the `db.env` file. Note the mounting of database data onto the host machine to ensure data persistence between container restarts.
-3. The `api` service instantiates the Keystone API application. It migrates the database schema, configures static file hosting, and launches the API behind a production quality web server.
-4. The `celery-worker` service executes background tasks for the API application. It executes using the same base image as the `api` service.
-5. The `celery-beat` service handles task scheduling for the `celery-worker` service. It executes using the same base image as the `api` service.
+3. The `api` service defines the Keystone API application. It migrates the database schema, configures static file hosting, and launches the API behind a production quality web server.
+4. The `celery-worker` service executes background tasks for the API application. It uses the same base image as the `api` service.
+5. The `celery-beat` service handles task scheduling for the `celery-worker` service. It uses the same base image as the `api` service.
 
-The following example files define the minimal required settings for deploying the recipe.
+The following examples define the minimal required settings for deploying the recipe.
 The `DJANGO_SETTINGS_MODULE="keystone_api.main.settings"` setting is required by the application.
 
 !!! important
 
     The settings provided below are intended for demonstrative purposes only.
-    These values should be customized to meet the needs at hand and credentials should be changed to secure values.
+    These values are not iherintly secure and should be customized to meet the needs at hand.
 
 === "api.env"
 
@@ -160,21 +158,26 @@ The `DJANGO_SETTINGS_MODULE="keystone_api.main.settings"` setting is required by
     SECURE_ALLOWED_HOSTS="*"
     
     # Redis settings
-    REDIS_HOST="cache"
+    REDIS_HOST="cache" # (1)!
     
     # Database settings
     DB_POSTGRES_ENABLE="true"
     DB_NAME="keystone"
     DB_USER="db_user"
     DB_PASSWORD="foobar123"
-    DB_HOST="db"
+    DB_HOST="db" # (2)!
     ```
+
+    1. This value should match the service name defined in the compose file.
+    2. This value should match the service name defined in the compose file.
 
 === "db.env"
 
     ```bash
     # Credential values must match api.env
     POSTGRES_DB="keystone"
-    POSTGRES_USER="db_user"
+    POSTGRES_USER="db_user" # (1)!
     POSTGRES_PASSWORD="foobar123"
     ```
+
+    1. Database credentials must match those defined in `api.env`.
