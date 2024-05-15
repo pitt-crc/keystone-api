@@ -6,7 +6,8 @@ hide:
 <style>
    /** Hide the page title and server launch sections **/
   .md-typeset h1,
-  .scheme-container {
+  .scheme-container,
+  .try-out__btn {
     display: none;
   }
 
