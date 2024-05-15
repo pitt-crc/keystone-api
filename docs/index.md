@@ -34,7 +34,7 @@ For more information, see the resources below.
 
     Get started with the REST API, designed and built using modern bst practices.
 
-    [:octicons-arrow-right-24: API Reference](api.md)
+    [:octicons-arrow-right-24: API Reference](api/api.md)
 
 -   :simple-git: **Contributing**
 

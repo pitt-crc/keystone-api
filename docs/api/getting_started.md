@@ -69,7 +69,7 @@ To generate a new access token, use the refresh token with the `authentication/r
 
 !!! note
 
-    See the `SECURE_ACCESS_TOKEN_LIFETIME` and `SECURE_REFRESH_TOKEN_LIFETIME` values in the [application settings](install/settings.md)
+    See the `SECURE_ACCESS_TOKEN_LIFETIME` and `SECURE_REFRESH_TOKEN_LIFETIME` values in the [application settings](../install/settings.md)
     for more information on token expiration.
 
 === "python"
