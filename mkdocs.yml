@@ -6,7 +6,8 @@ theme:
     - content.code.annotate
     - content.tabs.link
 plugins:
-    - render_swagger
+  - render_swagger:
+      allow_arbitrary_locations : true
 markdown_extensions:
   - admonition
   - attr_list

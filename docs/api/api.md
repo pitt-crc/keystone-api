@@ -21,4 +21,4 @@ hide:
   }
 </style>
 
-!!swagger api.yml!!
+!!swagger ../api.yml!!
