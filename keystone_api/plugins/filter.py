@@ -34,7 +34,7 @@ class AdvancedFilterBackend(DjangoFilterBackend):
         models.EmailField: _text_filters,
         models.FilePathField: _text_filters,
         models.FloatField: _numeric_filters,
-        models.ForeignKey: _numeric_filters,
+        models.ForeignKey: _default_filters,
         models.GenericIPAddressField: _default_filters,
         models.IPAddressField: _default_filters,
         models.IntegerField: _numeric_filters,
