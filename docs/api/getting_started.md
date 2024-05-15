@@ -12,15 +12,16 @@ New JWT tokens are generate using the `authentication/new/` endpoint.
 
     ```python
     import requests
-
+    
     credentials = {"username": "admin", "password": "adminpassword"}
     headers = {"Content-Type": "application/json"}
     
-    response = requests.post(
-        "https://keystone.domain.com/authentication/new/", 
-        json=credentials, headers=headers)
+    auth_request = requests.post(
+        url="https://keystone.domain.com/authentication/new/",
+        json=credentials,
+        headers=headers)
     
-    jwt = response.json()
+    jwt = auth_request.json()
     access_token = jwt["access"]
     refresh_token = jwt["refresh"]
     ```
@@ -28,82 +29,105 @@ New JWT tokens are generate using the `authentication/new/` endpoint.
 === "bash"
 
     ```bash
-    jwt=$(curl \
-      -X POST \
-      -H "Content-Type: application/json" \
-      -d '{"username": "admin", "password": "adminpassword"}' \
+    credentials='{"username": "admin", "password": "adminpassword"}'
+    headers='Content-Type: application/json'
+    
+    response=$(curl -s -X POST \
+      -H "$headers" \
+      -d "$credentials" \
       https://keystone.domain.com/authentication/new/)
+    
+    access_token=$(echo "$response" | jq -r '.access')
+    refresh_token=$(echo "$response" | jq -r '.refresh')
     ```
 
-To access API endpoints, specify the JWT access token in the request header. 
+Future requests to API endpoints are authenticated by including the JWT access token in the request header. 
 See the [OpenAPI specification](api.md) for documentation on available endpoints.
 
 === "python"
 
     ```python
-    response = requests.get(
-        "https://keystone.domain.com/endpoint'", 
-        headers={"Authorization": f"Bearer {jwt['access']}"})
+    data_request = requests.get(
+        url="https://keystone.domain.com/allocations/allocations/",
+        headers={"Authorization": f"Bearer {access_token}"})
+
+    print(data_request.json())
     ```
 
 === "bash"
 
     ```bash
-    curl \
-      -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX3BrIjoxLCJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiY29sZF9zdHVmZiI6IuKYgyIsImV4cCI6MTIzNDU2LCJqdGkiOiJmZDJmOWQ1ZTFhN2M0MmU4OTQ5MzVlMzYyYmNhOGJjYSJ9.NHlztMGER7UADHZJlxNG0WSi22a2KaYSfd1S-AuT7lU" \
-      https://keystone.domain.com/endpoint
+    data_request=$(curl -s -X GET \
+      -H "Authorization: Bearer $access_token" \
+      "https://keystone.domain.com/allocations/allocations/")
+
+    echo "$data_request"
     ```
 
-The access token will expire after a short period (see the `SECURE_ACCESS_TOKEN_LIFETIME` value in the [application settings](install/settings.md)).
+The access token will expire after a short period.
 To generate a new access token, use the refresh token with the `authentication/refresh/` endpoint. 
 
+!!! note
+
+    See the `SECURE_ACCESS_TOKEN_LIFETIME` and `SECURE_REFRESH_TOKEN_LIFETIME` values in the [application settings](install/settings.md)
+    for more information on token expiration.
+
 === "python"
 
     ```python
-    foobar
+    refresh_request = requests.post(
+        url="https://keystone.domain.com/authentication/refresh/",
+        json={"refresh": refresh_token})
+
+    access_token = refresh_request["access"]
     ```
 
 === "bash"
 
     ```bash
-    curl \
-      -X POST \
+    refresh_request=$(curl -s -X POST \
       -H "Content-Type: application/json" \
-      -d '{"refresh":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX3BrIjoxLCJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImNvbGRfc3R1ZmYiOiLimIMiLCJleHAiOjIzNDU2NywianRpIjoiZGUxMmY0ZTY3MDY4NDI3ODg5ZjE1YWMyNzcwZGEwNTEifQ.aEoAYkSJjoWH1boshQAaTkf8G3yn0kapko6HFRt7Rh4"}' \
-      http://localhost:8000/authentication/refresh/
+      -d '{"refresh": "'"$refresh_token"'"}' \
+      "https://keystone.domain.com/authentication/refresh/")
+    
+    access_token=$(echo "$refresh_request" | jq -r '.access')
     ```
 
-After a long enough period of time, the refresh token will also expire (see the `SECURE_REFRESH_TOKEN_LIFETIME` value in the [application settings](install/settings.md)).
-However, users may wish to manually invalidate their credentials.
-The `authentication/blacklist/` endpoint will add any posted credentials to a blacklist and invalidate the corresponding user credentials.
+After a long enough period of time, the refresh token will also expire.
+Users can invalidate their credentials early using the `authentication/blacklist/` endpoint.
 
 === "python"
 
     ```python
-    foobar
+    blacklist_request = requests.post(
+        url="https://keystone.domain.com/authentication/blacklist/",
+        json={"refresh": refresh_token})
     ```
 
 === "bash"
 
     ```bash
-    foobar
+    blacklist_request=$(curl -s -X POST \
+      -H "Content-Type: application/json" \
+      -d '{"refresh": "'"$refresh_token"'"}' \
+      "https://keystone.domain.com/authentication/blacklist/")
     ```
 
 ## Query Expressions
 
 When querying data from an API endpoint, the returned records can be filtered using URL parameters.
-In the following example, returned records are limited to those where the `count` field equals `100`:
+In the following example, returned records are limited to those where the `example` field equals `100`:
 
 ```
-my.domain.com/endpoint?count=100
+my.domain.com/endpoint?example=100
 ```
 
 More advanced filtering is achieved by adding query filters.
 Query filters are specified using a double underscre (`__`) followed by filter expression.
-For example, the following API call will return records when the `count` field is greatr than `50` but less than `150`:
+For example, the following API call will return records when the `example` field is greater than `50` but less than `150`:
 
 ```
-my.domain.com/endpoint?count__gt=50&count_lt=150
+my.domain.com/endpoint?example__gt=50&example_lt=150
 ```
 
 Available query filters are summarized in the tables below.

@@ -15,10 +15,8 @@ Certain dependencies, such as those required for building documentation, are opt
 To install the project dependencies, execute the following command from the root of the cloned repository:
 
 ```bash
-poetry install --with docs #(1)!
+poetry install --all-extras
 ```
-
-1. The `--with` option is used to specify optional dependency groups.
 
 The API package itself is installed using the `pip` command.
 The use of editable mode (`-e`) is recommended:
@@ -54,7 +52,6 @@ Use the `keystone-api <command> --help` option for specific usage information.
 ## Running In Debug Mode
 
 The Django framework provides a debug mode which enables detailed error tracebacks directly in the browser.
-It also enables static file hosting (including page styling) and loosens various security restrictions.
 To enable debug mode, specify the `DEBUG=true` setting.
 
 !!! danger
@@ -91,21 +88,6 @@ keystone-api health_check #(3)!
 1. Check for system configuration errors
 2. Check for missing database migrations
 3. Check the status of backend services
-
-## Previewing Documentation
-
-Project documentation is written using [MkDocs](https://www.mkdocs.org/).
-The `serve` command will automatically compile the documentation into HTML and launch a local webserver.
-
-```bash
-mkdocs serve
-```
-
-To compile the HTML documentation without launching a webserver, use the `build` command.
-
-```bash
-mkdocs build
-```
 
 ## OpenAPI Generation
 
