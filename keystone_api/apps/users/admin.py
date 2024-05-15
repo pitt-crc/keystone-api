@@ -24,7 +24,20 @@ settings.JAZZMIN_SETTINGS['order_with_respect_to'].extend([
 class UserAdmin(auth.admin.UserAdmin):
     """Admin interface for managing user accounts"""
 
+    @admin.action
+    def activate_selected_users(self, request, queryset) -> None:
+        """Mark selected users as active"""
+
+        queryset.update(is_active=True)
+
+    @admin.action
+    def deactivate_selected_users(self, request, queryset) -> None:
+        """Mark selected users as inactive"""
+
+        queryset.update(is_active=False)
+
     readonly_fields = ("last_login", "date_joined", "is_ldap_user")
+    actions = [activate_selected_users, deactivate_selected_users]
     fieldsets = (
         ("User Info", {"fields": ("first_name", "last_name", "email", "last_login", "date_joined", 'is_ldap_user')}),
         ("Credentials", {"fields": ("username", "password")}),
@@ -41,7 +54,16 @@ class UserAdmin(auth.admin.UserAdmin):
 class ResearchGroupAdmin(admin.ModelAdmin):
     """Admin interface for managing research group delegates"""
 
-    list_display = ['name', 'pi']
+    @staticmethod
+    @admin.display
+    def pi(obj: ResearchGroup) -> str:
+        """Return the username of the research group PI"""
+
+        return obj.pi.username
+
+    pi.admin_order_field = 'pi__username'
+
+    list_display = ['name', pi]
     filter_horizontal = ('admins', 'members')
     ordering = ['name', ]
     search_fields = ['name', 'pi__username']

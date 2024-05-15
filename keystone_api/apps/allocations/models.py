@@ -15,7 +15,6 @@ from django.db import models
 from django.template.defaultfilters import truncatechars
 
 from apps.users.models import ResearchGroup, User
-from .managers import *
 
 __all__ = [
     'Allocation',
@@ -38,14 +37,12 @@ class RGModelInterface:
 class Allocation(RGModelInterface, models.Model):
     """User service unit allocation"""
 
-    requested = models.PositiveIntegerField('Requested Service Units')
-    awarded = models.PositiveIntegerField('Awarded Service Units', null=True, blank=True)
-    final = models.PositiveIntegerField('Final Usage', null=True, blank=True)
+    requested = models.PositiveIntegerField()
+    awarded = models.PositiveIntegerField(null=True, blank=True)
+    final = models.PositiveIntegerField(null=True, blank=True)
 
     cluster: Cluster = models.ForeignKey('Cluster', on_delete=models.CASCADE)
     request: AllocationRequest = models.ForeignKey('AllocationRequest', on_delete=models.CASCADE)
-
-    objects = AllocationManager()
 
     def get_research_group(self) -> ResearchGroup:
         """Return the research group tied to the current record"""
@@ -71,14 +68,12 @@ class AllocationRequest(RGModelInterface, models.Model):
 
     title = models.CharField(max_length=250)
     description = models.TextField(max_length=1600)
-    submitted = models.DateField('Submission Date', auto_now=True)
-    status = models.CharField('Review Status', max_length=2, choices=StatusChoices.choices, default=StatusChoices.PENDING)
-    active = models.DateField('Active Date', null=True, blank=True)
-    expire = models.DateField('Expiration Date', null=True, blank=True)
+    submitted = models.DateField(auto_now=True)
+    status = models.CharField(max_length=2, choices=StatusChoices.choices, default=StatusChoices.PENDING)
+    active = models.DateField(null=True, blank=True)
+    expire = models.DateField(null=True, blank=True)
 
     group: ResearchGroup = models.ForeignKey(ResearchGroup, on_delete=models.CASCADE)
-
-    objects = AllocationRequestManager()
 
     def clean(self) -> None:
         """Validate the model instance
@@ -118,8 +113,6 @@ class AllocationRequestReview(RGModelInterface, models.Model):
 
     request: AllocationRequest = models.ForeignKey(AllocationRequest, on_delete=models.CASCADE)
     reviewer: User = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    objects = AllocationRequestReviewManager()
 
     def get_research_group(self) -> ResearchGroup:
         """Return the research group tied to the current record"""

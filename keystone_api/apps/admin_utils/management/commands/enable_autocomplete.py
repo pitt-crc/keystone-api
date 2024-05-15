@@ -35,7 +35,7 @@ class Command(BaseCommand):
         # Find the user's .bash_prf le or .bashrc file
         profile_path = self.get_profile_path()
         if profile_path is None:
-            self.stderr.write(f'No .bash_profile or .bashrc fie found.')
+            self.stderr.write(f'No .bash_profile or .bashrc file found.')
             exit(1)
 
         # Copy the completion script into the user's home directory
@@ -58,15 +58,15 @@ class Command(BaseCommand):
         print(
             'This command will make the following changes:\n',
             '  - A file `.keystone_autocomplete` will be add to your home directory\n'
-            '  - A line of setup code will be added to your `.bash_profile`\n'
+            '  - A line of setup code will be added to your .bash_profile or .bashrc file`\n'
         )
 
         while True:
-            answer = input('Do you want to continue? [Y/n]: ').lower()
-            if answer in ('y', ''):
+            answer = input('Do you want to continue? [y/N]: ').lower()
+            if answer == 'y':
                 return True
 
-            elif answer == 'n':
+            elif answer in ('n', ''):
                 return False
 
             print('Unrecognized input.')

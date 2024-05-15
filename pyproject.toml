@@ -7,7 +7,7 @@ name = "keystone-api"
 version = "0.0.0"
 readme = "README.md"
 description = "A REST API for managing user resource allocations on HPC systems."
-authors = ["Pitt Center for Research Computing"]
+authors = ["Daniel Perrefort", "Pitt Center for Research Computing"]
 keywords = ["Pitt", "CRC", "HPC", "django"]
 
 [tool.poetry.scripts]
@@ -16,7 +16,6 @@ keystone-api = "keystone_api.manage:main"
 [tool.poetry.dependencies]
 python = "^3.11"
 django = "5.0.4"
-django-auth-ldap = "4.8.0"
 django-celery-beat = "2.6.0"
 django-celery-results = "2.5.1"
 django-cors-headers = "4.3.1"
@@ -35,9 +34,13 @@ tqdm = "4.66.3"
 uritemplate = "4.1.1"
 whitenoise = "6.6.0"
 
-[tool.poetry.group.docs]
-optional = true
+# Optional dependencies installed via extras
+django-auth-ldap = { version = "4.8.0", optional = true }
+mkdocs-material = { version = "^9.5.17", optional = true }
+mkdocs-render-swagger-plugin = { version = "^0.1.1", optional = true }
 
-[tool.poetry.group.docs.dependencies]
-mkdocs-material = "^9.5.17"
-mkdocs-render-swagger-plugin = "^0.1.1"
+
+[tool.poetry.extras]
+ldap = ["django-auth-ldap"]
+docs = ["mkdocs-material", "mkdocs-render-swagger-plugin"]
+all = ["django-auth-ldap", "mkdocs-material", "mkdocs-render-swagger-plugin"]
