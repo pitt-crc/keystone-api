@@ -2,6 +2,12 @@ name: 🤖 Publish Package
 
 on:
   workflow_call:
+    inputs:
+      version:
+        description: 'Set the version number of the published application.'
+        default: '0.0.0'
+        required: false
+        type: string
 
 jobs:
   publish-docker:
@@ -72,3 +78,15 @@ jobs:
           print-hash: true
           user: ${{ secrets.REPO_USER }}
           password: ${{ secrets.REPO_PASSWORD }}
+
+  trigger-docs:
+    name: Trigger Docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update docs
+        uses: pitt-crc/keystone-docs/.github/actions/update-action/@main
+        with:
+          keystone-gitops-id: ${{ secrets.KEYSTONE_GITOPS_ID }}
+          keystone-gitops-pk: ${{ secrets.KEYSTONE_GITOPS_PK }}
+          repo-name: keystone-api
+          tag: ${{ inputs.version }}

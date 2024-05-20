@@ -4,41 +4,18 @@ View objects handle the processing of incoming HTTP requests and return the
 appropriately rendered HTML template or other HTTP response.
 """
 
-import abc
-
 from django.http import HttpResponse, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from drf_spectacular.utils import extend_schema, inline_serializer, OpenApiExample
 from health_check.mixins import CheckMixin
-from rest_framework.views import APIView
+from rest_framework import serializers
+from rest_framework.generics import GenericAPIView
 
 __all__ = ['HealthCheckView', 'HealthCheckJsonView', 'HealthCheckPrometheusView']
 
 
-class BaseView(APIView, CheckMixin, metaclass=abc.ABCMeta):
-    """Base class that caches successful health check requests for one minute"""
-
-    @staticmethod
-    @abc.abstractmethod
-    def render_response(plugins: dict) -> HttpResponse:
-        """Summarize a list of health checks in an HTTP response"""
-
-    @method_decorator(cache_page(60))
-    def get(self, request, *args, **kwargs) -> HttpResponse:
-        """Render system health checks into an HTTP response
-
-        Args:
-            request: The incoming HTTP request
-
-        Returns:
-            An Http response
-        """
-
-        self.check()
-        return self.render_response(self.plugins)
-
-
-class HealthCheckView(BaseView):
+class HealthCheckView(GenericAPIView, CheckMixin):
     """Return a 200 status code if all health checks pass and 500 otherwise"""
 
     permission_classes = []
@@ -60,8 +37,19 @@ class HealthCheckView(BaseView):
 
         return HttpResponse()
 
+    @extend_schema(responses={
+        '200': inline_serializer('health_ok', fields=dict()),
+        '500': inline_serializer('health_error', fields=dict()),
+    })
+    @method_decorator(cache_page(60))
+    def get(self, request, *args, **kwargs) -> HttpResponse:
+        """Return a status code reflecting the global status of system health checks."""
 
-class HealthCheckJsonView(BaseView):
+        self.check()
+        return self.render_response(self.plugins)
+
+
+class HealthCheckJsonView(GenericAPIView, CheckMixin):
     """Return system health checks in JSON format"""
 
     permission_classes = []
@@ -87,8 +75,26 @@ class HealthCheckJsonView(BaseView):
 
         return JsonResponse(data=data, status=200)
 
+    @extend_schema(responses={
+        '200': inline_serializer('health_json_ok', fields={
+            'healthCheckName': inline_serializer(
+                name='NestedInlineOneOffSerializer',
+                fields={
+                    'status': serializers.IntegerField(default=200),
+                    'message': serializers.CharField(default='working'),
+                    'critical_service': serializers.BooleanField(default=True),
+                })
+        })
+    })
+    @method_decorator(cache_page(60))
+    def get(self, request, *args, **kwargs) -> HttpResponse:
+        """Summarize health checks in JSON format."""
 
-class HealthCheckPrometheusView(BaseView):
+        self.check()
+        return self.render_response(self.plugins)
+
+
+class HealthCheckPrometheusView(GenericAPIView, CheckMixin):
     """Return system health checks in Prometheus format"""
 
     permission_classes = []
@@ -112,4 +118,15 @@ class HealthCheckPrometheusView(BaseView):
                 status=200 if plugin.status else 500
             ) for plugin_name, plugin in plugins.items()
         ]
+
         return HttpResponse('\n'.join(status_data), status=200, content_type="text/plain")
+
+    @extend_schema(responses={
+        '200': inline_serializer('health_prom_ok', fields=dict()),
+    })
+    @method_decorator(cache_page(60))
+    def get(self, request, *args, **kwargs) -> HttpResponse:
+        """Summarize health checks in Prometheus format."""
+
+        self.check()
+        return self.render_response(self.plugins)

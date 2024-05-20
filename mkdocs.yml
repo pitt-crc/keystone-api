@@ -1,0 +1,32 @@
+site_name: Keystone API
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - content.code.annotate
+    - content.tabs.link
+plugins:
+  - render_swagger:
+      allow_arbitrary_locations : true
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+nav:
+  - index.md
+  - Installation:
+      - install/slurm.md
+      - install/docker.md
+      - install/python.md
+      - install/settings.md
+  - REST API:
+    - api/getting_started.md
+    - API Specification: api/api.md
+  - Developer Notes:
+      - Common Tasks: developer/common.md
