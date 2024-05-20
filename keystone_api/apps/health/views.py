@@ -19,6 +19,23 @@ class HealthCheckView(GenericAPIView, CheckMixin):
 
     permission_classes = []
 
+    @staticmethod
+    def render_response(plugins: dict) -> HttpResponse:
+        """Return an HTTP response with a status code matching system health checks
+
+        Args:
+            plugins: A mapping of healthcheck names to health check objects
+
+        Returns:
+            An HTTPResponse with status 200 if all checks are passing or 500 otherwise
+        """
+
+        for plugin in plugins.values():
+            if plugin.status != 1:
+                return HttpResponse(status=500)
+
+        return HttpResponse()
+
     @extend_schema(responses={
         '200': inline_serializer('OK', fields=dict()),
         '500': inline_serializer('Error', fields=dict()),
@@ -28,18 +45,34 @@ class HealthCheckView(GenericAPIView, CheckMixin):
         """Return a status code reflecting the global status of system health checks."""
 
         self.check()
-
-        for plugin in self.plugins.values():
-            if plugin.status != 1:
-                return HttpResponse(status=500)
-
-        return HttpResponse()
+        return self.render_response(self.plugins)
 
 
 class HealthCheckJsonView(GenericAPIView, CheckMixin):
     """Return system health checks in JSON format"""
 
     permission_classes = []
+
+    @staticmethod
+    def render_response(plugins: dict) -> JsonResponse:
+        """Return a JSON response summarizing a collection of health checks
+
+        Args:
+            plugins: A mapping of healthcheck names to health check objects
+
+        Returns:
+            A JSON response
+        """
+
+        data = dict()
+        for plugin_name, plugin in plugins.items():
+            data[plugin_name] = {
+                'status': 200 if plugin.status == 1 else 500,
+                'message': plugin.pretty_status(),
+                'critical_service': plugin.critical_service
+            }
+
+        return JsonResponse(data=data, status=200)
 
     @extend_schema(responses={
         '200': inline_serializer('OK', fields=dict()),
@@ -49,22 +82,35 @@ class HealthCheckJsonView(GenericAPIView, CheckMixin):
         """Summarize health checks in JSON format."""
 
         self.check()
-
-        data = dict()
-        for plugin_name, plugin in self.plugins.items():
-            data[plugin_name] = {
-                'status': 200 if plugin.status == 1 else 500,
-                'message': plugin.pretty_status(),
-                'critical_service': plugin.critical_service
-            }
-
-        return JsonResponse(data=data, status=200)
+        return self.render_response(self.plugins)
 
 
 class HealthCheckPrometheusView(GenericAPIView, CheckMixin):
     """Return system health checks in Prometheus format"""
 
     permission_classes = []
+
+    @staticmethod
+    def render_response(plugins: dict) -> HttpResponse:
+        """Return an HTTP response summarizing a collection of health checks
+
+        Args:
+            plugins: A mapping of healthcheck names to health check objects
+
+        Returns:
+            An HTTP response
+        """
+
+        status_data = [
+            '{name}{{critical_service="{critical_service}",message="{message}"}} {status:.1f}'.format(
+                name=plugin_name,
+                critical_service=plugin.critical_service,
+                message=plugin.pretty_status(),
+                status=200 if plugin.status else 500
+            ) for plugin_name, plugin in plugins.items()
+        ]
+
+        return HttpResponse('\n'.join(status_data), status=200, content_type="text/plain")
 
     @extend_schema(responses={
         '200': inline_serializer('OK', fields=dict()),
@@ -74,13 +120,4 @@ class HealthCheckPrometheusView(GenericAPIView, CheckMixin):
         """Summarize health checks in Prometheus format."""
 
         self.check()
-
-        status_data = [
-            '{name}{{critical_service="{critical_service}",message="{message}"}} {status:.1f}'.format(
-                name=plugin_name,
-                critical_service=plugin.critical_service,
-                message=plugin.pretty_status(),
-                status=200 if plugin.status else 500
-            ) for plugin_name, plugin in self.plugins.items()
-        ]
-        return HttpResponse('\n'.join(status_data), status=200, content_type="text/plain")
+        return self.render_response(self.plugins)
