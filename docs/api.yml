@@ -1532,7 +1532,11 @@ paths:
       - jwtAuth: []
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/health_json_ok'
+          description: ''
   /health/prom/:
     get:
       operationId: health_prom_retrieve
@@ -4647,6 +4651,18 @@ components:
       - id
       - start_date
       - title
+    NestedInlineOneOff:
+      type: object
+      properties:
+        status:
+          type: integer
+          default: 200
+        message:
+          type: string
+          default: working
+        critical_service:
+          type: boolean
+          default: true
     PatchedAllocation:
       type: object
       description: Object serializer for the `Allocation` class
@@ -5190,6 +5206,13 @@ components:
       - id
       - last_name
       - username
+    health_json_ok:
+      type: object
+      properties:
+        healthCheckName:
+          $ref: '#/components/schemas/NestedInlineOneOff'
+      required:
+      - healthCheckName
   securitySchemes:
     jwtAuth:
       type: http

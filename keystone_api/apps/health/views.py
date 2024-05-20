@@ -9,6 +9,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from drf_spectacular.utils import extend_schema, inline_serializer
 from health_check.mixins import CheckMixin
+from rest_framework import serializers
 from rest_framework.generics import GenericAPIView
 
 __all__ = ['HealthCheckView', 'HealthCheckJsonView', 'HealthCheckPrometheusView']
@@ -37,8 +38,8 @@ class HealthCheckView(GenericAPIView, CheckMixin):
         return HttpResponse()
 
     @extend_schema(responses={
-        '200': inline_serializer('OK', fields=dict()),
-        '500': inline_serializer('Error', fields=dict()),
+        '200': inline_serializer('health_ok', fields=dict()),
+        '500': inline_serializer('health_error', fields=dict()),
     })
     @method_decorator(cache_page(60))
     def get(self, request, *args, **kwargs) -> HttpResponse:
@@ -75,7 +76,15 @@ class HealthCheckJsonView(GenericAPIView, CheckMixin):
         return JsonResponse(data=data, status=200)
 
     @extend_schema(responses={
-        '200': inline_serializer('OK', fields=dict()),
+        '200': inline_serializer('health_json_ok', fields={
+            'healthCheckName': inline_serializer(
+                name='NestedInlineOneOffSerializer',
+                fields={
+                    'status': serializers.IntegerField(default=200),
+                    'message': serializers.CharField(default='working'),
+                    'critical_service': serializers.BooleanField(default=True),
+                })
+        })
     })
     @method_decorator(cache_page(60))
     def get(self, request, *args, **kwargs) -> HttpResponse:
@@ -113,7 +122,7 @@ class HealthCheckPrometheusView(GenericAPIView, CheckMixin):
         return HttpResponse('\n'.join(status_data), status=200, content_type="text/plain")
 
     @extend_schema(responses={
-        '200': inline_serializer('OK', fields=dict()),
+        '200': inline_serializer('health_prom_ok', fields=dict()),
     })
     @method_decorator(cache_page(60))
     def get(self, request, *args, **kwargs) -> HttpResponse:
