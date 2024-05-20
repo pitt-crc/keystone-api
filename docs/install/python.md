@@ -142,6 +142,14 @@ The following unit files are provided as a starting point to daemonize the proce
 
 ## Deploying the Application
 
+Before launching the API, collect migrate the database to the latest schema version and collect any static files.
+See the [Settings](settings.md) page for details on configuring database credentials and the static files location.
+
+```bash
+keystone-api migrate
+keystone-api collectstatic
+```
+
 Gunicorn is the recommended webserver for running the Keystone-API.
 When launching the webserver, use the WSGI entrypoint located under `keystone_api.main.wsgi:application`.
 
@@ -191,35 +199,16 @@ The following unit files are provided as a starting point to daemonize the proce
     WantedBy=sockets.target
     ```
 
-## Grouping Systemd Services
+## Upgrading Application Versions
 
-Instead of managing each of Keystone's services independently, we create a dedicated service to manage them collectively.
-This service applies any necessary database migrations and configured static files before launching other services
-(i.e., Gunicorn, Celery, and Celery Beat).
-
-=== "keystone.service"
-
-    ```toml
-    [Unit]
-    Description=Keystone API
-    Before=keystone-server.socket
-    Before=keystone-worker.service
-    Before=keystone-beat.service
-    
-    [Service]
-    Type=notify
-    User=keystone
-    Group=keystone
-    RuntimeDirectory=keystone
-    WorkingDirectory=/home/keystone
-    EnvironmentFile=/home/keystone/keystone.env
-    ExecStartPre=/home/keystone/.local/bin/keystone-api migrate --no-input
-    ExecStartPre=/home/keystone/.local/bin/keystone-api collectstatic --no-input
-    ```
-
-Grouping systemd services in this way simplifies application upgrades and restarts:
+When upgrading the application, ensure the database and static files are up-to-date before relaunching the application server.
 
 ```bash
+systemcl stop keystone-server
+
 pip install --upgrade keystone-api
-systemcl restart keystone
+keystone-api migrate
+keystone-api collectstatic
+
+systemcl start keystone-server
 ```
