@@ -39,3 +39,5 @@ jobs:
     needs: test
     uses: ./.github/workflows/Publish.yml
     secrets: inherit
+    with:
+      version: ${{needs.version.outputs.version}}
