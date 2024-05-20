@@ -7,7 +7,7 @@ appropriately rendered HTML template or other HTTP response.
 from django.http import HttpResponse, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
-from drf_spectacular.utils import extend_schema, inline_serializer
+from drf_spectacular.utils import extend_schema, inline_serializer, OpenApiExample
 from health_check.mixins import CheckMixin
 from rest_framework import serializers
 from rest_framework.generics import GenericAPIView
