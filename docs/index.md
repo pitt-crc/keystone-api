@@ -32,9 +32,9 @@ For more information, see the resources below.
 
     ---
 
-    Get started with the REST API, designed and built using modern bst practices.
+    Get started with the REST API, designed and built using modern best practices.
 
-    [:octicons-arrow-right-24: API Reference](api/api.md)
+    [:octicons-arrow-right-24: Getting Started](api/getting_started.md)
 
 -   :simple-git: **Contributing**
 
