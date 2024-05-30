@@ -21,7 +21,6 @@ class User(auth_models.AbstractBaseUser, auth_models.PermissionsMixin):
 
     USERNAME_FIELD = 'username'
     EMAIL_FIELD = "email"
-    REQUIRED_FIELDS = ['email', 'first_name', 'last_name']
 
     username = models.CharField('username', max_length=150, unique=True, validators=[UnicodeUsernameValidator()])
     first_name = models.CharField('first name', max_length=150)
