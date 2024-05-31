@@ -110,16 +110,23 @@ class HealthCheckPrometheusView(GenericAPIView, CheckMixin):
             An HTTP response
         """
 
+        prom_format = (
+            '# HELP {name} {module}\n'
+            '# TYPE {name} gauge\n'
+            '{name}{{critical_service="{critical_service}",message="{message}"}} {status:.1f}'
+        )
+
         status_data = [
-            '{name}{{critical_service="{critical_service}",message="{message}"}} {status:.1f}'.format(
+           prom_format.format(
                 name=plugin_name,
                 critical_service=plugin.critical_service,
                 message=plugin.pretty_status(),
-                status=200 if plugin.status else 500
+                status=200 if plugin.status else 500,
+                module=plugin.__class__.__module__ + plugin.__class__.__name__
             ) for plugin_name, plugin in plugins.items()
         ]
 
-        return HttpResponse('\n'.join(status_data), status=200, content_type="text/plain")
+        return HttpResponse('\n\n'.join(status_data), status=200, content_type="text/plain")
 
     @extend_schema(responses={
         '200': inline_serializer('health_prom_ok', fields=dict()),
