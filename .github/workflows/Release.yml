@@ -36,7 +36,7 @@ jobs:
   
   publish:
     name: Publish
-    needs: test
+    needs: [ version, test ]
     uses: ./.github/workflows/Publish.yml
     secrets: inherit
     with:
