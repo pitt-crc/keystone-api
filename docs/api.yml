@@ -4936,7 +4936,7 @@ components:
           maxLength: 10
         endpoint:
           type: string
-          maxLength: 100
+          maxLength: 2048
         response_code:
           type: integer
           maximum: 9223372036854775807
