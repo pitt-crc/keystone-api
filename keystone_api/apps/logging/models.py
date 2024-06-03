@@ -31,7 +31,7 @@ class RequestLog(models.Model):
     """Log entry for an incoming HTTP request"""
 
     method = models.CharField(max_length=10)
-    endpoint = models.CharField(max_length=100)
+    endpoint = models.CharField(max_length=2048)  # Maximum URL length for most browsers
     response_code = models.PositiveSmallIntegerField()
     body_request = models.TextField()
     body_response = models.TextField()
