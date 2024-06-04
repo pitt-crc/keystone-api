@@ -89,4 +89,4 @@ jobs:
           keystone-gitops-id: ${{ secrets.KEYSTONE_GITOPS_ID }}
           keystone-gitops-pk: ${{ secrets.KEYSTONE_GITOPS_PK }}
           repo-name: keystone-api
-          tag: ${{ inputs.version }}
+          tag: v${{ inputs.version }}
