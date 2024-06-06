@@ -5,10 +5,10 @@ from apps.users.models import User
 
 def create_test_user(
     username: str,
+    password: str = "foobar123",
     first_name: str = "foo",
     last_name: str = "bar",
     email: str = "foo@bar.com",
-    password: str = "foobar123",
     **kwargs
 ) -> User:
     """Create a user account for testing purposes
@@ -25,4 +25,4 @@ def create_test_user(
         The saved user account
     """
 
-    return User.objects.create_user(username, first_name, last_name, email, password, **kwargs)
+    return User.objects.create_user(username, password, **kwargs)
