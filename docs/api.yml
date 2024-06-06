@@ -5201,10 +5201,7 @@ components:
             type: integer
           description: Specific permissions for this user.
       required:
-      - email
-      - first_name
       - id
-      - last_name
       - username
     health_json_ok:
       type: object
