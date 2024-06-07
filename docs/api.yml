@@ -4861,13 +4861,16 @@ components:
           maxLength: 150
         first_name:
           type: string
+          nullable: true
           maxLength: 150
         last_name:
           type: string
+          nullable: true
           maxLength: 150
         email:
           type: string
           format: email
+          nullable: true
           title: Email address
           maxLength: 254
         is_active:
@@ -5169,13 +5172,16 @@ components:
           maxLength: 150
         first_name:
           type: string
+          nullable: true
           maxLength: 150
         last_name:
           type: string
+          nullable: true
           maxLength: 150
         email:
           type: string
           format: email
+          nullable: true
           title: Email address
           maxLength: 254
         is_active:
