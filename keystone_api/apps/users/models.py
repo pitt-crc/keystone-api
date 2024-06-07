@@ -23,9 +23,9 @@ class User(auth_models.AbstractBaseUser, auth_models.PermissionsMixin):
     EMAIL_FIELD = "email"
 
     username = models.CharField('username', max_length=150, unique=True, validators=[UnicodeUsernameValidator()])
-    first_name = models.CharField('first name', max_length=150, blank=True)
-    last_name = models.CharField('last name', max_length=150, blank=True)
-    email = models.EmailField('email address', blank=True)
+    first_name = models.CharField('first name', max_length=150, null=True)
+    last_name = models.CharField('last name', max_length=150, null=True)
+    email = models.EmailField('email address', null=True)
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField('staff status', default=False)
