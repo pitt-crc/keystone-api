@@ -13,6 +13,7 @@ from .models import *
 __all__ = [
     'ResearchGroupSerializer',
     'UserSerializer',
+    'RestrictedUserSerializer'
 ]
 
 
@@ -33,4 +34,15 @@ class UserSerializer(serializers.ModelSerializer):
         """Serializer settings"""
 
         model = User
-        exclude = ['password']
+        fields = ['username', 'first_name', 'last_name', 'email', 'is_staff', 'is_active', 'is_ldap_user']
+
+
+class RestrictedUserSerializer(serializers.ModelSerializer):
+    """Object serializer for the `User` class"""
+
+    class Meta:
+        """Serializer settings"""
+
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'email', 'is_staff']
+        read_only_fields = ['is_staff']

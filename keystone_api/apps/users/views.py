@@ -37,4 +37,11 @@ class UserViewSet(viewsets.ModelViewSet):
 
     queryset = User.objects.all()
     permission_classes = [permissions.IsAuthenticated, IsStaffOrIsSelf]
-    serializer_class = UserSerializer
+
+    def get_serializer_class(self):
+        """Return the appropriate data serializer"""
+
+        if self.request.user.is_staff:
+            return UserSerializer
+
+        return RestrictedUserSerializer
