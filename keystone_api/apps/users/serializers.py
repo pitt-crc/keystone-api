@@ -48,6 +48,7 @@ class PrivilegeUserSerializer(serializers.ModelSerializer):
             A new user instance
         """
 
+        # User `create_user` instead of `create` to ensure passwords are salted/hashed properly
         return User.objects.create_user(**validated_data)
 
 

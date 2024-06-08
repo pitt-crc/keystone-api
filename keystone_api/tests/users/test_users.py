@@ -75,12 +75,12 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         )
 
 
-class UserCreation(APITestCase):
-    """Test user creation"""
+class CredentialHandling(APITestCase):
+    """Test the handling of user credentials"""
 
     fixtures = ['multi_research_group.yaml']
 
-    def test_correct_credentials(self) -> None:
+    def test_new_user_credentials(self) -> None:
         """Test the user is created with the correct password
 
         Passwords are provided in plain text but stored in the DB as a hash.
@@ -111,3 +111,16 @@ class UserCreation(APITestCase):
         self.assertEqual(new_user.email, 'foo@bar.com')
         self.assertEqual(new_user.first_name, 'Foo')
         self.assertEqual(new_user.last_name, 'Bar')
+
+    def test_credentials_not_gettable(self) -> None:
+        """Test credentials are not included in get requests"""
+
+        staff_user = User.objects.get(username='staff_user')
+        self.client.force_authenticate(user=staff_user)
+
+        response = self.client.get('/users/users/')
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertTrue(response.json())
+
+        for record in response.json():
+            self.assertNotIn('password', record.keys(), f'Password field found in record: {record}')

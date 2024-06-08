@@ -26,6 +26,8 @@ class StaffWriteAuthenticatedRead(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return request.user.is_authenticated
 
+        return request.user.is_staff
+
 
 class IsStaffOrIsSelf(permissions.BasePermission):
     """Gives read-only permissions to everyone but limits write access to staff users and record owners"""
