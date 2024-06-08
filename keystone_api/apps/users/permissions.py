@@ -35,12 +35,17 @@ class IsStaffOrIsSelf(permissions.BasePermission):
     def has_permission(self, request: Request, view: View) -> bool:
         """Return whether the request has permissions to access the requested resource"""
 
-        is_readonly = request.method in permissions.SAFE_METHODS
-        return is_readonly or request.user.is_staff
+        # All users are allowed to read/update existing records
+        if request.method in permissions.SAFE_METHODS or request.method in ('PUT', 'PATCH'):
+            return True
+
+        # Record creation/deletion is restricted to staff
+        return request.user.is_staff
 
     def has_object_permission(self, request: Request, view: View, obj: Model) -> bool:
         """Return whether the incoming HTTP request has permission to access a database record"""
 
+        # Write operations are restricted to staff and user's modifying their own data
         is_readonly = request.method in permissions.SAFE_METHODS
         is_record_owner = obj == request.user
         return is_readonly or is_record_owner or request.user.is_staff

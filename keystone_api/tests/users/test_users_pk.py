@@ -17,7 +17,7 @@ class EndpointPermissions(APITestCase, CustomAsserts):
     | Authentication              | GET | HEAD | OPTIONS | POST | PUT | PATCH | DELETE | TRACE |
     |-----------------------------|-----|------|---------|------|-----|-------|--------|-------|
     | Anonymous User             | 401 | 401  | 401     | 401  | 401 | 401   | 401    | 401   |
-    | User accessing own user    | 200 | 200  | 200     | 403  | 403 | 403   | 403    | 403   |
+    | User accessing own user    | 200 | 200  | 200     | 403  | 200 | 200   | 403    | 403   |
     | User accessing other user  | 200 | 200  | 200     | 403  | 403 | 403   | 403    | 403   |
     | Staff User                 | 200 | 200  | 200     | 405  | 200 | 200   | 204    | 405   |
     """
@@ -55,8 +55,8 @@ class EndpointPermissions(APITestCase, CustomAsserts):
             head=status.HTTP_200_OK,
             options=status.HTTP_200_OK,
             post=status.HTTP_403_FORBIDDEN,
-            put=status.HTTP_403_FORBIDDEN,
-            patch=status.HTTP_403_FORBIDDEN,
+            put=status.HTTP_200_OK,
+            patch=status.HTTP_200_OK,
             delete=status.HTTP_403_FORBIDDEN,
             trace=status.HTTP_403_FORBIDDEN,
             put_body={'username': 'foobar', 'first_name': 'Foo', 'last_name': 'Bar', 'email': 'foo@bar.com', 'password': 'foobar123'},
@@ -106,7 +106,7 @@ class EndpointPermissions(APITestCase, CustomAsserts):
 
 
 class CredentialHandling(APITestCase):
-    """Test the handling of user credentials"""
+    """Test the getting/setting of user credentials"""
 
     endpoint_pattern = '/users/users/{pk}/'
     fixtures = ['multi_research_group.yaml']
@@ -130,12 +130,12 @@ class CredentialHandling(APITestCase):
         user = User.objects.get(username='generic_user')
         self.client.force_authenticate(user=user)
 
-        response = self.client.put(
+        response = self.client.patch(
             path=self.endpoint_pattern.format(pk=user.id),
             data={'password': 'new_password123'}
         )
 
-        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
         user.refresh_from_db()
         self.assertTrue(user.check_password('new_password123'))
 
@@ -160,7 +160,7 @@ class CredentialHandling(APITestCase):
         self.client.force_authenticate(user=authenticated_user)
 
         other_user = User.objects.get(username='member_2')
-        response = self.client.put(
+        response = self.client.patch(
             path=self.endpoint_pattern.format(pk=other_user.id),
             data={'password': 'new_password123'}
         )
@@ -188,7 +188,7 @@ class CredentialHandling(APITestCase):
         self.client.force_authenticate(user=staff_user)
 
         generic_user = User.objects.get(username='generic_user')
-        response = self.client.put(
+        response = self.client.patch(
             path=self.endpoint_pattern.format(pk=generic_user.id),
             data={'password': 'new_password123'}
         )
