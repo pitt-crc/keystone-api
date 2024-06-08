@@ -7,7 +7,7 @@ appropriately rendered HTML template or other HTTP response.
 from rest_framework import permissions, viewsets
 
 from .models import *
-from .permissions import StaffWriteAuthenticatedRead
+from .permissions import IsStaffOrIsSelf, StaffWriteAuthenticatedRead
 from .serializers import *
 
 __all__ = [
@@ -36,5 +36,5 @@ class UserViewSet(viewsets.ModelViewSet):
     """Read only access to user data"""
 
     queryset = User.objects.all()
-    permission_classes = [permissions.IsAuthenticated, StaffWriteAuthenticatedRead]
+    permission_classes = [permissions.IsAuthenticated, IsStaffOrIsSelf]
     serializer_class = UserSerializer
