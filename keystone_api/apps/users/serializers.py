@@ -44,5 +44,5 @@ class RestrictedUserSerializer(serializers.ModelSerializer):
         """Serializer settings"""
 
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'is_staff']
-        read_only_fields = ['is_staff']
+        fields = ['username', 'first_name', 'last_name', 'email', 'is_staff', 'is_active', 'is_ldap_user']
+        read_only_fields = ['is_staff', 'is_active', 'is_ldap_user']
