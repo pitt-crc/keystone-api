@@ -11,8 +11,8 @@ from rest_framework import serializers
 from .models import *
 
 __all__ = [
+    'PrivilegeUserSerializer',
     'ResearchGroupSerializer',
-    'UserSerializer',
     'RestrictedUserSerializer'
 ]
 
@@ -27,14 +27,28 @@ class ResearchGroupSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class UserSerializer(serializers.ModelSerializer):
+class PrivilegeUserSerializer(serializers.ModelSerializer):
     """Object serializer for the `User` class"""
+
+    password = serializers.CharField(write_only=True)
 
     class Meta:
         """Serializer settings"""
 
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'is_staff', 'is_active', 'is_ldap_user']
+        fields = ['username', 'first_name', 'last_name', 'email', 'is_staff', 'is_active', 'is_ldap_user', 'password']
+
+    def create(self, validated_data: dict) -> User:
+        """Create a new user
+
+        Args:
+            validated_data: Validated user data
+
+        Returns:
+            A new user instance
+        """
+
+        return User.objects.create_user(**validated_data)
 
 
 class RestrictedUserSerializer(serializers.ModelSerializer):

@@ -4,7 +4,8 @@ View objects handle the processing of incoming HTTP requests and return the
 appropriately rendered HTML template or other HTTP response.
 """
 
-from rest_framework import permissions, viewsets
+from rest_framework import permissions, status, viewsets
+from rest_framework.response import Response
 
 from .models import *
 from .permissions import IsStaffOrIsSelf, StaffWriteAuthenticatedRead
@@ -42,6 +43,6 @@ class UserViewSet(viewsets.ModelViewSet):
         """Return the appropriate data serializer"""
 
         if self.request.user.is_staff:
-            return UserSerializer
+            return PrivilegeUserSerializer
 
         return RestrictedUserSerializer

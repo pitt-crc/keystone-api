@@ -56,7 +56,7 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         )
 
     def test_staff_user_permissions(self) -> None:
-        """Test staff users cannot access all user info"""
+        """Test staff users can access all user info"""
 
         user = User.objects.get(username='staff_user')
         self.client.force_authenticate(user=user)
@@ -71,5 +71,43 @@ class EndpointPermissions(APITestCase, CustomAsserts):
             patch=status.HTTP_405_METHOD_NOT_ALLOWED,
             delete=status.HTTP_405_METHOD_NOT_ALLOWED,
             trace=status.HTTP_405_METHOD_NOT_ALLOWED,
-            post_body={'username': 'member_3', 'first_name': 'foo', 'last_name': 'bar', 'email': 'member_3@domain.com', 'password': 'foobar123'}
+            post_body={'username': 'foobar', 'first_name': 'Foo', 'last_name': 'Bar', 'email': 'foo@bar.com', 'password': 'foobar123'}
         )
+
+
+class UserCreation(APITestCase):
+    """Test user creation"""
+
+    fixtures = ['multi_research_group.yaml']
+
+    def test_correct_credentials(self) -> None:
+        """Test the user is created with the correct password
+
+        Passwords are provided in plain text but stored in the DB as a hash.
+        """
+
+        staff_user = User.objects.get(username='staff_user')
+        self.client.force_authenticate(user=staff_user)
+
+        response = self.client.post(
+            path='/users/users/',
+            data={
+                'username': 'foobar',
+                'password': 'foobar123',
+                'first_name': 'Foo',
+                'last_name': 'Bar',
+                'email': 'foo@bar.com'
+            }
+        )
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+        # Check the password is stored in the database, but not in plain text
+        new_user = User.objects.get(username='foobar')
+        self.assertTrue(new_user.check_password('foobar123'))
+        self.assertNotEqual(new_user.password, 'foobar123')
+
+        # Verify additional fields
+        self.assertEqual(new_user.email, 'foo@bar.com')
+        self.assertEqual(new_user.first_name, 'Foo')
+        self.assertEqual(new_user.last_name, 'Bar')
