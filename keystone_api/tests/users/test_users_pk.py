@@ -59,7 +59,12 @@ class EndpointPermissions(APITestCase, CustomAsserts):
             patch=status.HTTP_200_OK,
             delete=status.HTTP_403_FORBIDDEN,
             trace=status.HTTP_403_FORBIDDEN,
-            put_body={'username': 'foobar', 'first_name': 'Foo', 'last_name': 'Bar', 'email': 'foo@bar.com', 'password': 'foobar123'},
+            put_body={
+                'username': 'foobar',
+                'password': 'foobar123',
+                'first_name': 'Foo',
+                'last_name': 'Bar',
+                'email': 'foo@bar.com'},
             patch_body={'email': 'member_3@newdomain.com'},
         )
 
@@ -100,7 +105,12 @@ class EndpointPermissions(APITestCase, CustomAsserts):
             patch=status.HTTP_200_OK,
             delete=status.HTTP_204_NO_CONTENT,
             trace=status.HTTP_405_METHOD_NOT_ALLOWED,
-            put_body={'username': 'foobar', 'first_name': 'Foo', 'last_name': 'Bar', 'email': 'foo@bar.com', 'password': 'foobar123'},
+            put_body={
+                'username': 'foobar',
+                'password': 'foobar123',
+                'first_name': 'Foo',
+                'last_name': 'Bar',
+                'email': 'foo@bar.com'},
             patch_body={'email': 'foo@bar.com'},
         )
 
@@ -168,7 +178,7 @@ class CredentialHandling(APITestCase):
         self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
     def test_staff_get_password(self) -> None:
-        """Test the password field is not included in get requests from staff users"""
+        """Test a staff user cannot get another user's password"""
 
         staff_user = User.objects.get(username='staff_user')
         self.client.force_authenticate(user=staff_user)

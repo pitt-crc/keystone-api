@@ -71,7 +71,12 @@ class EndpointPermissions(APITestCase, CustomAsserts):
             patch=status.HTTP_405_METHOD_NOT_ALLOWED,
             delete=status.HTTP_405_METHOD_NOT_ALLOWED,
             trace=status.HTTP_405_METHOD_NOT_ALLOWED,
-            post_body={'username': 'foobar', 'first_name': 'Foo', 'last_name': 'Bar', 'email': 'foo@bar.com', 'password': 'foobar123'}
+            post_body={
+                'username': 'foobar',
+                'password': 'foobar123',
+                'first_name': 'Foo',
+                'last_name': 'Bar',
+                'email': 'foo@bar.com'}
         )
 
 

@@ -19,7 +19,7 @@ __all__ = ['ResearchGroup', 'User']
 class User(auth_models.AbstractBaseUser, auth_models.PermissionsMixin):
     """Proxy model for the built-in django `User` model"""
 
-    # These values should always be defined when extended AbstractBaseUser
+    # These values should always be defined when extending AbstractBaseUser
     USERNAME_FIELD = 'username'
     EMAIL_FIELD = "email"
     REQUIRED_FIELDS = []

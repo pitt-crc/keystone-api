@@ -6,6 +6,7 @@ They encapsulate object serialization, data validation, and database object
 creation.
 """
 
+from django.contrib.auth import password_validation
 from rest_framework import serializers
 
 from .models import *
@@ -60,13 +61,17 @@ class RestrictedUserSerializer(serializers.ModelSerializer):
         """
 
         if 'password' in validated_data:
-            instance.set_password(validated_data.pop('password'))
+            password = validated_data.pop('password')
+            password_validation.validate_password(password)
+            instance.set_password(password)
 
         return super().update(instance, validated_data)
 
 
 class PrivilegeUserSerializer(RestrictedUserSerializer):
     """Object serializer for the `User` class"""
+
+    password = serializers.CharField(write_only=True)
 
     class Meta:
         """Serializer settings"""
@@ -84,5 +89,5 @@ class PrivilegeUserSerializer(RestrictedUserSerializer):
             A new user instance
         """
 
-        # User `create_user` instead of `create` to ensure passwords are salted/hashed properly
+        # Use `create_user` instead of `create` to ensure passwords are salted/hashed properly
         return User.objects.create_user(**validated_data)

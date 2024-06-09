@@ -35,7 +35,8 @@ class IsStaffOrIsSelf(permissions.BasePermission):
     def has_permission(self, request: Request, view: View) -> bool:
         """Return whether the request has permissions to access the requested resource"""
 
-        # All users are allowed to read/update existing records
+        # Allow all users to read/update existing records
+        # Rely on object level permissions for further refinement of update permissions
         if request.method in permissions.SAFE_METHODS or request.method in ('PUT', 'PATCH'):
             return True
 
