@@ -7,7 +7,7 @@ appropriately rendered HTML template or other HTTP response.
 from rest_framework import permissions, viewsets
 
 from .models import *
-from .permissions import StaffWriteAuthenticatedRead
+from .permissions import IsGroupAdminOrReadOnly, IsSelfOrReadOnly
 from .serializers import *
 
 __all__ = [
@@ -20,7 +20,7 @@ class ResearchGroupViewSet(viewsets.ModelViewSet):
     """Manage user membership in research groups"""
 
     queryset = ResearchGroup.objects.all()
-    permission_classes = [permissions.IsAuthenticated, StaffWriteAuthenticatedRead]
+    permission_classes = [permissions.IsAuthenticated, IsGroupAdminOrReadOnly]
     serializer_class = ResearchGroupSerializer
 
     def get_queryset(self) -> list[ResearchGroup]:
@@ -36,5 +36,12 @@ class UserViewSet(viewsets.ModelViewSet):
     """Read only access to user data"""
 
     queryset = User.objects.all()
-    permission_classes = [permissions.IsAuthenticated, StaffWriteAuthenticatedRead]
-    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated, IsSelfOrReadOnly]
+
+    def get_serializer_class(self):
+        """Return the appropriate data serializer"""
+
+        if self.request.user.is_staff:
+            return PrivilegeUserSerializer
+
+        return RestrictedUserSerializer

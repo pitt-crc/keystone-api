@@ -16,10 +16,10 @@ class EndpointPermissions(APITestCase, CustomAsserts):
 
     | Authentication              | GET | HEAD | OPTIONS | POST | PUT | PATCH | DELETE | TRACE |
     |-----------------------------|-----|------|---------|------|-----|-------|--------|-------|
-    | Anonymous User             | 401 | 401  | 401     | 401  | 401 | 401   | 401    | 401   |
-    | User accessing own user    | 200 | 200  | 200     | 403  | 403 | 403   | 403    | 403   |
-    | User accessing other user  | 200 | 200  | 200     | 403  | 403 | 403   | 403    | 403   |
-    | Staff User                 | 200 | 200  | 200     | 405  | 200 | 200   | 204    | 405   |
+    | Anonymous User              | 401 | 401  | 401     | 401  | 401 | 401   | 401    | 401   |
+    | User accessing own account  | 200 | 200  | 200     | 403  | 200 | 200   | 403    | 403   |
+    | User accessing other user   | 200 | 200  | 200     | 403  | 403 | 403   | 403    | 403   |
+    | Staff User                  | 200 | 200  | 200     | 405  | 200 | 200   | 204    | 405   |
     """
 
     endpoint_pattern = '/users/users/{pk}/'
@@ -55,12 +55,16 @@ class EndpointPermissions(APITestCase, CustomAsserts):
             head=status.HTTP_200_OK,
             options=status.HTTP_200_OK,
             post=status.HTTP_403_FORBIDDEN,
-            put=status.HTTP_403_FORBIDDEN,
-            patch=status.HTTP_403_FORBIDDEN,
+            put=status.HTTP_200_OK,
+            patch=status.HTTP_200_OK,
             delete=status.HTTP_403_FORBIDDEN,
             trace=status.HTTP_403_FORBIDDEN,
-            put_body={'username': 'member_3', 'first_name': 'foo', 'last_name': 'bar', 'email': 'member_3@domain.com',
-                      'password': 'foobar123'},
+            put_body={
+                'username': 'foobar',
+                'password': 'foobar123',
+                'first_name': 'Foo',
+                'last_name': 'Bar',
+                'email': 'foo@bar.com'},
             patch_body={'email': 'member_3@newdomain.com'},
         )
 
@@ -101,7 +105,104 @@ class EndpointPermissions(APITestCase, CustomAsserts):
             patch=status.HTTP_200_OK,
             delete=status.HTTP_204_NO_CONTENT,
             trace=status.HTTP_405_METHOD_NOT_ALLOWED,
-            put_body={'username': 'member_3', 'first_name': 'foo', 'last_name': 'bar', 'email': 'member_3@domain.com',
-                      'password': 'foobar123'},
-            patch_body={'email': 'member_3@newdomain.com'},
+            put_body={
+                'username': 'foobar',
+                'password': 'foobar123',
+                'first_name': 'Foo',
+                'last_name': 'Bar',
+                'email': 'foo@bar.com'},
+            patch_body={'email': 'foo@bar.com'},
         )
+
+
+class CredentialHandling(APITestCase):
+    """Test the getting/setting of user credentials"""
+
+    endpoint_pattern = '/users/users/{pk}/'
+    fixtures = ['multi_research_group.yaml']
+
+    def test_user_get_own_password(self) -> None:
+        """Test a user cannot get their own password"""
+
+        user = User.objects.get(username='generic_user')
+        self.client.force_authenticate(user=user)
+
+        response = self.client.get(
+            self.endpoint_pattern.format(pk=user.id)
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertNotIn('password', response.json())
+
+    def test_user_set_own_password(self) -> None:
+        """Test a user can set their own password"""
+
+        user = User.objects.get(username='generic_user')
+        self.client.force_authenticate(user=user)
+
+        response = self.client.patch(
+            path=self.endpoint_pattern.format(pk=user.id),
+            data={'password': 'new_password123'}
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        user.refresh_from_db()
+        self.assertTrue(user.check_password('new_password123'))
+
+    def test_user_get_others_password(self) -> None:
+        """Test a user cannot get another user's password"""
+
+        authenticated_user = User.objects.get(username='member_1')
+        self.client.force_authenticate(user=authenticated_user)
+
+        other_user = User.objects.get(username='member_2')
+        response = self.client.get(
+            self.endpoint_pattern.format(pk=other_user.id),
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertNotIn('password', response.data)
+
+    def test_user_set_others_password(self) -> None:
+        """Test a user cannot set another user's password"""
+
+        authenticated_user = User.objects.get(username='member_1')
+        self.client.force_authenticate(user=authenticated_user)
+
+        other_user = User.objects.get(username='member_2')
+        response = self.client.patch(
+            path=self.endpoint_pattern.format(pk=other_user.id),
+            data={'password': 'new_password123'}
+        )
+
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+
+    def test_staff_get_password(self) -> None:
+        """Test a staff user cannot get another user's password"""
+
+        staff_user = User.objects.get(username='staff_user')
+        self.client.force_authenticate(user=staff_user)
+
+        generic_user = User.objects.get(username='generic_user')
+        response = self.client.get(
+            self.endpoint_pattern.format(pk=generic_user.id)
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertNotIn('password', response.json())
+
+    def test_staff_set_password(self) -> None:
+        """Test the password field is settable by staff users"""
+
+        staff_user = User.objects.get(username='staff_user')
+        self.client.force_authenticate(user=staff_user)
+
+        generic_user = User.objects.get(username='generic_user')
+        response = self.client.patch(
+            path=self.endpoint_pattern.format(pk=generic_user.id),
+            data={'password': 'new_password123'}
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        generic_user.refresh_from_db()
+        self.assertTrue(generic_user.check_password('new_password123'))
