@@ -31,7 +31,7 @@ class AllocationViewSet(viewsets.ModelViewSet):
     def get_queryset(self) -> list[Allocation]:
         """Return a list of allocations for the currently authenticated user"""
 
-        if self.request.user.is_staff or self.request.user.is_superuser:
+        if self.request.user.is_staff:
             return self.queryset
 
         research_groups = ResearchGroup.objects.groups_for_user(self.request.user)
@@ -48,7 +48,7 @@ class AllocationRequestViewSet(viewsets.ModelViewSet):
     def get_queryset(self) -> list[AllocationRequest]:
         """Return a list of allocation requests for the currently authenticated user"""
 
-        if self.request.user.is_staff or self.request.user.is_superuser:
+        if self.request.user.is_staff:
             return self.queryset
 
         research_groups = ResearchGroup.objects.groups_for_user(self.request.user)
@@ -65,7 +65,7 @@ class AllocationRequestReviewViewSet(viewsets.ModelViewSet):
     def get_queryset(self) -> list[Allocation]:
         """Return a list of allocation reviews for the currently authenticated user"""
 
-        if self.request.user.is_staff or self.request.user.is_superuser:
+        if self.request.user.is_staff:
             return self.queryset
 
         research_groups = ResearchGroup.objects.groups_for_user(self.request.user)
