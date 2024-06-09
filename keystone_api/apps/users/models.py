@@ -30,13 +30,13 @@ class User(auth_models.AbstractBaseUser, auth_models.PermissionsMixin):
     first_name = models.CharField('first name', max_length=150)
     last_name = models.CharField('last name', max_length=150)
     email = models.EmailField('email address')
-    last_login = models.DateTimeField('last login', null=True)
 
     # Administrative values for user management/permissions
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField('staff status', default=False)
     is_ldap_user = models.BooleanField('LDAP User', default=False)
     date_joined = models.DateTimeField('date joined', default=timezone.now)
+    last_login = models.DateTimeField('last login', null=True)
 
     objects = UserManager()
 

@@ -31,14 +31,13 @@ class ResearchGroupSerializer(serializers.ModelSerializer):
 class RestrictedUserSerializer(serializers.ModelSerializer):
     """Object serializer for the `User` class with administrative fields marked as read only"""
 
-    password = serializers.CharField(write_only=True)
-
     class Meta:
         """Serializer settings"""
 
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'is_staff', 'is_active', 'is_ldap_user', 'password']
-        read_only_fields = ['is_staff', 'is_active', 'is_ldap_user']
+        fields = '__all__'
+        read_only_fields = ['is_active', 'is_staff', 'is_ldap_user', 'date_joined', 'last_login']
+        extra_kwargs = {'password': {'write_only': True}}
 
     def validate(self, attrs: dict) -> None:
         """Validate user attributes match the ORM data model
@@ -72,6 +71,7 @@ class RestrictedUserSerializer(serializers.ModelSerializer):
             An instance reflecting the new database state
         """
 
+        # Use the `set_password` method to ensure proper salting/hashing
         if 'password' in validated_data:
             password = validated_data.pop('password')
             password_validation.validate_password(password)
@@ -83,13 +83,13 @@ class RestrictedUserSerializer(serializers.ModelSerializer):
 class PrivilegeUserSerializer(RestrictedUserSerializer):
     """Object serializer for the `User` class"""
 
-    password = serializers.CharField(write_only=True)
-
     class Meta:
         """Serializer settings"""
 
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'is_staff', 'is_active', 'is_ldap_user', 'password']
+        fields = '__all__'
+        read_only_fields = ['date_joined', 'last_login']
+        extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data: dict) -> User:
         """Create a new user
