@@ -11,10 +11,10 @@ from rest_framework import permissions
 from rest_framework.request import Request
 from rest_framework.views import View
 
-__all__ = ['IsStaffOrIsSelf', 'StaffWriteAuthenticatedRead']
+__all__ = ['IsGroupAdminOrReadOnly', 'IsSelfOrReadOnly']
 
 
-class StaffWriteAuthenticatedRead(permissions.BasePermission):
+class IsGroupAdminOrReadOnly(permissions.BasePermission):
     """Grant read-only access is granted to all authenticated users.
 
     Staff users retain all read/write permissions.
@@ -29,7 +29,7 @@ class StaffWriteAuthenticatedRead(permissions.BasePermission):
         return request.user.is_staff
 
 
-class IsStaffOrIsSelf(permissions.BasePermission):
+class IsSelfOrReadOnly(permissions.BasePermission):
     """Gives read-only permissions to everyone but limits write access to staff users and record owners"""
 
     def has_permission(self, request: Request, view: View) -> bool:
@@ -40,13 +40,13 @@ class IsStaffOrIsSelf(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS or request.method in ('PUT', 'PATCH'):
             return True
 
-        # Record creation/deletion is restricted to staff
+        # Record creation/deletion is allowed for staff
         return request.user.is_staff
 
     def has_object_permission(self, request: Request, view: View, obj: Model) -> bool:
         """Return whether the incoming HTTP request has permission to access a database record"""
 
         # Write operations are restricted to staff and user's modifying their own data
-        is_readonly = request.method in permissions.SAFE_METHODS
         is_record_owner = obj == request.user
+        is_readonly = request.method in permissions.SAFE_METHODS
         return is_readonly or is_record_owner or request.user.is_staff
