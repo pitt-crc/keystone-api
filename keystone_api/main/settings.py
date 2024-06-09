@@ -232,7 +232,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(seconds=env.int('SECURE_ACCESS_TOKEN_LIFETIME', 5 * 60)),
-    'REFRESH_TOKEN_LIFETIME': timedelta(seconds=env.int('SECURE_REFRESH_TOKEN_LIFETIME', 24 * 60 * 60))
+    'REFRESH_TOKEN_LIFETIME': timedelta(seconds=env.int('SECURE_REFRESH_TOKEN_LIFETIME', 24 * 60 * 60)),
+    'UPDATE_LAST_LOGIN': True
 }
 
 # Static file handling (CSS, JavaScript, Images)
