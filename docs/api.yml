@@ -4844,10 +4844,22 @@ components:
       description: Object serializer for the `User` class with administrative fields
         marked as read only
       properties:
+        id:
+          type: integer
+          readOnly: true
+        is_superuser:
+          type: boolean
+          title: Superuser status
+          description: Designates that this user has all permissions without explicitly
+            assigning them.
         username:
           type: string
           pattern: ^[\w.@+-]+$
           maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
         first_name:
           type: string
           maxLength: 150
@@ -4859,20 +4871,37 @@ components:
           format: email
           title: Email address
           maxLength: 254
+        is_active:
+          type: boolean
+          readOnly: true
         is_staff:
           type: boolean
           readOnly: true
           title: Staff status
-        is_active:
-          type: boolean
-          readOnly: true
         is_ldap_user:
           type: boolean
           readOnly: true
           title: LDAP User
-        password:
+        date_joined:
           type: string
-          writeOnly: true
+          format: date-time
+          readOnly: true
+        last_login:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        groups:
+          type: array
+          items:
+            type: integer
+          description: The groups this user belongs to. A user will get all permissions
+            granted to each of their groups.
+        user_permissions:
+          type: array
+          items:
+            type: integer
+          description: Specific permissions for this user.
     Publication:
       type: object
       description: Object serializer for the `Publication` class
@@ -4975,10 +5004,22 @@ components:
       description: Object serializer for the `User` class with administrative fields
         marked as read only
       properties:
+        id:
+          type: integer
+          readOnly: true
+        is_superuser:
+          type: boolean
+          title: Superuser status
+          description: Designates that this user has all permissions without explicitly
+            assigning them.
         username:
           type: string
           pattern: ^[\w.@+-]+$
           maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
         first_name:
           type: string
           maxLength: 150
@@ -4990,26 +5031,46 @@ components:
           format: email
           title: Email address
           maxLength: 254
+        is_active:
+          type: boolean
+          readOnly: true
         is_staff:
           type: boolean
           readOnly: true
           title: Staff status
-        is_active:
-          type: boolean
-          readOnly: true
         is_ldap_user:
           type: boolean
           readOnly: true
           title: LDAP User
-        password:
+        date_joined:
           type: string
-          writeOnly: true
+          format: date-time
+          readOnly: true
+        last_login:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        groups:
+          type: array
+          items:
+            type: integer
+          description: The groups this user belongs to. A user will get all permissions
+            granted to each of their groups.
+        user_permissions:
+          type: array
+          items:
+            type: integer
+          description: Specific permissions for this user.
       required:
+      - date_joined
       - email
       - first_name
+      - id
       - is_active
       - is_ldap_user
       - is_staff
+      - last_login
       - last_name
       - password
       - username
