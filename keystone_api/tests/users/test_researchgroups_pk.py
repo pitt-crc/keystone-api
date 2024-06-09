@@ -14,12 +14,14 @@ class EndpointPermissions(APITestCase, CustomAsserts):
 
     Endpoint permissions are tested against the following matrix of HTTP responses.
 
-    | Authentication              | GET | HEAD | OPTIONS | POST | PUT | PATCH | DELETE | TRACE |
-    |-----------------------------|-----|------|---------|------|-----|-------|--------|-------|
-    | Anonymous User              | 401 | 401  | 401     | 401  | 401 | 401   | 401    | 401   |
-    | User accessing own group    | 200 | 200  | 200     | 403  | 403 | 403   | 403    | 403   |
-    | User accessing other group  | 404 | 404  | 200     | 403  | 403 | 403   | 403    | 403   |
-    | Staff User                  | 200 | 200  | 200     | 405  | 200 | 200   | 204    | 405   |
+    | Authentication               | GET | HEAD | OPTIONS | POST | PUT | PATCH | DELETE | TRACE |
+    |------------------------------|-----|------|---------|------|-----|-------|--------|-------|
+    | Anonymous User               | 401 | 401  | 401     | 401  | 401 | 401   | 401    | 401   |
+    | Nonmember accessing group    | 200 | 200  | 200     | 405  | 403 | 403   | 403    | 403   |
+    | Group member accessing group | 200 | 200  | 200     | 405  | 403 | 403   | 403    | 403   |
+    | Group admin accessing group  | 200 | 200  | 200     | 405  | 200 | 200   | 204    | 403   |
+    | Group PI accessing group     | 200 | 200  | 200     | 405  | 200 | 200   | 204    | 403   |
+    | Staff User                   | 200 | 200  | 200     | 405  | 200 | 200   | 204    | 405   |
     """
 
     endpoint_pattern = '/users/researchgroups/{pk}/'
@@ -41,10 +43,29 @@ class EndpointPermissions(APITestCase, CustomAsserts):
             trace=status.HTTP_401_UNAUTHORIZED,
         )
 
-    def test_authenticated_user_same_group(self) -> None:
-        """Test permissions for authenticated users accessing records owned by their research group"""
+    def test_authenticated_user_different_group(self) -> None:
+        """Test authenticated users have read-only permissions to research groups"""
 
-        # Define a user / record endpoint from the SAME research groups
+        # Define a user / record endpoint from DIFFERENT research groups
+        endpoint = self.endpoint_pattern.format(pk=1)
+        user = User.objects.get(username='member_2')
+        self.client.force_authenticate(user=user)
+
+        self.assert_http_responses(
+            endpoint,
+            get=status.HTTP_200_OK,
+            head=status.HTTP_200_OK,
+            options=status.HTTP_200_OK,
+            post=status.HTTP_405_METHOD_NOT_ALLOWED,
+            put=status.HTTP_403_FORBIDDEN,
+            patch=status.HTTP_403_FORBIDDEN,
+            delete=status.HTTP_403_FORBIDDEN,
+            trace=status.HTTP_403_FORBIDDEN,
+        )
+
+    def test_authenticated_group_member(self) -> None:
+        """Test group members have read-only permissions for their own research group"""
+
         endpoint = self.endpoint_pattern.format(pk=1)
         user = User.objects.get(username='member_1')
         self.client.force_authenticate(user=user)
@@ -54,31 +75,53 @@ class EndpointPermissions(APITestCase, CustomAsserts):
             get=status.HTTP_200_OK,
             head=status.HTTP_200_OK,
             options=status.HTTP_200_OK,
-            post=status.HTTP_403_FORBIDDEN,
+            post=status.HTTP_405_METHOD_NOT_ALLOWED,
             put=status.HTTP_403_FORBIDDEN,
             patch=status.HTTP_403_FORBIDDEN,
             delete=status.HTTP_403_FORBIDDEN,
             trace=status.HTTP_403_FORBIDDEN,
         )
 
-    def test_authenticated_user_different_group(self) -> None:
-        """Test permissions for authenticated users accessing records owned by someone else's research group"""
+    def test_authenticated_group_admin(self) -> None:
+        """Test group admins have read and write permissions for their own research group"""
 
-        # Define a user / record endpoint from DIFFERENT research groups
         endpoint = self.endpoint_pattern.format(pk=1)
-        user = User.objects.get(username='member_2')
+        user = User.objects.get(username='group_admin_1')
         self.client.force_authenticate(user=user)
 
         self.assert_http_responses(
             endpoint,
-            get=status.HTTP_404_NOT_FOUND,
-            head=status.HTTP_404_NOT_FOUND,
+            get=status.HTTP_200_OK,
+            head=status.HTTP_200_OK,
             options=status.HTTP_200_OK,
-            post=status.HTTP_403_FORBIDDEN,
-            put=status.HTTP_403_FORBIDDEN,
-            patch=status.HTTP_403_FORBIDDEN,
-            delete=status.HTTP_403_FORBIDDEN,
+            post=status.HTTP_405_METHOD_NOT_ALLOWED,
+            put=status.HTTP_200_OK,
+            patch=status.HTTP_200_OK,
+            delete=status.HTTP_204_NO_CONTENT,
             trace=status.HTTP_403_FORBIDDEN,
+            put_body={'name': 'Research Group 3', 'pi': 1, 'admins': [2], 'members': [3]},
+            patch_body={'admins': []},
+        )
+
+    def test_authenticated_group_pi(self) -> None:
+        """Test group PIs have read and write permissions for their own research group"""
+
+        endpoint = self.endpoint_pattern.format(pk=1)
+        user = User.objects.get(username='pi_1')
+        self.client.force_authenticate(user=user)
+
+        self.assert_http_responses(
+            endpoint,
+            get=status.HTTP_200_OK,
+            head=status.HTTP_200_OK,
+            options=status.HTTP_200_OK,
+            post=status.HTTP_405_METHOD_NOT_ALLOWED,
+            put=status.HTTP_200_OK,
+            patch=status.HTTP_200_OK,
+            delete=status.HTTP_204_NO_CONTENT,
+            trace=status.HTTP_403_FORBIDDEN,
+            put_body={'name': 'Research Group 3', 'pi': 1, 'admins': [2], 'members': [3]},
+            patch_body={'admins': []},
         )
 
     def test_staff_user_permissions(self) -> None:
