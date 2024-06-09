@@ -16,10 +16,10 @@ class EndpointPermissions(APITestCase, CustomAsserts):
 
     | Authentication              | GET | HEAD | OPTIONS | POST | PUT | PATCH | DELETE | TRACE |
     |-----------------------------|-----|------|---------|------|-----|-------|--------|-------|
-    | Anonymous User             | 401 | 401  | 401     | 401  | 401 | 401   | 401    | 401   |
-    | User accessing own user    | 200 | 200  | 200     | 403  | 200 | 200   | 403    | 403   |
-    | User accessing other user  | 200 | 200  | 200     | 403  | 403 | 403   | 403    | 403   |
-    | Staff User                 | 200 | 200  | 200     | 405  | 200 | 200   | 204    | 405   |
+    | Anonymous User              | 401 | 401  | 401     | 401  | 401 | 401   | 401    | 401   |
+    | User accessing own account  | 200 | 200  | 200     | 403  | 200 | 200   | 403    | 403   |
+    | User accessing other user   | 200 | 200  | 200     | 403  | 403 | 403   | 403    | 403   |
+    | Staff User                  | 200 | 200  | 200     | 405  | 200 | 200   | 204    | 405   |
     """
 
     endpoint_pattern = '/users/users/{pk}/'
