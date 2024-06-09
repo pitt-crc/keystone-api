@@ -129,3 +129,23 @@ class CredentialHandling(APITestCase):
 
         for record in response.json():
             self.assertNotIn('password', record.keys(), f'Password field found in record: {record}')
+
+    def test_passwords_validated(self) -> None:
+        """Test passwords are validated against security requirements"""
+
+        staff_user = User.objects.get(username='staff_user')
+        self.client.force_authenticate(user=staff_user)
+
+        response = self.client.post(
+            path='/users/users/',
+            data={
+                'username': 'foobar',
+                'password': 'short',
+                'first_name': 'Foo',
+                'last_name': 'Bar',
+                'email': 'foo@bar.com'
+            }
+        )
+
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertIn('This password is too short.', response.content.decode())

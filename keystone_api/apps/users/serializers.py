@@ -40,6 +40,18 @@ class RestrictedUserSerializer(serializers.ModelSerializer):
         fields = ['username', 'first_name', 'last_name', 'email', 'is_staff', 'is_active', 'is_ldap_user', 'password']
         read_only_fields = ['is_staff', 'is_active', 'is_ldap_user']
 
+    def validate(self, attrs: dict) -> None:
+        """Validate user attributes match the ORM data model
+
+        Args:
+            attrs: Dictionary of user attributes
+        """
+
+        if 'password' in attrs:
+            password_validation.validate_password(attrs['password'])
+
+        return super().validate(attrs)
+
     def create(self, validated_data: dict) -> None:
         """Raises an error when attempting to create a new record
 
