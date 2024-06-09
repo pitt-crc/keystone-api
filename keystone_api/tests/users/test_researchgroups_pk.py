@@ -16,12 +16,12 @@ class EndpointPermissions(APITestCase, CustomAsserts):
 
     | Authentication               | GET | HEAD | OPTIONS | POST | PUT | PATCH | DELETE | TRACE |
     |------------------------------|-----|------|---------|------|-----|-------|--------|-------|
-    | Anonymous User               | 401 | 401  | 401     | 401  | 401 | 401   | 401    | 401   |
+    | Anonymous user               | 401 | 401  | 401     | 401  | 401 | 401   | 401    | 401   |
     | Nonmember accessing group    | 200 | 200  | 200     | 405  | 403 | 403   | 403    | 403   |
     | Group member accessing group | 200 | 200  | 200     | 405  | 403 | 403   | 403    | 403   |
     | Group admin accessing group  | 200 | 200  | 200     | 405  | 200 | 200   | 204    | 403   |
     | Group PI accessing group     | 200 | 200  | 200     | 405  | 200 | 200   | 204    | 403   |
-    | Staff User                   | 200 | 200  | 200     | 405  | 200 | 200   | 204    | 405   |
+    | Staff user                   | 200 | 200  | 200     | 405  | 200 | 200   | 204    | 405   |
     """
 
     endpoint_pattern = '/users/researchgroups/{pk}/'
