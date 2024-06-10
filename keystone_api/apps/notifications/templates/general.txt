@@ -1,0 +1,6 @@
+<p>Dear {{ user.username }},</p>
+
+<p>{{ message }}</p>
+
+<p>Sincerely,</p>
+<p>The keystone HPC utility</p>
