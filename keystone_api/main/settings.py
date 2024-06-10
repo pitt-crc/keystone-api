@@ -109,7 +109,7 @@ TEMPLATES = [
 
 # Base styling for the Admin UI
 
-USE_THOUSAND_SEPARATOR=True
+USE_THOUSAND_SEPARATOR = True
 JAZZMIN_SETTINGS = {
     "site_title": "Keystone",
     "site_header": "Keystone",
@@ -174,6 +174,22 @@ CELERY_BROKER_URL = REDIS_URL + f'/{_redis_db}'
 CELERY_CACHE_BACKEND = 'django-cache'
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_RESULT_EXTENDED = True
+
+# Email server
+
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_FILE_PATH = env.path('EMAIL_FILE_PATH', BASE_DIR / 'email')
+
+EMAIL_HOST = env.str('EMAIL_HOST', 'localhost')
+EMAIL_PORT = env.int('EMAIL_PORT', 587)
+EMAIL_HOST_USER = env.str('EMAIL_HOST_USER', None)
+EMAIL_HOST_PASSWORD = env.str('your_email_password', None)
+EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', True)
 
 # Database
 
