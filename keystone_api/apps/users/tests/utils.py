@@ -5,9 +5,6 @@ from apps.users.models import User
 
 def create_test_user(
     username: str,
-    first_name: str = "foo",
-    last_name: str = "bar",
-    email: str = "foo@bar.com",
     password: str = "foobar123",
     **kwargs
 ) -> User:
@@ -15,9 +12,6 @@ def create_test_user(
 
     Args:
         username: The account username
-        first_name: The user's first name
-        last_name: The user's last name
-        email: A valid email address
         password: The account password
         **kwargs: Any other values in the user model
 
@@ -25,4 +19,8 @@ def create_test_user(
         The saved user account
     """
 
-    return User.objects.create_user(username, first_name, last_name, email, password, **kwargs)
+    kwargs.setdefault('first_name', "foo")
+    kwargs.setdefault('last_name', "bar")
+    kwargs.setdefault('email', "foo@bar.com")
+
+    return User.objects.create_user(username, password, **kwargs)
