@@ -79,11 +79,11 @@ Securing your production email server with a username/password is recommended, b
 
 | Setting Name              | Default Value            | Description                                                   |
 |---------------------------|--------------------------|---------------------------------------------------------------|
-| `EMAIL_HOST`              | `localhost`              |                                                               |
-| `EMAIL_PORT`              | `587`                    |                                                               |
-| `EMAIL_HOST_USER`         |                          |                                                               |
-| `EMAIL_HOST_PASSWORD`     |                          |                                                               |
-| `EMAIL_USE_TLS`           | `True`                   |                                                               |
+| `EMAIL_HOST`              | `localhost`              | The host server to use for sending email.                     |
+| `EMAIL_PORT`              | `25`                     | Port to use for the SMTP server.                              |
+| `EMAIL_HOST_USER`         |                          | Username to use for the SMTP server.                          |
+| `EMAIL_HOST_PASSWORD`     |                          | Password to use for the SMTP server.                          |
+| `EMAIL_USE_TLS`           | `False`                  | Use a TLS connection to the SMTP server.                      |
 
 ## LDAP Authentication
 

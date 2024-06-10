@@ -186,10 +186,10 @@ else:
 EMAIL_FILE_PATH = env.path('DEBUG_EMAIL_DIR', BASE_DIR / 'email_files')
 
 EMAIL_HOST = env.str('EMAIL_HOST', 'localhost')
-EMAIL_PORT = env.int('EMAIL_PORT', 587)
-EMAIL_HOST_USER = env.str('EMAIL_HOST_USER', None)
-EMAIL_HOST_PASSWORD = env.str('your_email_password', None)
-EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', True)
+EMAIL_PORT = env.int('EMAIL_PORT', 25)
+EMAIL_HOST_USER = env.str('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = env.str('your_email_password', '')
+EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', False)
 
 # Database
 
