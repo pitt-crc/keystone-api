@@ -1,3 +1,11 @@
+"""ORM for application specific database models.
+
+Model objects are used to define the expected schema for individual database
+tables and provide an object-oriented interface for executing database logic.
+Each model reflects a different database and defines low-level defaults for how
+the associated table/fields/records are presented by parent interfaces.
+"""
+
 from __future__ import annotations
 
 from django.contrib.auth.models import User
@@ -12,12 +20,13 @@ class Notification(models.Model):
     class NotificationType(models.TextChoices):
         resource_usage = 'RU', 'Resource Usage'
         request_status = 'SU', 'Status Update'
+        general_message = 'GM', 'General Message'
 
     time = models.DateTimeField(auto_now_add=True)
     read = models.BooleanField(default=False)
     message = models.TextField()
     metadata = models.JSONField(null=True)
-    notification_type = models.CharField(max_length=2, choices=NotificationType.choices)
+    notification_type = models.CharField(max_length=2, choices=NotificationType.choices, default=NotificationType.general_message)
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
