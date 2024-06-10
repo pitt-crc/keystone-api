@@ -1,3 +1,10 @@
+"""Helper functions for streamlining common tasks.
+
+Shortcuts are designed to simplify common tasks such as rendering templates,
+redirecting URLs, and handling HTTP responses.
+"""
+
+
 from pathlib import Path
 
 from django.conf import settings
