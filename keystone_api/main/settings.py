@@ -183,7 +183,7 @@ if DEBUG:
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-EMAIL_FILE_PATH = env.path('EMAIL_FILE_PATH', BASE_DIR / 'email')
+EMAIL_FILE_PATH = env.path('DEBUG_EMAIL_DIR', BASE_DIR / 'email_files')
 
 EMAIL_HOST = env.str('EMAIL_HOST', 'localhost')
 EMAIL_PORT = env.int('EMAIL_PORT', 587)
