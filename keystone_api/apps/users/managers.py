@@ -65,9 +65,9 @@ class UserManager(BaseUserManager):
         Args:
             username: The account username
             first_name: The user's first name
-            last_name: The user's last
+            last_name: The user's last name
             email: A valid email address
-            password: The account password name
+            password: The account password
             **extra_fields: See fields of the `models.User` class for other accepted arguments
 
         Return:
