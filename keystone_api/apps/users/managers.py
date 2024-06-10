@@ -6,7 +6,7 @@ every database model. Managers are commonly exposed as an attribute of the
 associated model class called `objects`.
 """
 
-from typing import TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING
 
 from django.contrib.auth.base_user import BaseUserManager
 from django.db import models
@@ -21,35 +21,53 @@ class UserManager(BaseUserManager):
     """Object manager for the `User` database model"""
 
     def create_user(
-        self, username: str, password: str, **extra_fields
+            self,
+            username: str,
+            first_name: Optional[str],
+            last_name: Optional[str],
+            email: Optional[str],
+            password: str,
+            **extra_fields
     ) -> 'User':
         """Create and a new user account
 
         Args:
             username: The account username
+            first_name: The user's first name
+            last_name: The user's last name
+            email: A valid email address
             password: The account password
             **extra_fields: See fields of the `models.User` class for other accepted arguments
 
         Return:
             The saved user account
         """
-        if 'email' in extra_fields:
-            extra_fields['email'] = self.normalize_email(extra_fields['email'])
+        if email:
+            email = self.normalize_email(email)
 
-        user = self.model(username=username, **extra_fields)
+        user = self.model(username=username, first_name=first_name, last_name=last_name, email=email, **extra_fields)
         user.set_password(password)
         user.save()
 
         return user
 
     def create_superuser(
-        self, username: str, password: str, **extra_fields
+        self,
+        username: str,
+        first_name: Optional[str],
+        last_name: Optional[str],
+        email: Optional[str],
+        password: str,
+        **extra_fields
     ) -> 'User':
         """Create and a new user account with superuser privileges
 
         Args:
             username: The account username
-            password: The account password
+            first_name: The user's first name
+            last_name: The user's last
+            email: A valid email address
+            password: The account password name
             **extra_fields: See fields of the `models.User` class for other accepted arguments
 
         Return:
@@ -66,7 +84,7 @@ class UserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('When creating a superuser you must set  `is_superuser=True`.')
 
-        return self.create_user(username, password, **extra_fields)
+        return self.create_user(username, first_name, last_name, email, password, **extra_fields)
 
 
 class ResearchGroupManager(models.Manager):

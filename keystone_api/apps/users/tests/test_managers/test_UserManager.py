@@ -13,11 +13,10 @@ class UserCreation(TestCase):
 
         user = User.objects.create_user(
             username='foobar',
-            password="foobar123",
             first_name='foo',
             last_name='bar',
-            email="foo@bar.com"
-            )
+            email="foo@bar.com",
+            password="foobar123")
 
         self.assertEqual(user.username, "foobar")
         self.assertEqual(user.first_name, "foo")
@@ -32,11 +31,10 @@ class UserCreation(TestCase):
 
         admin_user = User.objects.create_superuser(
             username='foobar',
-            password="foobar123",
             first_name='foo',
             last_name='bar',
-            email="foo@bar.com"
-            )
+            email="foo@bar.com",
+            password="foobar123")
 
         self.assertEqual(admin_user.username, "foobar")
         self.assertEqual(admin_user.first_name, "foo")
@@ -52,10 +50,10 @@ class UserCreation(TestCase):
         with self.assertRaisesRegex(ValueError, 'must set `is_staff=True`.'):
             User.objects.create_superuser(
                 username='foobar',
-                password="foobar123",
                 first_name='foo',
                 last_name='bar',
                 email="foo@bar.com",
+                password="foobar123",
                 is_staff=False)
 
     def test_superusers_must_be_superusers(self) -> None:
@@ -64,8 +62,8 @@ class UserCreation(TestCase):
         with self.assertRaisesRegex(ValueError, 'must set  `is_superuser=True`'):
             User.objects.create_superuser(
                 username='foobar',
-                password="foobar123",
                 first_name='foo',
                 last_name='bar',
                 email="foo@bar.com",
+                password="foobar123",
                 is_superuser=False)
