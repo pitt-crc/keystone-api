@@ -4,12 +4,10 @@ Shortcuts are designed to simplify common tasks such as rendering templates,
 redirecting URLs, and handling HTTP responses.
 """
 
-
-from pathlib import Path
-
 from django.conf import settings
-from django.core.mail import EmailMultiAlternatives
-from django.template import Template
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 from apps.notifications.models import Notification
 from apps.users.models import User
@@ -34,15 +32,12 @@ def send_notification(
         notification_metadata: Metadata to store alongside the notification
     """
 
-    email = EmailMultiAlternatives(
+    send_mail(
         subject=subject,
-        body=plain_text,
+        message=plain_text,
         from_email=settings.NOTIFY_FROM_EMAIL,
-        to=[user.email]
-    )
-
-    email.attach_alternative(html_text, "text/html")
-    email.send()
+        recipient_list=[user.email],
+        html_message=html_text)
 
     Notification.objects.create(
         user=user,
@@ -69,13 +64,8 @@ def send_notification_template(
         notification_metadata: Metadata to store alongside the notification
     """
 
-    template_path = Path(template)
-    text_template_name = str(template_path.with_suffix('.txt'))
-    html_template_name = str(template_path.with_suffix('.html'))
-
-    html_content = Template(html_template_name).render(notification_metadata)
-    text_content = Template(text_template_name).render(notification_metadata)
-
+    html_content = render_to_string(template, notification_metadata)
+    text_content = strip_tags(html_content)
     send_notification(
         user,
         subject,
