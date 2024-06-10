@@ -37,6 +37,7 @@ class UserManager(BaseUserManager):
         Return:
             The saved user account
         """
+
         if 'email' in extra_fields:
             extra_fields['email'] = self.normalize_email(extra_fields['email'])
         password_validation.validate_password(password)
