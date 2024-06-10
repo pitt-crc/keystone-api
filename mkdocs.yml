@@ -1,13 +1,14 @@
 site_name: Keystone API
 nav:
-  - index.md
+  - Introduction: index.md
   - Installation:
       - install/slurm.md
       - install/docker.md
       - install/python.md
       - install/settings.md
   - REST API:
-    - api/getting_started.md
     - API Specification: api/api.md
+    - api/authentication.md
+    - api/filtering.md
   - Developer Notes:
       - Common Tasks: developer/common.md
