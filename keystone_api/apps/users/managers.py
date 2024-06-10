@@ -6,7 +6,7 @@ every database model. Managers are commonly exposed as an attribute of the
 associated model class called `objects`.
 """
 
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from django.contrib.auth.base_user import BaseUserManager
 from django.db import models
@@ -23,9 +23,9 @@ class UserManager(BaseUserManager):
     def create_user(
             self,
             username: str,
-            first_name: Optional[str],
-            last_name: Optional[str],
-            email: Optional[str],
+            first_name: str | None,
+            last_name: str | None,
+            email: str | None,
             password: str,
             **extra_fields
     ) -> 'User':
@@ -54,9 +54,9 @@ class UserManager(BaseUserManager):
     def create_superuser(
         self,
         username: str,
-        first_name: Optional[str],
-        last_name: Optional[str],
-        email: Optional[str],
+        first_name: str | None,
+        last_name: str | None,
+        email: str | None,
         password: str,
         **extra_fields
     ) -> 'User':
