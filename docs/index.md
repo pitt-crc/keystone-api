@@ -1,4 +1,4 @@
-# Introduction
+# Keystone-API
 
 Keystone-API is a Python based REST API designed to support the Keystone web interface.
 It provides management utilities for:
@@ -34,7 +34,7 @@ For more information, see the resources below.
 
     Get started with the REST API, designed and built using modern best practices.
 
-    [:octicons-arrow-right-24: Getting Started](api/getting_started.md)
+    [:octicons-arrow-right-24: Getting Started](api/api.md)
 
 -   :simple-git: **Contributing**
 
