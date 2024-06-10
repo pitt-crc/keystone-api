@@ -14,7 +14,7 @@
 # Accounts not affiliated with a group:
 #   - super_user  (Superuser account)
 #   - staff_user  (Staff user account)
-#   - common_user (Generic user account)
+#   - generic_user (Generic user account)
 
 # Clusters
 - model: allocations.cluster

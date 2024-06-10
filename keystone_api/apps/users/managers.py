@@ -8,6 +8,7 @@ associated model class called `objects`.
 
 from typing import TYPE_CHECKING
 
+from django.contrib.auth import password_validation
 from django.contrib.auth.base_user import BaseUserManager
 from django.db import models
 
@@ -44,6 +45,7 @@ class UserManager(BaseUserManager):
         """
         if email:
             email = self.normalize_email(email)
+        password_validation.validate_password(password)
 
         user = self.model(username=username, first_name=first_name, last_name=last_name, email=email, **extra_fields)
         user.set_password(password)

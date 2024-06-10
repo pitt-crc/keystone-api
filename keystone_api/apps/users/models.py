@@ -19,19 +19,24 @@ __all__ = ['ResearchGroup', 'User']
 class User(auth_models.AbstractBaseUser, auth_models.PermissionsMixin):
     """Proxy model for the built-in django `User` model"""
 
+    # These values should always be defined when extending AbstractBaseUser
     USERNAME_FIELD = 'username'
     EMAIL_FIELD = "email"
+    REQUIRED_FIELDS = []
 
+    # User metadata
     username = models.CharField('username', max_length=150, unique=True, validators=[UnicodeUsernameValidator()])
+    password = models.CharField('password', max_length=128)
     first_name = models.CharField('first name', max_length=150, null=True)
     last_name = models.CharField('last name', max_length=150, null=True)
     email = models.EmailField('email address', null=True)
 
+    # Administrative values for user management/permissions
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField('staff status', default=False)
-    date_joined = models.DateTimeField('date joined', default=timezone.now)
-
     is_ldap_user = models.BooleanField('LDAP User', default=False)
+    date_joined = models.DateTimeField('date joined', default=timezone.now)
+    last_login = models.DateTimeField('last login', null=True)
 
     objects = UserManager()
 
@@ -46,12 +51,12 @@ class ResearchGroup(models.Model):
 
     objects = ResearchGroupManager()
 
-    def get_all_members(self) -> tuple[User]:
+    def get_all_members(self) -> tuple[User, ...]:
         """Return all research group members"""
 
         return (self.pi,) + tuple(self.admins.all()) + tuple(self.members.all())
 
-    def get_privileged_members(self) -> tuple[User]:
+    def get_privileged_members(self) -> tuple[User, ...]:
         """Return all research group members with admin privileges"""
 
         return (self.pi,) + tuple(self.admins.all())
