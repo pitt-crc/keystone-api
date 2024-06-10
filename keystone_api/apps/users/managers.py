@@ -24,9 +24,6 @@ class UserManager(BaseUserManager):
     def create_user(
             self,
             username: str,
-            first_name: str | None,
-            last_name: str | None,
-            email: str | None,
             password: str,
             **extra_fields
     ) -> 'User':
@@ -34,20 +31,17 @@ class UserManager(BaseUserManager):
 
         Args:
             username: The account username
-            first_name: The user's first name
-            last_name: The user's last name
-            email: A valid email address
             password: The account password
             **extra_fields: See fields of the `models.User` class for other accepted arguments
 
         Return:
             The saved user account
         """
-        if email:
-            email = self.normalize_email(email)
+        if 'email' in extra_fields:
+            extra_fields['email'] = self.normalize_email(extra_fields['email'])
         password_validation.validate_password(password)
 
-        user = self.model(username=username, first_name=first_name, last_name=last_name, email=email, **extra_fields)
+        user = self.model(username=username, **extra_fields)
         user.set_password(password)
         user.save()
 
@@ -56,9 +50,6 @@ class UserManager(BaseUserManager):
     def create_superuser(
         self,
         username: str,
-        first_name: str | None,
-        last_name: str | None,
-        email: str | None,
         password: str,
         **extra_fields
     ) -> 'User':
@@ -66,9 +57,6 @@ class UserManager(BaseUserManager):
 
         Args:
             username: The account username
-            first_name: The user's first name
-            last_name: The user's last name
-            email: A valid email address
             password: The account password
             **extra_fields: See fields of the `models.User` class for other accepted arguments
 
@@ -86,7 +74,7 @@ class UserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('When creating a superuser you must set  `is_superuser=True`.')
 
-        return self.create_user(username, first_name, last_name, email, password, **extra_fields)
+        return self.create_user(username, password, **extra_fields)
 
 
 class ResearchGroupManager(models.Manager):
