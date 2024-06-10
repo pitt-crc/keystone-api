@@ -84,6 +84,7 @@ Securing your production email server with a username/password is recommended, b
 | `EMAIL_HOST_USER`         |                          | Username to use for the SMTP server.                          |
 | `EMAIL_HOST_PASSWORD`     |                          | Password to use for the SMTP server.                          |
 | `EMAIL_USE_TLS`           | `False`                  | Use a TLS connection to the SMTP server.                      |
+| `EMAIL_FROM_ADDRESS`      | `noreply@keystone.bot`   | Use a TLS connection to the SMTP server.                      |
 
 ## LDAP Authentication
 

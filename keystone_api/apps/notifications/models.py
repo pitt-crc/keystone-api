@@ -8,8 +8,8 @@ the associated table/fields/records are presented by parent interfaces.
 
 from __future__ import annotations
 
-from django.contrib.auth.models import User
 from django.db import models
+from django.conf import settings
 
 from . import settings as appsettings
 
@@ -28,7 +28,7 @@ class Notification(models.Model):
     metadata = models.JSONField(null=True)
     notification_type = models.CharField(max_length=2, choices=NotificationType.choices, default=NotificationType.general_message)
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
 
 class Preference(models.Model):
@@ -38,10 +38,10 @@ class Preference(models.Model):
     notify_status_update = models.BooleanField(default=appsettings.NOTIFY_STATUS_UPDATE)
     expiry_thresholds = models.BooleanField(default=appsettings.NOTIFY_EXPIRY_THRESHOLDS)
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     @classmethod
-    def get_user_preference(cls, user: User) -> Preference:
+    def get_user_preference(cls, user: settings.AUTH_USER_MODEL) -> Preference:
         """Retrieve user preferences or create them if they don't exist"""
 
         preference, created = cls.objects.get_or_create(user=user)

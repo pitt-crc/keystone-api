@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     'apps.allocations',
     'apps.health',
     'apps.logging',
+    'apps.notifications',
     'apps.openapi',
     'apps.research_products',
     'apps.scheduler',
@@ -190,6 +191,7 @@ EMAIL_PORT = env.int('EMAIL_PORT', 25)
 EMAIL_HOST_USER = env.str('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = env.str('your_email_password', '')
 EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', False)
+EMAIL_FROM_ADDRESS = env.str('EMAIL_FROM_ADDRESS', 'noreply@keystone.bot')
 
 # Database
 

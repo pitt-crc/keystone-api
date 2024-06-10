@@ -35,7 +35,7 @@ def send_notification(
     send_mail(
         subject=subject,
         message=plain_text,
-        from_email=settings.NOTIFY_FROM_EMAIL,
+        from_email=settings.EMAIL_FROM_ADDRESS,
         recipient_list=[user.email],
         html_message=html_text)
 
