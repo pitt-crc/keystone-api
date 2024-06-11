@@ -10,8 +10,6 @@ from apps.users.models import User
 from main import settings
 
 
-# TODO: Add checks for email/template content
-
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
 class EmailSending(TestCase):
     """Test sending emails via the `send_notification` function"""
@@ -37,7 +35,7 @@ class EmailSending(TestCase):
         send_notification_template(
             self.user,
             self.subject,
-            'general',
+            'general.html',
             self.notification_type,
             self.notification_metadata
         )
@@ -46,10 +44,8 @@ class EmailSending(TestCase):
         email = mail.outbox[0]
 
         self.assertEqual(email.subject, self.subject)
-        # self.assertEqual(email.body, self.plain_text)
         self.assertEqual(email.from_email, settings.EMAIL_FROM_ADDRESS)
         self.assertEqual(email.to, [self.user.email])
-        # self.assertEqual(email.alternatives, [(self.html_text, 'text/html')])
 
     def test_database_is_updated(self) -> None:
         """Test a record of the email is stored in the database"""
@@ -57,13 +53,12 @@ class EmailSending(TestCase):
         send_notification_template(
             self.user,
             self.subject,
-            'general',
+            'general.html',
             self.notification_type,
             self.notification_metadata
         )
 
         notification = Notification.objects.get(user=self.user)
-        # self.assertEqual(notification.message, self.plain_text)
         self.assertEqual(notification.notification_type, self.notification_type)
         self.assertEqual(notification.metadata, self.notification_metadata)
 

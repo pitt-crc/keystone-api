@@ -59,7 +59,7 @@ def send_notification_template(
     Args:
         user: The user object to whom the email will be sent
         subject: The subject line of the email
-        template: The name of the template to render
+        template: The name of the template file to render
         notification_type: Optionally categorize the notification type
         notification_metadata: Metadata to store alongside the notification
     """
@@ -88,7 +88,7 @@ def send_general_notification(user: User, subject: str, message: str) -> None:
     send_notification_template(
         user=user,
         subject=subject,
-        template='general',
+        template='general.html',
         notification_type=Notification.NotificationType.general_message,
         notification_metadata={'message': message}
     )
