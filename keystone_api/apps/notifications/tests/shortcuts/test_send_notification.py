@@ -30,7 +30,13 @@ class EmailSending(TestCase):
         self.notification_type = Notification.NotificationType.general_message
         self.notification_metadata = {'key': 'value'}
 
-        send_notification(self.user, self.subject, self.plain_text, self.html_text, self.notification_type, self.notification_metadata)
+        send_notification(
+            self.user,
+            self.subject,
+            self.plain_text,
+            self.html_text,
+            self.notification_type,
+            self.notification_metadata)
 
     def test_email_content(self) -> None:
         """Test an email notification is sent with the correct content"""

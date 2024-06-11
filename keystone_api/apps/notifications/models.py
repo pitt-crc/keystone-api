@@ -8,16 +8,24 @@ the associated table/fields/records are presented by parent interfaces.
 
 from __future__ import annotations
 
-from django.db import models
 from django.conf import settings
+from django.db import models
 
-from . import settings as appsettings
+
+def _default_alloc_thresholds() -> list[int]:
+    return [90]
+
+
+def _default_expiry_thresholds() -> list[int]:
+    return [14]
 
 
 class Notification(models.Model):
     """User notification"""
 
     class NotificationType(models.TextChoices):
+        """Enumerated choices for the `notification_type` field"""
+
         resource_usage = 'RU', 'Resource Usage'
         request_status = 'SU', 'Status Update'
         general_message = 'GM', 'General Message'
@@ -26,7 +34,10 @@ class Notification(models.Model):
     read = models.BooleanField(default=False)
     message = models.TextField()
     metadata = models.JSONField(null=True)
-    notification_type = models.CharField(max_length=2, choices=NotificationType.choices, default=NotificationType.general_message)
+    notification_type = models.CharField(
+        max_length=2,
+        choices=NotificationType.choices,
+        default=NotificationType.general_message)
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
@@ -34,9 +45,9 @@ class Notification(models.Model):
 class Preference(models.Model):
     """User notification preferences"""
 
-    alloc_thresholds = models.JSONField(default=lambda: appsettings.NOTIFY_ALLOC_THRESHOLDS)
-    notify_status_update = models.BooleanField(default=lambda: appsettings.NOTIFY_STATUS_UPDATE)
-    expiry_thresholds = models.BooleanField(default=lambda: appsettings.NOTIFY_EXPIRY_THRESHOLDS)
+    alloc_thresholds = models.JSONField(default=_default_alloc_thresholds)
+    notify_status_update = models.BooleanField(default=True)
+    expiry_thresholds = models.JSONField(default=_default_expiry_thresholds)
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
@@ -44,7 +55,7 @@ class Preference(models.Model):
     def get_user_preference(cls, user: settings.AUTH_USER_MODEL) -> Preference:
         """Retrieve user preferences or create them if they don't exist"""
 
-        preference, created = cls.objects.get_or_create(user=user)
+        preference, _ = cls.objects.get_or_create(user=user)
         return preference
 
     @classmethod
