@@ -34,9 +34,9 @@ class Notification(models.Model):
 class Preference(models.Model):
     """User notification preferences"""
 
-    alloc_thresholds = models.JSONField(default=appsettings.NOTIFY_ALLOC_THRESHOLDS)
-    notify_status_update = models.BooleanField(default=appsettings.NOTIFY_STATUS_UPDATE)
-    expiry_thresholds = models.BooleanField(default=appsettings.NOTIFY_EXPIRY_THRESHOLDS)
+    alloc_thresholds = models.JSONField(default=lambda: appsettings.NOTIFY_ALLOC_THRESHOLDS)
+    notify_status_update = models.BooleanField(default=lambda: appsettings.NOTIFY_STATUS_UPDATE)
+    expiry_thresholds = models.BooleanField(default=lambda: appsettings.NOTIFY_EXPIRY_THRESHOLDS)
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
