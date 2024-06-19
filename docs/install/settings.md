@@ -45,30 +45,6 @@ Limits are specified as the maximum number of requests per `day`, `minute`, `hou
 | `API_THROTTLE_ANON`       | `1000/day`               | Rate limiting for anonymous (unauthenticated) users.          |
 | `API_THROTTLE_USER`       | `10000/day`              | Rate limiting for authenticated users.                        |
 
-## LDAP Authentication
-
-Enabling LDAP authentication is optional and disabled by default.
-To enable LDAP, set the `AUTH_LDAP_SERVER_URI` value to the desired LDAP endpoint.
-
-Application user fields are mapped to LDAP attributes by specifying the `AUTH_LDAP_ATTR_MAP` setting.
-The following example maps the `first_name` and `last_name` fields used by Keystone to the LDAP attributes `givenName` and `sn`:
-
-```bash
-AUTH_LDAP_ATTR_MAP="first_name=givenName,last_name=sn"
-```
-
-See the `apps.users.models.User` class for a full list of available Keystone fields.
-
-| Setting Name              | Default Value            | Description                                                   |
-|---------------------------|--------------------------|---------------------------------------------------------------|
-| `AUTH_LDAP_SERVER_URI`    |                          | The URI of the LDAP server.                                   |
-| `AUTH_LDAP_START_TLS`     | `True`                   | Whether to use TLS when connecting to the LDAP server.        |
-| `AUTH_LDAP_BIND_DN`       |                          | Optionally bind LDAP queries to the given DN.                 |
-| `AUTH_LDAP_BIND_PASSWORD` |                          | The password to use when binding to the LDAP server.          |
-| `AUTH_LDAP_USER_SEARCH`   | `(uid=%(user)s)`         | The search query for finding a user in the LDAP server.       |
-| `AUTH_LDAP_REQUIRE_CERT`  | `False`                  | Whether to require certificate verification.                  |
-| `AUTH_LDAP_ATTR_MAP`      |                          | A mapping of user fields to LDAP attribute names.             |
-
 ## Database Connection
 
 Official support is included for both SQLite and PostgreSQL database backends.
@@ -96,6 +72,44 @@ Enabling password authentication is recommended.
 | `REDIS_DB`                | `0`                      | The Redis database number to use.                             |
 | `REDIS_PASSWORD`          |                          | Optionally connect using the given password.                  |
 
+## Email Server
+
+Keystone will default to using the local server when issuing email notifications.
+Securing your production email server with a username/password is recommended, but not required.
+
+| Setting Name              | Default Value            | Description                                                   |
+|---------------------------|--------------------------|---------------------------------------------------------------|
+| `EMAIL_HOST`              | `localhost`              | The host server to use for sending email.                     |
+| `EMAIL_PORT`              | `25`                     | Port to use for the SMTP server.                              |
+| `EMAIL_HOST_USER`         |                          | Username to use for the SMTP server.                          |
+| `EMAIL_HOST_PASSWORD`     |                          | Password to use for the SMTP server.                          |
+| `EMAIL_USE_TLS`           | `False`                  | Use a TLS connection to the SMTP server.                      |
+| `EMAIL_FROM_ADDRESS`      | `noreply@keystone.bot`   | Use a TLS connection to the SMTP server.                      |
+
+## LDAP Authentication
+
+Enabling LDAP authentication is optional and disabled by default.
+To enable LDAP, set the `AUTH_LDAP_SERVER_URI` value to the desired LDAP endpoint.
+
+Application user fields are mapped to LDAP attributes by specifying the `AUTH_LDAP_ATTR_MAP` setting.
+The following example maps the `first_name` and `last_name` fields used by Keystone to the LDAP attributes `givenName` and `sn`:
+
+```bash
+AUTH_LDAP_ATTR_MAP="first_name=givenName,last_name=sn"
+```
+
+See the `apps.users.models.User` class for a full list of available Keystone fields.
+
+| Setting Name              | Default Value            | Description                                                   |
+|---------------------------|--------------------------|---------------------------------------------------------------|
+| `AUTH_LDAP_SERVER_URI`    |                          | The URI of the LDAP server.                                   |
+| `AUTH_LDAP_START_TLS`     | `True`                   | Whether to use TLS when connecting to the LDAP server.        |
+| `AUTH_LDAP_BIND_DN`       |                          | Optionally bind LDAP queries to the given DN.                 |
+| `AUTH_LDAP_BIND_PASSWORD` |                          | The password to use when binding to the LDAP server.          |
+| `AUTH_LDAP_USER_SEARCH`   | `(uid=%(user)s)`         | The search query for finding a user in the LDAP server.       |
+| `AUTH_LDAP_REQUIRE_CERT`  | `False`                  | Whether to require certificate verification.                  |
+| `AUTH_LDAP_ATTR_MAP`      |                          | A mapping of user fields to LDAP attribute names.             |
+
 ## Developer Settings
 
 The following settings are intended exclusively for use in development.
@@ -107,3 +121,4 @@ The following settings are intended exclusively for use in development.
 | Setting Name              | Default Value            | Description                                                   |
 |---------------------------|--------------------------|---------------------------------------------------------------|
 | `DEBUG`                   | `False`                  | Enable or disable in browser error tracebacks.                |
+| `DEBUG_EMAIL_DIR`         | `<app>/email_files`      | Write emails to disk instead of using the SMTP server.        |

@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     'apps.allocations',
     'apps.health',
     'apps.logging',
+    'apps.notifications',
     'apps.openapi',
     'apps.research_products',
     'apps.scheduler',
@@ -109,7 +110,7 @@ TEMPLATES = [
 
 # Base styling for the Admin UI
 
-USE_THOUSAND_SEPARATOR=True
+USE_THOUSAND_SEPARATOR = True
 JAZZMIN_SETTINGS = {
     "site_title": "Keystone",
     "site_header": "Keystone",
@@ -174,6 +175,23 @@ CELERY_BROKER_URL = REDIS_URL + f'/{_redis_db}'
 CELERY_CACHE_BACKEND = 'django-cache'
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_RESULT_EXTENDED = True
+
+# Email server
+
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_FILE_PATH = env.path('DEBUG_EMAIL_DIR', BASE_DIR / 'email_files')
+
+EMAIL_HOST = env.str('EMAIL_HOST', 'localhost')
+EMAIL_PORT = env.int('EMAIL_PORT', 25)
+EMAIL_HOST_USER = env.str('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = env.str('your_email_password', '')
+EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', False)
+EMAIL_FROM_ADDRESS = env.str('EMAIL_FROM_ADDRESS', 'noreply@keystone.bot')
 
 # Database
 
