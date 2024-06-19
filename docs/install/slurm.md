@@ -1,31 +1,45 @@
 # Configuring Slurm
 
 Keystone is agnostic to most Slurm settings, and requires minimal modification to a running Slurm cluster.
-However, 
+However, certain fairshare features are incompatible with the Keystone accounting system and must be disabled.
 
 ## Enable Resource Tracking
 
 Slurm categorizes system usage in terms of trackable resources (TRES).
-In order to impose a usage limit on a computational resource, that resource must be represented in Slurm as a TRES.
+To impose a usage limit on a computational resource, that resource must be represented in Slurm as a TRES.
 Resource tracking for common TRES' like CPU, memory, and energy usage is enabled by default.
-However, administrators may wish to extend the default list to enable limits on additional resource types.
+However, administrators may wish to extend the default list to enable limits on additional resource types (e.g., for GPU usage).
 
 The `AccountingStorageTRES` setting is used to extend the default list of TRES values stored in the Slurm database.
+See the official [Surm documentation](https://slurm.schedmd.com/tres.html#conf) on `slurm.conf` settings for details.
 
-!!! Example "Example: Tracking GPU usage"
+??? Example "Example: Tracking GPU usage"
 
-    The following example enables tracking for GPU resources.
+    The following example enables tracking for GPU resources in addition to the default TRES tracked by slurm.
 
     ```
     AccountingStorageTRES=gres/gpu
     ```
 
+??? Example "Example: Tracking GPU and IOP"
+
+    The following example extends the default TRES list with resources called GPU and iop1.
+
+    ```
+    AccountingStorageTRES=gres/gpu,license/iop1
+    ```
+
 ## Disable Usage Decay
 
-Most Slurm installations default to using the [multifactor priority plugin](https://slurm.schedmd.com/priority_multifactor.html) to schedule jobs.
-This can be confirmed explicitly by checking the Slurm `PriorityType` setting. 
+Slurm defaults to using the [multifactor priority plugin](https://slurm.schedmd.com/priority_multifactor.html) to schedule jobs.
+This can be confirmed by checking the Slurm `PriorityType` setting.
 
-In order to ensure these values are recorded consistently, the `PriorityDecayHalfLife` and `PriorityUsageResetPeriod` settings need to be disabled:
+```bash
+scontrol show config | grep PriorityType
+```
+
+When using the multifactor plugin, the `PriorityDecayHalfLife` and `PriorityUsageResetPeriod` settings need to be disabled.
+Leaving either of these features enabled will cause Slurm to periodically reduce an account's recorded resource usage, causing inaccuracies in resource allocation limits. 
 
 ```
 PriorityDecayHalfLife=00:00:00
@@ -39,20 +53,36 @@ PriorityUsageResetPeriod=NONE
 
 ## Configuring Charging Rates
 
-Set `TRESBillingWeights` for each partition.
+Keystone enforces allocation limits in units of billable TRES.
+The total billable TRES for a given job is determined using the allocated resources in addition to a series of billing weights:
 
-```
-PartitionName=partition_name TRESBillingWeights="CPU=1.0,Mem=1.0G"
-```
+$$ 
+Billable = \sum_{T} \, \left ( W_{T} * A_{T} \right )
+$$
 
+The billing weights are set on a per-partition basis using the `TRESBillingWeights` setting.
 Billing weights are definable in variety of units. 
 See the [Slurm documentation](https://slurm.schedmd.com/tres.html) for more details.
 
-Set `PriorityFlags`.
+??? Example "Example: Billing for CPU"
+
+    The following example only charges users for CPU resources.
+
+    ```
+    PartitionName=partition_name TRESBillingWeights="CPU=1.0"
+    ```
+
+??? Example "Example: Billing for CPU and GPU"
+
+    The following example charges users for GPU resources at twice the rate of CPU resources.
+
+    ```
+    PartitionName=partition_name TRESBillingWeights="CPU=1.0,GRES/gpu=2.0"
+    ```
+
+To ensure the total allocated resources are calculated correctly, the `MAX_TRES` flag must be enabled. 
+Doing so ensures the billable TRES include individual TRES on a node (e.g. cpus, mem, gres) plus the sum of all global TRES (e.g. licenses).
 
 ```
 PriorityFlags=MAX_TRES
 ```
-
-If PriorityFlags=MAX_TRES is configured, the billable TRES is calculated as the MAX of individual TRESs on a node (e.g. cpus, mem, gres) plus the sum of all global TRESs (e.g. licenses).
-Only TRES defined in `AccountingStorageTRES` are available for `TRESBillingWeights`.
