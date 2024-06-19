@@ -27,9 +27,9 @@ class User(auth_models.AbstractBaseUser, auth_models.PermissionsMixin):
     # User metadata
     username = models.CharField('username', max_length=150, unique=True, validators=[UnicodeUsernameValidator()])
     password = models.CharField('password', max_length=128)
-    first_name = models.CharField('first name', max_length=150)
-    last_name = models.CharField('last name', max_length=150)
-    email = models.EmailField('email address')
+    first_name = models.CharField('first name', max_length=150, null=True)
+    last_name = models.CharField('last name', max_length=150, null=True)
+    email = models.EmailField('email address', null=True)
 
     # Administrative values for user management/permissions
     is_active = models.BooleanField(default=True)

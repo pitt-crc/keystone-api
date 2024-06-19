@@ -4862,13 +4862,16 @@ components:
           maxLength: 128
         first_name:
           type: string
+          nullable: true
           maxLength: 150
         last_name:
           type: string
+          nullable: true
           maxLength: 150
         email:
           type: string
           format: email
+          nullable: true
           title: Email address
           maxLength: 254
         is_active:
@@ -5022,13 +5025,16 @@ components:
           maxLength: 128
         first_name:
           type: string
+          nullable: true
           maxLength: 150
         last_name:
           type: string
+          nullable: true
           maxLength: 150
         email:
           type: string
           format: email
+          nullable: true
           title: Email address
           maxLength: 254
         is_active:
@@ -5064,14 +5070,11 @@ components:
           description: Specific permissions for this user.
       required:
       - date_joined
-      - email
-      - first_name
       - id
       - is_active
       - is_ldap_user
       - is_staff
       - last_login
-      - last_name
       - password
       - username
     TaskResult:
