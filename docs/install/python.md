@@ -54,13 +54,6 @@ keystone-api enable_autocomplete
 Keystone-API requires several backend services to support its operation.
 Specific instructions are provided below on configuring each dependency.
 
-### LDAP (Optional)
-
-An LDAP server is only required if users are expected to authenticate with LDAP credentials.
-Setting up LDAP for use with Keystone-API doesn't require any special configuration.
-However, the API settings must be properly configured to ensure correct mapping between LDAP fields and Keystone user account attributes.
-See the [Settings](settings.md) page for more details.
-
 ### Redis
 
 Most Redis server instances will work out of the box so long as the connection and authentication values are set correctly in the API settings.
