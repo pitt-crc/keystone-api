@@ -4,7 +4,7 @@
 
 | Argument   | Description                                                      |
 |------------|------------------------------------------------------------------|
-| --data     | path to JSON demo data                                           |
+| data       | path to JSON demo data                                           |
 """
 
 import tempfile
@@ -28,7 +28,7 @@ class Command(BaseCommand):
             parser: The parser instance to add arguments under
         """
 
-        parser.add_argument('--data', type=Path, help='path to JSON demo data')
+        parser.add_argument('data', type=Path, help='path to JSON demo data')
 
     def handle(self, *args, **options):
         """Handle the command execution
@@ -39,7 +39,7 @@ class Command(BaseCommand):
         """
 
         # Check for demo data at user provided path
-        json_file = options['json_file']
+        json_file = options['data']
         if not json_file.is_file():
             raise CommandError(f'The file "{json_file}" does not exist')
 
@@ -55,7 +55,7 @@ class Command(BaseCommand):
             }
 
             call_command('migrate')
-            call_command(f'loaddata {json_file}')
+            call_command(f'loaddata', json_file)
             call_command('runserver')
 
         finally:
