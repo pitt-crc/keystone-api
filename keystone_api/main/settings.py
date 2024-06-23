@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'apps.admin_utils',
     'apps.allocations',
+    'apps.demo',
     'apps.health',
     'apps.logging',
     'apps.notifications',

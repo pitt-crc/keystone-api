@@ -5,7 +5,7 @@
 | Argument   | Description                                                      |
 |------------|------------------------------------------------------------------|
 | --static   | Delete the static root directory                                 |
-| --uploads  | Delete all user uploaded file data                              |
+| --uploads  | Delete all user uploaded file data                               |
 | --sqlite   | Delete all sqlite database files                                 |
 | --all      | Shorthand for deleting everything                                |
 """
@@ -27,7 +27,7 @@ class Command(BaseCommand):
         """Define command-line arguments
 
         Args:
-          parser: The parser instance to add arguments under
+            parser: The parser instance to add arguments under
         """
 
         group = parser.add_argument_group('clean options')
@@ -40,8 +40,8 @@ class Command(BaseCommand):
         """Handle the command execution
 
         Args:
-          *args: Additional positional arguments.
-          **options: Additional keyword arguments.
+            *args: Additional positional arguments.
+            **options: Additional keyword arguments.
         """
 
         if not any([options['static'], options['uploads'], options['sqlite'], options['all']]):
