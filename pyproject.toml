@@ -23,7 +23,7 @@ django-environ = "0.11.2"
 django-filter = "24.2"
 django-health-check = "3.18.2"
 django-jazzmin = "3.0.0"
-djangorestframework = "3.15.1"
+djangorestframework = "3.15.2"
 djangorestframework-simplejwt = "5.3.1"
 drf_spectacular = { version = "0.27.2", extras = ["sidecar"] }
 gunicorn = "22.0.0"
