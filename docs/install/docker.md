@@ -23,7 +23,7 @@ Once the container is ready, create a new administrator account by running the `
 within the container.
 
 ```bash
-docker exec -t keystone keystone-api createsuperuser
+docker exec -i -t keystone keystone-api createsuperuser
 ```
 
 You can test the new credentials by authenticating against the API and generating a pair of JWT tokens.
