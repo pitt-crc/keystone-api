@@ -25,7 +25,7 @@ jobs:
           path: /tmp
 
       - name: Load image
-        run: docker load --input keystone-api.tar
+        run: docker load --input /tmp/keystone-api.tar
 
       - name: Define Docker metadata
         id: meta

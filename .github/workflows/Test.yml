@@ -19,7 +19,7 @@ jobs:
           path: /tmp
 
       - name: Load image
-        run: docker load --input keystone-api.tar
+        run: docker load --input /tmp/keystone-api.tar
 
       - name: Run project checks
         run: docker run keystone-api check
@@ -41,7 +41,7 @@ jobs:
           path: /tmp
 
       - name: Load image
-        run: docker load --input keystone-api.tar
+        run: docker load --input /tmp/keystone-api.tar
 
       - name: Run API health checks
         run: |
@@ -72,7 +72,7 @@ jobs:
 
       - name: Run tests
         run: |
-          docker load --input keystone-api.tar
+          docker load --input /tmp/keystone-api.tar
           docker run keystone-api test tests apps
 
   report-test-status:
