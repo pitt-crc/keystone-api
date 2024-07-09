@@ -37,14 +37,14 @@ jobs:
         with:
           context: .
           tags: keystone-api:latest
-          outputs: type=oci,dest=/tmp/keystone-api.tar
+          outputs: type=oci,dest=keystone-api.tar
           platforms: linux/amd64,linux/arm64
 
       - name: Upload image artifact
         uses: actions/upload-artifact@v4
         with:
           name: keystone-api-docker
-          path: /tmp/keystone-api.tar
+          path: keystone-api.tar
 
   build-python:
     name: Python Distribution
