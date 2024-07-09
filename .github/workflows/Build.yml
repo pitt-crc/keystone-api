@@ -26,6 +26,9 @@ jobs:
       - name: Set package version
         run: poetry version "${{ inputs.version }}"
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -35,6 +38,7 @@ jobs:
           context: .
           tags: keystone-api:latest
           outputs: type=docker,dest=/tmp/keystone-api.tar
+          platforms: linux/amd64,linux/arm64
 
       - name: Upload image artifact
         uses: actions/upload-artifact@v4
