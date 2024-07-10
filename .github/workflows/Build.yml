@@ -11,7 +11,7 @@ on:
 
 jobs:
   build-docker:
-    name: Docker Image
+    name: Docker
     runs-on: ubuntu-latest
 
     strategy:
@@ -44,7 +44,7 @@ jobs:
         with:
           context: .
           tags: keystone-api:latest
-          outputs: type=image,dest=keystone-api.tar
+          outputs: type=docker,dest=keystone-api.tar
           platforms: ${{ matrix.platform }}
 
       - name: Upload image artifact
