@@ -67,7 +67,7 @@ class AllocationRequest(RGModelInterface, models.Model):
         CHANGES = 'CR', 'Changes Requested'
 
     title = models.CharField(max_length=250)
-    description = models.TextField(max_length=1600)
+    description = models.TextField(max_length=20_000)
     submitted = models.DateField(auto_now=True)
     status = models.CharField(max_length=2, choices=StatusChoices.choices, default=StatusChoices.PENDING)
     active = models.DateField(null=True, blank=True)

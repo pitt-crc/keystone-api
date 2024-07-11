@@ -4472,7 +4472,7 @@ components:
           maxLength: 250
         description:
           type: string
-          maxLength: 1600
+          maxLength: 20000
         submitted:
           type: string
           format: date
@@ -4703,7 +4703,7 @@ components:
           maxLength: 250
         description:
           type: string
-          maxLength: 1600
+          maxLength: 20000
         submitted:
           type: string
           format: date
