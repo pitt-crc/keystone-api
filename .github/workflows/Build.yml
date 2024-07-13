@@ -37,7 +37,7 @@ jobs:
         with:
           context: .
           tags: keystone-api:latest
-          outputs: type=tar,dest=keystone-api.tar
+          outputs: type=oci,dest=keystone-api.tar
           platforms: linux/arm64,linux/amd64
           cache-from: type=gha
           cache-to: type=gha,mode=max
