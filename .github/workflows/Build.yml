@@ -35,6 +35,8 @@ jobs:
           context: .
           tags: keystone-api:latest
           outputs: type=docker,dest=/tmp/keystone-api.tar
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Upload image artifact
         uses: actions/upload-artifact@v4
