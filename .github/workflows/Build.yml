@@ -39,6 +39,8 @@ jobs:
           tags: keystone-api:latest
           outputs: type=tar,dest=keystone-api.tar
           platforms: linux/arm64,linux/amd64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Upload image artifact
         uses: actions/upload-artifact@v4
