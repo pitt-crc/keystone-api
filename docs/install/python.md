@@ -135,7 +135,7 @@ The following unit files are provided as a starting point to daemonize the proce
 
 ## Deploying the Application
 
-Before launching the API, collect migrate the database to the latest schema version and collect any static files.
+Before launching the API, migrate the database to the latest schema version and collect any static files.
 See the [Settings](settings.md) page for details on configuring database credentials and the static files location.
 
 ```bash
@@ -196,12 +196,26 @@ The following unit files are provided as a starting point to daemonize the proce
 
 When upgrading the application, ensure the database and static files are up-to-date before relaunching the application server.
 
-```bash
-systemcl stop keystone-server
+=== "pip"
 
-pip install --upgrade keystone-api
-keystone-api migrate
-keystone-api collectstatic
+    ```bash
+    systemcl stop keystone-server
+    
+    pip install --upgrade keystone-api
+    keystone-api migrate
+    keystone-api collectstatic
+    
+    systemcl start keystone-server
+    ```
 
-systemcl start keystone-server
-```
+=== "pipx"
+
+    ```bash
+    systemcl stop keystone-server
+    
+    pipx upgrade keystone-api
+    keystone-api migrate
+    keystone-api collectstatic
+    
+    systemcl start keystone-server
+    ```
