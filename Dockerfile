@@ -3,8 +3,8 @@ FROM python:3.11.4-slim
 EXPOSE 8000
 
 # Disable Python byte code caching and output buffering
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 # Install system dependencies
 RUN apt-get update && apt-get install --no-install-recommends -y \
