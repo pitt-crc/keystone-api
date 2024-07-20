@@ -6,18 +6,20 @@ to handle database migrations, static file collection, and web server deployment
 
 ## Arguments
 
-| Argument   | Description                                                      |
-|------------|------------------------------------------------------------------|
-| --static   | Collect static files                                             |
-| --migrate  | Run database migrations                                          |
-| --celery   | Launch a Celery worker with a Redis backend                      |
-| --gunicorn | Run a web server using Gunicorn                                  |
-| --all      | Launch all available services                                    |
+| Argument    | Description                                                      |
+|-------------|------------------------------------------------------------------|
+| --static    | Collect static files                                             |
+| --migrate   | Run database migrations                                          |
+| --celery    | Launch a Celery worker with a Redis backend                      |
+| --demo-user | Create an admin user account if no other accounts exist          |
+| --gunicorn  | Run a web server using Gunicorn                                  |
+| --all       | Launch all available services                                    |
 """
 
 import subprocess
 from argparse import ArgumentParser
 
+from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
@@ -38,6 +40,7 @@ class Command(BaseCommand):
         group.add_argument('--static', action='store_true', help='Collect static files.')
         group.add_argument('--migrate', action='store_true', help='Run database migrations.')
         group.add_argument('--celery', action='store_true', help='Launch a background Celery worker.')
+        group.add_argument('--demo-user', action='store_true', help='Create an admin user account if no other accounts exist.')
         group.add_argument('--gunicorn', action='store_true', help='Run a web server using Gunicorn.')
         group.add_argument('--all', action='store_true', help='Launch all available services.')
 
@@ -63,9 +66,23 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS('Starting Celery worker...'))
             self.run_celery()
 
+        if options['demo_user'] or options['all']:
+            self.stdout.write(self.style.SUCCESS('Checking for admin account...'))
+            self.create_admin()
+
         if options['gunicorn'] or options['all']:
             self.stdout.write(self.style.SUCCESS('Starting Gunicorn server...'))
             self.run_gunicorn()
+
+    def create_admin(self) -> None:
+        """Create an `admin` user account if no other accounts already exist"""
+
+        user = get_user_model()
+        if user.objects.exists():
+            self.stdout.write(self.style.WARNING('User accounts already exist - skipping.'))
+
+        else:
+            user.objects.create_superuser(username='admin', password='quickstart')
 
     @staticmethod
     def run_celery() -> None:
