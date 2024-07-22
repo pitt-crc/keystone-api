@@ -3966,6 +3966,35 @@ paths:
         schema:
           type: number
       - in: query
+        name: department
+        schema:
+          type: string
+      - in: query
+        name: department__contains
+        schema:
+          type: string
+      - in: query
+        name: department__endswith
+        schema:
+          type: string
+      - in: query
+        name: department__in
+        schema:
+          type: array
+          items:
+            type: string
+        description: Multiple values may be separated by commas.
+        explode: false
+        style: form
+      - in: query
+        name: department__isnull
+        schema:
+          type: boolean
+      - in: query
+        name: department__startswith
+        schema:
+          type: string
+      - in: query
         name: email
         schema:
           type: string
@@ -4251,6 +4280,35 @@ paths:
           type: boolean
       - in: query
         name: password__startswith
+        schema:
+          type: string
+      - in: query
+        name: role
+        schema:
+          type: string
+      - in: query
+        name: role__contains
+        schema:
+          type: string
+      - in: query
+        name: role__endswith
+        schema:
+          type: string
+      - in: query
+        name: role__in
+        schema:
+          type: array
+          items:
+            type: string
+        description: Multiple values may be separated by commas.
+        explode: false
+        style: form
+      - in: query
+        name: role__isnull
+        schema:
+          type: boolean
+      - in: query
+        name: role__startswith
         schema:
           type: string
       - in: query
@@ -4872,8 +4930,15 @@ components:
           type: string
           format: email
           nullable: true
-          title: Email address
           maxLength: 254
+        department:
+          type: string
+          nullable: true
+          maxLength: 1000
+        role:
+          type: string
+          nullable: true
+          maxLength: 1000
         is_active:
           type: boolean
           readOnly: true
@@ -5035,8 +5100,15 @@ components:
           type: string
           format: email
           nullable: true
-          title: Email address
           maxLength: 254
+        department:
+          type: string
+          nullable: true
+          maxLength: 1000
+        role:
+          type: string
+          nullable: true
+          maxLength: 1000
         is_active:
           type: boolean
           readOnly: true
