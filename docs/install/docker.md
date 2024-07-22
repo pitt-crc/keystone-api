@@ -19,8 +19,10 @@ The health of the running API instance can be checked by querying the API `healt
 curl -L http://localhost:8000/health | jq .
 ```
 
-Once the container is ready, create a new administrator account by running the `keystone-api` utility from
-within the container.
+The default container command executes the `quickstart` utility, which automatically spins up system dependencies (Postgres, Redis, etc.) within the container.
+The command also checks for any existing user accounts and, if no accounts are found, creates an admin account with username `admin` password `quickstart`.
+This behavior can be overwritten by manually specifying the docker deployment command.
+New administrator accounts can also be created manually by running the `keystone-api` utility from within the container.
 
 ```bash
 docker exec -i -t keystone keystone-api createsuperuser
