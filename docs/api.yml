@@ -4547,7 +4547,12 @@ components:
           nullable: true
         group:
           type: integer
+        assignees:
+          type: array
+          items:
+            type: integer
       required:
+      - assignees
       - description
       - group
       - id
@@ -4578,6 +4583,7 @@ components:
           type: integer
         reviewer:
           type: integer
+          nullable: true
       required:
       - date_modified
       - id
@@ -4778,6 +4784,10 @@ components:
           nullable: true
         group:
           type: integer
+        assignees:
+          type: array
+          items:
+            type: integer
     PatchedAllocationRequestReview:
       type: object
       description: Object serializer for the `AllocationRequestReview` class
@@ -4803,6 +4813,7 @@ components:
           type: integer
         reviewer:
           type: integer
+          nullable: true
     PatchedCluster:
       type: object
       description: Object serializer for the `Cluster` class
