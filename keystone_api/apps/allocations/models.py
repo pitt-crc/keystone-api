@@ -74,7 +74,7 @@ class AllocationRequest(RGModelInterface, models.Model):
     expire = models.DateField(null=True, blank=True)
 
     group: ResearchGroup = models.ForeignKey(ResearchGroup, on_delete=models.CASCADE)
-    assignees: User = models.ManyToManyField(User)
+    assignees: User = models.ManyToManyField(User, blank=True)
 
     def clean(self) -> None:
         """Validate the model instance
@@ -113,7 +113,7 @@ class AllocationRequestReview(RGModelInterface, models.Model):
     date_modified = models.DateTimeField(auto_now=True)
 
     request: AllocationRequest = models.ForeignKey(AllocationRequest, on_delete=models.CASCADE)
-    reviewer: User = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    reviewer: User = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def get_research_group(self) -> ResearchGroup:
         """Return the research group tied to the current record"""

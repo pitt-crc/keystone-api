@@ -4552,7 +4552,6 @@ components:
           items:
             type: integer
       required:
-      - assignees
       - description
       - group
       - id
@@ -4583,7 +4582,6 @@ components:
           type: integer
         reviewer:
           type: integer
-          nullable: true
       required:
       - date_modified
       - id
@@ -4813,7 +4811,6 @@ components:
           type: integer
         reviewer:
           type: integer
-          nullable: true
     PatchedCluster:
       type: object
       description: Object serializer for the `Cluster` class
