@@ -27,8 +27,9 @@ class Notification(models.Model):
         """Enumerated choices for the `notification_type` field"""
 
         resource_usage = 'RU', 'Resource Usage'
-        request_status = 'SU', 'Status Update'
         general_message = 'GM', 'General Message'
+        request_status = 'RS', 'Request Status Update'
+        request_expiring = 'RE', 'Request Expiry Notice'
 
     time = models.DateTimeField(auto_now_add=True)
     read = models.BooleanField(default=False)

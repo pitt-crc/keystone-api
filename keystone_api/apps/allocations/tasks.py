@@ -5,12 +5,14 @@ asynchronously from the rest of the application and log their results in the
 application database.
 """
 
-from datetime import date
+from datetime import date, timedelta
 
 from celery import shared_task
 from django.db.models import Sum
+from django.utils import timezone
 
-from apps.allocations.models import Allocation, Cluster
+from apps.allocations.models import Allocation, AllocationRequest, Cluster
+from apps.notifications.models import Notification
 from apps.users.models import ResearchGroup
 from keystone_api.plugins.slurm import *
 
@@ -117,3 +119,31 @@ def update_limit_for_account(account: ResearchGroup, cluster: Cluster) -> None:
               f"    {closing_summary}"
               f"    historical usage change: {historical_usage} -> {updated_historical_usage}\n"
               f"    limit change: {current_limit} -> {updated_limit}")
+
+
+def send_expiration_notifications() -> None:
+
+    # Get all allocation requests that have expired in the last week
+    now = timezone.now()
+    window = now - timedelta(days=7)
+    expired_requests = AllocationRequest.objects.filter(expire__gte=window, expire__lte=now)
+
+    # Issue notifications for each request
+    for request in expired_requests:
+        for user in request.group.all_members():
+
+            # Add logic here to check the user's notification preferences
+            notification_sent = Notification.objects.filter(
+                user=user,
+                notification_type=Notification.NotificationType.request_status,
+                metadata__request_id=request.id
+            ).exists()
+
+            if not notification_sent:
+                # Create and send a notification
+                notification = Notification.objects.create(
+                    user=user,
+                    message=f"Your allocation request '{request.title}' has expired.",
+                    metadata={'request_id': request.id},
+                    notification_type=Notification.NotificationType.request_status
+                )
