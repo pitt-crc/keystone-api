@@ -176,4 +176,9 @@ def send_expiration_notifications() -> None:
 
     for request in expiring_requests:
         for user in request.group.all_members():
-            notify_user_expiring_allocation(user, request)
+
+            try:
+                notify_user_expiring_allocation(user, request)
+
+            except Exception as error:
+                log.error(f'Error notifying user {user.username} for request #{request.id}: {error}')
