@@ -150,9 +150,14 @@ def notify_user_expiring_allocation(user: User, request: AllocationRequest) -> N
         send_notification_template(
             user=user,
             subject=f'Allocation Expires on {request.expire}',
-            template='test',
+            template='expiration_email.html',
             notification_type=Notification.NotificationType.request_status,
-            notification_metadata={'request_id': request.id, 'days_to_expire': days_until_expire}
+            notification_metadata={
+                'request_id': request.id,
+                'request_title': request.title,
+                'request_expire': request.expire,
+                'days_to_expire': days_until_expire
+            }
         )
 
 

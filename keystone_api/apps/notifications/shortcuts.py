@@ -64,6 +64,7 @@ def send_notification_template(
         notification_metadata: Metadata to store alongside the notification
     """
 
+    notification_metadata.setdefault('user', user)
     html_content = render_to_string(template, notification_metadata)
     text_content = strip_tags(html_content)
     send_notification(
