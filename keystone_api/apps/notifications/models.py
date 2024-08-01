@@ -17,7 +17,7 @@ def _default_alloc_thresholds() -> list[int]:
 
 
 def _default_expiry_thresholds() -> list[int]:
-    return [14]
+    return [30, 14, 0]
 
 
 class Notification(models.Model):

@@ -131,16 +131,22 @@ def notify_user_expiring_allocation(user: User, allocation: AllocationRequest) -
     """
 
     # Nothing do if the allocation does not expire
+    log.debug(f'Checking notifications for user {user.username} on request #{allocation.id}')
     if not allocation.expire:
+        log.debug('Request does not expire')
         return
 
-    # The next notification occurs at the largest threshold that is less than the days until expiration
+    # The next notification occurs at the smallest threshold that is greater than the days until expiration
     days_until_expire = (allocation.expire - date.today()).days
-    notification_thresholds = Preference.get_user_preference(user).expiry_thresholds()
-    next_threshold = max(
-        (nt for nt in notification_thresholds if nt < days_until_expire),
-        default=min(notification_thresholds)
+    notification_thresholds = Preference.get_user_preference(user).expiry_thresholds
+    next_threshold = min(
+        (nt for nt in notification_thresholds if nt >= days_until_expire),
+        default=max(notification_thresholds)
     )
+
+    log.debug(f'Request expires in {days_until_expire} days with next threshold at {next_threshold} days.')
+    if next_threshold < days_until_expire:
+        return
 
     # Check if a notification has already been sent
     notification_sent = Notification.objects.filter(
@@ -150,7 +156,11 @@ def notify_user_expiring_allocation(user: User, allocation: AllocationRequest) -
         metadata__days_to_expire__lte=next_threshold
     ).exists()
 
-    if not notification_sent:
+    if notification_sent:
+        log.debug(f'Existing notification found.')
+
+    else:
+        log.debug(f'Sending new notification for request #{allocation.id}.')
         send_notification_template(
             user=user,
             subject=f'Allocation Expires on {allocation.expire}',
@@ -175,10 +185,10 @@ def send_expiration_notifications() -> None:
     ).all()
 
     for request in expiring_requests:
-        for user in request.group.all_members():
+        for user in request.group.get_all_members():
 
             try:
                 notify_user_expiring_allocation(user, request)
 
             except Exception as error:
-                log.error(f'Error notifying user {user.username} for request #{request.id}: {error}')
+                log.exception(f'Error notifying user {user.username} for request #{request.id}: {error}')
