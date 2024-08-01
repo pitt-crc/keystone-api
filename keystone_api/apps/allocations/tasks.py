@@ -12,8 +12,9 @@ from django.db.models import Sum
 from django.utils import timezone
 
 from apps.allocations.models import Allocation, AllocationRequest, Cluster
-from apps.notifications.models import Notification
-from apps.users.models import ResearchGroup
+from apps.notifications.models import Notification, Preference
+from apps.notifications.shortcuts import send_notification_template
+from apps.users.models import ResearchGroup, User
 from keystone_api.plugins.slurm import *
 
 log = logging.getLogger(__name__)
@@ -38,14 +39,12 @@ def update_limits_for_cluster(cluster: Cluster) -> None:
     """
 
     for account_name in get_slurm_account_names(cluster.name):
-
-        # Skip root
         if account_name in ['root']:
             continue
 
         try:
-            # Check the Slurm account has representation in Keystone
             account = ResearchGroup.objects.get(name=account_name)
+
         except ResearchGroup.DoesNotExist:
             log.warning(f"No existing ResearchGroup for account {account_name} on {cluster.name}, skipping for now")
             continue
@@ -121,29 +120,47 @@ def update_limit_for_account(account: ResearchGroup, cluster: Cluster) -> None:
               f"    limit change: {current_limit} -> {updated_limit}")
 
 
+def notify_user_expiring_allocation(user: User, request: AllocationRequest) -> None:
+    """Send any pending expiration notices to the given user
+
+    A notification is only generated if warranted by the user's notification preferences.
+
+    Args:
+        user: The user to notify
+        request: The request to check for pending notifications
+    """
+
+    # The next notification occurs at the largest threshold that is less than the days until expiration
+    days_until_expire = (request.expire - date.today()).days
+    notification_thresholds = Preference.get_user_preference(user).expiry_thresholds()
+    next_threshold = max(
+        (nt for nt in notification_thresholds if nt < days_until_expire),
+        default=min(notification_thresholds)
+    )
+
+    # Check if a notification has already been sent
+    notification_sent = Notification.objects.filter(
+        user=user,
+        notification_type=Notification.NotificationType.request_status,
+        metadata__request_id=request.id,
+        metadata__days_to_expire__lte=next_threshold
+    ).exists()
+
+    if not notification_sent:
+        send_notification_template(
+            user=user,
+            subject=f'Allocation Expires on {request.expire}',
+            template='test',
+            notification_type=Notification.NotificationType.request_status,
+            notification_metadata={'request_id': request.id, 'days_to_expire': days_until_expire}
+        )
+
+
+@shared_task()
 def send_expiration_notifications() -> None:
+    """Send any pending expiration notices to all users"""
 
-    # Get all allocation requests that have expired in the last week
-    now = timezone.now()
-    window = now - timedelta(days=7)
-    expired_requests = AllocationRequest.objects.filter(expire__gte=window, expire__lte=now)
-
-    # Issue notifications for each request
-    for request in expired_requests:
+    expiring_requests = AllocationRequest.objects.filter(expire__gte=timezone.now() - timedelta(days=7)).all()
+    for request in expiring_requests:
         for user in request.group.all_members():
-
-            # Add logic here to check the user's notification preferences
-            notification_sent = Notification.objects.filter(
-                user=user,
-                notification_type=Notification.NotificationType.request_status,
-                metadata__request_id=request.id
-            ).exists()
-
-            if not notification_sent:
-                # Create and send a notification
-                notification = Notification.objects.create(
-                    user=user,
-                    message=f"Your allocation request '{request.title}' has expired.",
-                    metadata={'request_id': request.id},
-                    notification_type=Notification.NotificationType.request_status
-                )
+            notify_user_expiring_allocation(user, request)
