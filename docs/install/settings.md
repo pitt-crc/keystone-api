@@ -121,4 +121,4 @@ The following settings are intended exclusively for use in development.
 | Setting Name              | Default Value            | Description                                                   |
 |---------------------------|--------------------------|---------------------------------------------------------------|
 | `DEBUG`                   | `False`                  | Enable or disable in browser error tracebacks.                |
-| `DEBUG_EMAIL_DIR`         | `<app>/email_files`      | Write emails to disk instead of using the SMTP server.        |
+| `DEBUG_EMAIL_DIR`         | ``                       | Write emails to disk instead of using the SMTP server.        |
