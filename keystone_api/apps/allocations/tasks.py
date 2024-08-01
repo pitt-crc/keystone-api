@@ -130,22 +130,23 @@ def notify_user_expiring_allocation(user: User, allocation: AllocationRequest) -
         allocation: The allocation request to check for pending notifications
     """
 
-    # Nothing do if the allocation does not expire
+    # There are no notifications if the allocation does not expire
     log.debug(f'Checking notifications for user {user.username} on request #{allocation.id}')
     if not allocation.expire:
         log.debug('Request does not expire')
         return
 
-    # The next notification occurs at the smallest threshold that is greater than the days until expiration
+    # The next notification occurs at the smallest threshold that is greater than or equal the days until expiration
     days_until_expire = (allocation.expire - date.today()).days
     notification_thresholds = Preference.get_user_preference(user).expiry_thresholds
     next_threshold = min(
-        (nt for nt in notification_thresholds if nt >= days_until_expire),
-        default=max(notification_thresholds)
+        filter(lambda x: x >= days_until_expire, notification_thresholds),
+        default=None
     )
 
+    # Exit early if we have not hit a threshold yet
     log.debug(f'Request expires in {days_until_expire} days with next threshold at {next_threshold} days.')
-    if next_threshold < days_until_expire:
+    if next_threshold is None:
         return
 
     # Check if a notification has already been sent
