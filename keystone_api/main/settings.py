@@ -178,7 +178,7 @@ CELERY_RESULT_EXTENDED = True
 
 # Email server
 
-if _email_path := env.path('DEBUG_EMAIL_DIR', None):
+if _email_path := env.get_value('DEBUG_EMAIL_DIR', default=None):
     EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
     EMAIL_FILE_PATH = _email_path
 
