@@ -120,24 +120,24 @@ def update_limit_for_account(account: ResearchGroup, cluster: Cluster) -> None:
               f"    limit change: {current_limit} -> {updated_limit}")
 
 
-def notify_user_expiring_allocation(user: User, allocation: AllocationRequest) -> None:
+def send_expiry_notification_for_request(user: User, request: AllocationRequest) -> None:
     """Send any pending expiration notices to the given user
 
     A notification is only generated if warranted by the user's notification preferences.
 
     Args:
         user: The user to notify
-        allocation: The allocation request to check for pending notifications
+        request: The allocation request to check for pending notifications
     """
 
     # There are no notifications if the allocation does not expire
-    log.debug(f'Checking notifications for user {user.username} on request #{allocation.id}')
-    if not allocation.expire:
+    log.debug(f'Checking notifications for user {user.username} on request #{request.id}')
+    if not request.expire:
         log.debug('Request does not expire')
         return
 
     # The next notification occurs at the smallest threshold that is greater than or equal the days until expiration
-    days_until_expire = (allocation.expire - date.today()).days
+    days_until_expire = (request.expire - date.today()).days
     notification_thresholds = Preference.get_user_preference(user).expiry_thresholds
     next_threshold = min(
         filter(lambda x: x >= days_until_expire, notification_thresholds),
@@ -153,7 +153,7 @@ def notify_user_expiring_allocation(user: User, allocation: AllocationRequest) -
     notification_sent = Notification.objects.filter(
         user=user,
         notification_type=Notification.NotificationType.request_status,
-        metadata__request_id=allocation.id,
+        metadata__request_id=request.id,
         metadata__days_to_expire__lte=next_threshold
     ).exists()
 
@@ -161,23 +161,23 @@ def notify_user_expiring_allocation(user: User, allocation: AllocationRequest) -
         log.debug(f'Existing notification found.')
 
     else:
-        log.debug(f'Sending new notification for request #{allocation.id}.')
+        log.debug(f'Sending new notification for request #{request.id}.')
         send_notification_template(
             user=user,
-            subject=f'Allocation Expires on {allocation.expire}',
+            subject=f'Allocation Expires on {request.expire}',
             template='expiration_email.html',
             notification_type=Notification.NotificationType.request_status,
             notification_metadata={
-                'request_id': allocation.id,
-                'request_title': allocation.title,
-                'request_expire': allocation.expire.isoformat(),
+                'request_id': request.id,
+                'request_title': request.title,
+                'request_expire': request.expire.isoformat(),
                 'days_to_expire': days_until_expire
             }
         )
 
 
 @shared_task()
-def send_expiration_notifications() -> None:
+def send_expiry_notifications() -> None:
     """Send any pending expiration notices to all users"""
 
     expiring_requests = AllocationRequest.objects.filter(
@@ -189,7 +189,7 @@ def send_expiration_notifications() -> None:
         for user in request.group.get_all_members():
 
             try:
-                notify_user_expiring_allocation(user, request)
+                send_expiry_notification_for_request(user, request)
 
             except Exception as error:
                 log.exception(f'Error notifying user {user.username} for request #{request.id}: {error}')
