@@ -4547,6 +4547,10 @@ components:
           nullable: true
         group:
           type: integer
+        assignees:
+          type: array
+          items:
+            type: integer
       required:
       - description
       - group
@@ -4778,6 +4782,10 @@ components:
           nullable: true
         group:
           type: integer
+        assignees:
+          type: array
+          items:
+            type: integer
     PatchedAllocationRequestReview:
       type: object
       description: Object serializer for the `AllocationRequestReview` class

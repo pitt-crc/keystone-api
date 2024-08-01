@@ -74,6 +74,7 @@ class AllocationRequest(RGModelInterface, models.Model):
     expire = models.DateField(null=True, blank=True)
 
     group: ResearchGroup = models.ForeignKey(ResearchGroup, on_delete=models.CASCADE)
+    assignees: User = models.ManyToManyField(User, blank=True)
 
     def clean(self) -> None:
         """Validate the model instance
