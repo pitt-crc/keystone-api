@@ -29,7 +29,7 @@ drf_spectacular = { version = "0.27.2", extras = ["sidecar"] }
 gunicorn = "22.0.0"
 psycopg2-binary = "2.9.9"
 pyyaml = "6.0.1"
-redis = "5.0.7"
+redis = "5.0.8"
 tqdm = "4.66.4"
 uritemplate = "4.1.1"
 whitenoise = "6.7.0"
