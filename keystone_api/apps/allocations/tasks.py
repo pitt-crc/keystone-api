@@ -120,18 +120,22 @@ def update_limit_for_account(account: ResearchGroup, cluster: Cluster) -> None:
               f"    limit change: {current_limit} -> {updated_limit}")
 
 
-def notify_user_expiring_allocation(user: User, request: AllocationRequest) -> None:
+def notify_user_expiring_allocation(user: User, allocation: AllocationRequest) -> None:
     """Send any pending expiration notices to the given user
 
     A notification is only generated if warranted by the user's notification preferences.
 
     Args:
         user: The user to notify
-        request: The request to check for pending notifications
+        allocation: The allocation request to check for pending notifications
     """
 
+    # Nothing do if the allocation does not expire
+    if not allocation.expire:
+        return
+
     # The next notification occurs at the largest threshold that is less than the days until expiration
-    days_until_expire = (request.expire - date.today()).days
+    days_until_expire = (allocation.expire - date.today()).days
     notification_thresholds = Preference.get_user_preference(user).expiry_thresholds()
     next_threshold = max(
         (nt for nt in notification_thresholds if nt < days_until_expire),
@@ -142,20 +146,20 @@ def notify_user_expiring_allocation(user: User, request: AllocationRequest) -> N
     notification_sent = Notification.objects.filter(
         user=user,
         notification_type=Notification.NotificationType.request_status,
-        metadata__request_id=request.id,
+        metadata__request_id=allocation.id,
         metadata__days_to_expire__lte=next_threshold
     ).exists()
 
     if not notification_sent:
         send_notification_template(
             user=user,
-            subject=f'Allocation Expires on {request.expire}',
+            subject=f'Allocation Expires on {allocation.expire}',
             template='expiration_email.html',
             notification_type=Notification.NotificationType.request_status,
             notification_metadata={
-                'request_id': request.id,
-                'request_title': request.title,
-                'request_expire': request.expire,
+                'request_id': allocation.id,
+                'request_title': allocation.title,
+                'request_expire': allocation.expire.isoformat(),
                 'days_to_expire': days_until_expire
             }
         )
@@ -165,7 +169,11 @@ def notify_user_expiring_allocation(user: User, request: AllocationRequest) -> N
 def send_expiration_notifications() -> None:
     """Send any pending expiration notices to all users"""
 
-    expiring_requests = AllocationRequest.objects.filter(expire__gte=timezone.now() - timedelta(days=7)).all()
+    expiring_requests = AllocationRequest.objects.filter(
+        status=AllocationRequest.StatusChoices.APPROVED,
+        expire__gte=timezone.now() - timedelta(days=7)
+    ).all()
+
     for request in expiring_requests:
         for user in request.group.all_members():
             notify_user_expiring_allocation(user, request)
