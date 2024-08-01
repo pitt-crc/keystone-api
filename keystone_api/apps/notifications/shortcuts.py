@@ -75,21 +75,3 @@ def send_notification_template(
         notification_type,
         notification_metadata
     )
-
-
-def send_general_notification(user: User, subject: str, message: str) -> None:
-    """Send a general notification email to a specified user
-
-    Args:
-        user: The user object to whom the email will be sent
-        subject: The subject line of the email
-        message: The message content to included
-    """
-
-    send_notification_template(
-        user=user,
-        subject=subject,
-        template='general.html',
-        notification_type=Notification.NotificationType.general_message,
-        notification_metadata={'message': message}
-    )
