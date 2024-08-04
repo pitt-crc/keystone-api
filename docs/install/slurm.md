@@ -54,13 +54,13 @@ PriorityUsageResetPeriod=NONE
 ## Configuring Charging Rates
 
 Keystone enforces allocation limits in units of billable TRES.
-The total billable TRES for a given job is determined using the allocated resources in addition to a series of billing weights:
+The total billable TRES for a given job is determined as a sum over the TRES usage $\left ( U \right )$ scaled by a billing weight $\left ( W \right )$ :
 
 $$ 
-Billable = \sum_{T} \, \left ( W_{T} * A_{T} \right )
+\text{Billable Usage} = \sum_\text{TRES} \,\, \left ( W_\text{TRES} * U_\text{TRES} \right )
 $$
 
-The billing weights are set on a per-partition basis using the `TRESBillingWeights` setting.
+The billing weights default to zero and are set on a per-partition basis using the `TRESBillingWeights` setting.
 Billing weights are definable in variety of units. 
 See the [Slurm documentation](https://slurm.schedmd.com/tres.html) for more details.
 
