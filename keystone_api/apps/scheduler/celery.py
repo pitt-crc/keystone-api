@@ -37,6 +37,6 @@ celery_app.conf.beat_schedule = {
     'apps.allocations.tasks.send_expiry_notifications': {
         'task': 'apps.allocations.tasks.send_expiry_notifications',
         'schedule': crontab(minute='0'),
-        'description': 'Send any pending email identify user\'s of expiring proposals.'
+        'description': 'This task sends email notifications informing users of expiring proposals.'
     },
 }
