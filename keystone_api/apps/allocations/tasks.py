@@ -5,13 +5,16 @@ asynchronously from the rest of the application and log their results in the
 application database.
 """
 
-from datetime import date
+from datetime import date, timedelta
 
 from celery import shared_task
 from django.db.models import Sum
+from django.utils import timezone
 
-from apps.allocations.models import Allocation, Cluster
-from apps.users.models import ResearchGroup
+from apps.allocations.models import Allocation, AllocationRequest, Cluster
+from apps.notifications.models import Notification, Preference
+from apps.notifications.shortcuts import send_notification_template
+from apps.users.models import ResearchGroup, User
 from keystone_api.plugins.slurm import *
 
 log = logging.getLogger(__name__)
@@ -36,14 +39,12 @@ def update_limits_for_cluster(cluster: Cluster) -> None:
     """
 
     for account_name in get_slurm_account_names(cluster.name):
-
-        # Skip root
         if account_name in ['root']:
             continue
 
         try:
-            # Check the Slurm account has representation in Keystone
             account = ResearchGroup.objects.get(name=account_name)
+
         except ResearchGroup.DoesNotExist:
             log.warning(f"No existing ResearchGroup for account {account_name} on {cluster.name}, skipping for now")
             continue
@@ -117,3 +118,78 @@ def update_limit_for_account(account: ResearchGroup, cluster: Cluster) -> None:
               f"    {closing_summary}"
               f"    historical usage change: {historical_usage} -> {updated_historical_usage}\n"
               f"    limit change: {current_limit} -> {updated_limit}")
+
+
+def send_expiry_notification_for_request(user: User, request: AllocationRequest) -> None:
+    """Send any pending expiration notices to the given user
+
+    A notification is only generated if warranted by the user's notification preferences.
+
+    Args:
+        user: The user to notify
+        request: The allocation request to check for pending notifications
+    """
+
+    # There are no notifications if the allocation does not expire
+    log.debug(f'Checking notifications for user {user.username} on request #{request.id}')
+    if not request.expire:
+        log.debug('Request does not expire')
+        return
+
+    # The next notification occurs at the smallest threshold that is greater than or equal the days until expiration
+    days_until_expire = (request.expire - date.today()).days
+    notification_thresholds = Preference.get_user_preference(user).expiry_thresholds
+    next_threshold = min(
+        filter(lambda x: x >= days_until_expire, notification_thresholds),
+        default=None
+    )
+
+    # Exit early if we have not hit a threshold yet
+    log.debug(f'Request expires in {days_until_expire} days with next threshold at {next_threshold} days.')
+    if next_threshold is None:
+        return
+
+    # Check if a notification has already been sent
+    notification_sent = Notification.objects.filter(
+        user=user,
+        notification_type=Notification.NotificationType.request_status,
+        metadata__request_id=request.id,
+        metadata__days_to_expire__lte=next_threshold
+    ).exists()
+
+    if notification_sent:
+        log.debug(f'Existing notification found.')
+
+    else:
+        log.debug(f'Sending new notification for request #{request.id}.')
+        send_notification_template(
+            user=user,
+            subject=f'Allocation Expires on {request.expire}',
+            template='expiration_email.html',
+            notification_type=Notification.NotificationType.request_status,
+            notification_metadata={
+                'request_id': request.id,
+                'request_title': request.title,
+                'request_expire': request.expire.isoformat(),
+                'days_to_expire': days_until_expire
+            }
+        )
+
+
+@shared_task()
+def send_expiry_notifications() -> None:
+    """Send any pending expiration notices to all users"""
+
+    expiring_requests = AllocationRequest.objects.filter(
+        status=AllocationRequest.StatusChoices.APPROVED,
+        expire__gte=timezone.now() - timedelta(days=7)
+    ).all()
+
+    for request in expiring_requests:
+        for user in request.group.get_all_members():
+
+            try:
+                send_expiry_notification_for_request(user, request)
+
+            except Exception as error:
+                log.exception(f'Error notifying user {user.username} for request #{request.id}: {error}')

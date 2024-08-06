@@ -32,6 +32,11 @@ celery_app.conf.beat_schedule = {
     'apps.allocations.tasks.update_limits': {
         'task': 'apps.allocations.tasks.update_limits',
         'schedule': crontab(minute='0'),
-        'description': 'This task updates the per cluser usage limits in Slurm for each Research Group based on the state of their allocations.'
+        'description': 'This task updates the per cluster usage limits in Slurm for each Research Group based on the state of their allocations.'
+    },
+    'apps.allocations.tasks.send_expiry_notifications': {
+        'task': 'apps.allocations.tasks.send_expiry_notifications',
+        'schedule': crontab(minute='0'),
+        'description': 'This task sends email notifications informing users of expiring proposals.'
     },
 }
