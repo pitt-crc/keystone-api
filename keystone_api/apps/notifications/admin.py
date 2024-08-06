@@ -34,7 +34,6 @@ class NotificationAdmin(admin.ModelAdmin):
         return False
 
 
-
 @admin.register(Preference)
 class PreferenceAdmin(admin.ModelAdmin):
     """Admin interface for user notification preferences"""
