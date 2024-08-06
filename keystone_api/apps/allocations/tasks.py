@@ -131,7 +131,7 @@ def send_expiry_notification_for_request(user: User, request: AllocationRequest)
     """
 
     # There are no notifications if the allocation does not expire
-    log.debug(f'Checking notifications for user {user.username} on request #{request.id}')
+    log.debug(f'Checking notifications for user {user.username} on request #{request.id}.')
     if not request.expire:
         log.debug('Request does not expire')
         return
@@ -145,7 +145,7 @@ def send_expiry_notification_for_request(user: User, request: AllocationRequest)
     )
 
     # Exit early if we have not hit a threshold yet
-    log.debug(f'Request expires in {days_until_expire} days with next threshold at {next_threshold} days.')
+    log.debug(f'Request #{request.id} expires in {days_until_expire} days with next threshold at {next_threshold} days.')
     if next_threshold is None:
         return
 
@@ -161,7 +161,7 @@ def send_expiry_notification_for_request(user: User, request: AllocationRequest)
         log.debug(f'Existing notification found.')
 
     else:
-        log.debug(f'Sending new notification for request #{request.id}.')
+        log.debug(f'Sending new notification for request #{request.id} to user {user.username}.')
         send_notification_template(
             user=user,
             subject=f'Allocation Expires on {request.expire}',
@@ -185,6 +185,7 @@ def send_expiry_notifications() -> None:
         expire__gte=timezone.now() - timedelta(days=7)
     ).all()
 
+    failed = False
     for request in expiring_requests:
         for user in request.group.get_all_members():
 
@@ -193,3 +194,7 @@ def send_expiry_notifications() -> None:
 
             except Exception as error:
                 log.exception(f'Error notifying user {user.username} for request #{request.id}: {error}')
+                failed = True
+
+    if failed:
+        raise RuntimeError('Task failed with one or more errors. See logs for details.')

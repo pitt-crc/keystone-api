@@ -178,6 +178,7 @@ CELERY_RESULT_EXTENDED = True
 
 # Email server
 
+EMAIL_FROM_ADDRESS = env.str('EMAIL_FROM_ADDRESS', 'noreply@keystone.bot')
 if _email_path := env.get_value('DEBUG_EMAIL_DIR', default=None):
     EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
     EMAIL_FILE_PATH = _email_path
@@ -189,7 +190,6 @@ else:
     EMAIL_HOST_USER = env.str('EMAIL_HOST_USER', '')
     EMAIL_HOST_PASSWORD = env.str('your_email_password', '')
     EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', False)
-    EMAIL_FROM_ADDRESS = env.str('EMAIL_FROM_ADDRESS', 'noreply@keystone.bot')
 
 # Database
 
