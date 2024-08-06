@@ -33,8 +33,6 @@ class NotificationAdmin(admin.ModelAdmin):
     def has_add_permission(self, request, obj=None) -> False:
         return False
 
-    def has_delete_permission(self, request, obj=None) -> False:
-        return False
 
 
 @admin.register(Preference)
