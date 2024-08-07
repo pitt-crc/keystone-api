@@ -73,7 +73,8 @@ jobs:
       - name: Run tests
         run: |
           docker load --input /tmp/keystone-api.tar
-          docker run keystone-api test apps  
+          docker run -v $(pwd)/test:/tmp/test --entrypoint coverage keystone-api run --data-file=/tmp/test/.coverage --source=keystone_api  /usr/local/bin/keystone-api test apps 
+          docker run -v $(pwd)/test:/tmp/test --entrypoint coverage keystone-api report
 
   # Run application level unit tests
   function-tests:
