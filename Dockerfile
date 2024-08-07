@@ -24,8 +24,8 @@ RUN groupadd --gid 900 keystone && useradd -m -u 900 -g keystone keystone
 
 # Install the application
 WORKDIR /app
-COPY . .
-RUN pip install -e .
+COPY . src
+RUN pip install ./src[ldap] && rm -rf src
 
 # Setup and launch the application
 ENTRYPOINT ["keystone-api"]
