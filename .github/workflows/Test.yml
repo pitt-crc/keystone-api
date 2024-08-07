@@ -58,7 +58,7 @@ jobs:
             exit 1
           fi
 
-  # Run package level function tests
+  # Run application level unit tests
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
@@ -73,10 +73,10 @@ jobs:
       - name: Run tests
         run: |
           docker load --input /tmp/keystone-api.tar
-          docker run -v $(pwd)/test:/tmp/test --entrypoint coverage keystone-api run --data-file=/tmp/test/.coverage --source=keystone_api  /usr/local/bin/keystone-api test apps 
-          docker run -v $(pwd)/test:/tmp/test --entrypoint coverage keystone-api report
+          docker run -v $(pwd)/test:/tmp/test --entrypoint coverage keystone-api run    --data-file=/tmp/test/.coverage --source=keystone_api  /usr/local/bin/keystone-api test apps 
+          docker run -v $(pwd)/test:/tmp/test --entrypoint coverage keystone-api report --data-file=/tmp/test/.coverage
 
-  # Run application level unit tests
+  # Run package level function tests
   function-tests:
     name: Function Tests
     runs-on: ubuntu-latest
