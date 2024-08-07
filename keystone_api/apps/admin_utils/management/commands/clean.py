@@ -5,7 +5,7 @@
 | Argument   | Description                                                      |
 |------------|------------------------------------------------------------------|
 | --static   | Delete the static root directory                                 |
-| --uploads  | Delete all user uploaded file data                              |
+| --uploads  | Delete all user uploaded file data                               |
 | --sqlite   | Delete all sqlite database files                                 |
 | --all      | Shorthand for deleting everything                                |
 """
