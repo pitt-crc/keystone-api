@@ -73,9 +73,9 @@ jobs:
       - name: Run tests
         run: |
           docker load --input /tmp/keystone-api.tar
-          docker run -v $(pwd)/test_results:/tmp/test --entrypoint coverage keystone-api run    --data-file=/tmp/test/.coverage --source=keystone_api  /usr/local/bin/keystone-api test apps tests
-          docker run -v $(pwd)/test_results:/tmp/test --entrypoint coverage keystone-api report --data-file=/tmp/test/.coverage --omit "*/migrations/*","*/tests/*"
-          docker run -v $(pwd)/test_results:/tmp/test --entrypoint coverage keystone-api xml    --data-file=/tmp/test/.coverage --omit "*/migrations/*","*/tests/*" -o /tmp/test/report.xml
+          docker run -v $(pwd)/test:/tmp/test --entrypoint coverage keystone-api run    --data-file=/tmp/test/.coverage --source=keystone_api  /usr/local/bin/keystone-api test apps 
+          docker run -v $(pwd)/test:/tmp/test --entrypoint coverage keystone-api report --data-file=/tmp/test/.coverage --omit "*/migrations/*","*/tests/*"
+          docker run -v $(pwd)/test:/tmp/test --entrypoint coverage keystone-api xml    --data-file=/tmp/test/.coverage --omit "*/migrations/*","*/tests/*" -o /tmp/test/report.xml
 
   # Run package level function tests
   function-tests:
