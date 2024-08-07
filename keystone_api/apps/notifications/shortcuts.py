@@ -41,6 +41,7 @@ def send_notification(
 
     Notification.objects.create(
         user=user,
+        subject=subject,
         message=plain_text,
         notification_type=notification_type,
         metadata=notification_metadata
