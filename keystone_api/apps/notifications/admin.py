@@ -23,9 +23,9 @@ settings.JAZZMIN_SETTINGS['order_with_respect_to'].extend([
 class NotificationAdmin(admin.ModelAdmin):
     """Admin interface for user notifications"""
 
-    list_display = ('user', 'notification_type', 'time', 'read')
+    list_display = ('user', 'notification_type', 'subject', 'time', 'read')
     list_filter = ('read', 'notification_type', 'time')
-    search_fields = ('user__username', 'message')
+    search_fields = ('user__username', 'subject', 'message')
 
     def has_change_permission(self, request, obj=None) -> False:
         return False
