@@ -73,9 +73,9 @@ jobs:
       - name: Run tests
         run: |
           docker load --input /tmp/keystone-api.tar
-          docker run -v $(pwd)/coverage:/tmp/test --entrypoint coverage keystone-api run    --data-file /tmp/test/.coverage --source /usr/local/lib/python3.11/site-packages/keystone_api /usr/local/bin/keystone-api test apps plugins main
-          docker run -v $(pwd)/coverage:/tmp/test --entrypoint coverage keystone-api report --data-file /tmp/test/.coverage --omit "*/migrations/*","*/tests/*"
-          docker run -v $(pwd)/coverage:/tmp/test --entrypoint coverage keystone-api xml    --data-file /tmp/test/.coverage --omit "*/migrations/*","*/tests/*" -o /tmp/test/report.xml
+          docker run -v $(pwd)/coverage:/tmp/test --entrypoint coverage keystone-api run    --data-file /tmp/test/.coverage --source /usr/local/lib/python3.11/site-packages/keystone_api /usr/local/bin/keystone-api test apps plugins
+          docker run -v $(pwd)/coverage:/tmp/test --entrypoint coverage keystone-api report --data-file /tmp/test/.coverage --omit "*/tests/*","*/migrations/*" --include "*/keystone_api/apps/*","*/keystone_api/plugins/*"
+          docker run -v $(pwd)/coverage:/tmp/test --entrypoint coverage keystone-api xml    --data-file /tmp/test/.coverage --omit "*/tests/*","*/migrations/*" --include "*/keystone_api/apps/*","*/keystone_api/plugins/*" -o /tmp/test/report.xml
 
       - name: Report coverage results
         run: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l Python -r coverage/report.xml
