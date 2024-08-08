@@ -8,7 +8,7 @@ from apps.users.serializers import RestrictedUserSerializer
 class Create(TestCase):
     """Test the `create` method"""
 
-    def test_create_raises_not_permitted(self):
+    def test_create_raises_not_permitted(self) -> None:
         """Test that the create method raises a `RuntimeError`"""
 
         serializer = RestrictedUserSerializer()

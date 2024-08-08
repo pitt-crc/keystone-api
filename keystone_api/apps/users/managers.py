@@ -12,7 +12,7 @@ from django.contrib.auth import password_validation
 from django.contrib.auth.base_user import BaseUserManager
 from django.db import models
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: nocover
     from apps.users.models import User
 
 __all__ = ['ResearchGroupManager', 'UserManager']
@@ -22,10 +22,10 @@ class UserManager(BaseUserManager):
     """Object manager for the `User` database model"""
 
     def create_user(
-            self,
-            username: str,
-            password: str,
-            **extra_fields
+        self,
+        username: str,
+        password: str,
+        **extra_fields
     ) -> 'User':
         """Create and a new user account
 
