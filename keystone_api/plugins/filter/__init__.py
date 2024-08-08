@@ -1,11 +1,22 @@
 """Extends the `django-filter` package with custom filter backends.
 
 Filter backends define the default behavior when filtering database queries
-for REST API calls based on URL parameters.
+for REST API calls based on URL parameters. This plugin customizes the default
+filters available for different field types (e.g., char, int, bool, etc.).
 """
 
+from django import views
 from django.db import models
 from django_filters.rest_framework import DjangoFilterBackend
+
+__all__ = ['AdvancedFilterBackend', 'FactoryBuiltFilterSet']
+
+
+class FactoryBuiltFilterSet:
+    """A factory generated filterset class
+
+    This is an empty class used for type checking/hinting.
+    """
 
 
 class AdvancedFilterBackend(DjangoFilterBackend):
@@ -51,18 +62,22 @@ class AdvancedFilterBackend(DjangoFilterBackend):
         models.UUIDField: _default_filters,
     }
 
-    def get_filterset_class(self, view, queryset=None):
+    @property
+    def field_filter_map(self) -> dict[type[models.Field], str]:
+        return self._field_filter_map.copy()
+
+    def get_filterset_class(self, view: views.View, queryset: models.Manager = None) -> type[FactoryBuiltFilterSet]:
         """Get the filterSet class for a given view
 
         Args:
-            view: The view instance
-            queryset: The queryset for the view
+            view: The view used to handel requests that will be filtered
+            queryset: The queryset returning the data that will be filtered
 
         Returns:
             A FilterSet class
         """
 
-        # Default to user provided filterset class
+        # Default to the user defined filterset class
         # The super class method returns `None` if not defined
         if filterset_class := super().get_filterset_class(view, queryset=queryset):
             return filterset_class
@@ -73,9 +88,10 @@ class AdvancedFilterBackend(DjangoFilterBackend):
             if filters := self._field_filter_map.get(type(field), None):
                 field_filters[field.name] = filters
 
-        class AutoFilterSet(self.filterset_base):
+        # Create a filterset class with the appropriate filters for each field
+        class FactoryFilterSet(self.filterset_base, FactoryBuiltFilterSet):
             class Meta:
                 model = queryset.model
                 fields = field_filters
 
-        return AutoFilterSet
+        return FactoryFilterSet
