@@ -17,7 +17,7 @@ __all__ = ['ResearchGroup', 'User']
 
 
 class User(auth_models.AbstractBaseUser, auth_models.PermissionsMixin):
-    """Proxy model for the built-in django `User` model"""
+    """Proxy model for the built-in django `User` model."""
 
     # These values should always be defined when extending AbstractBaseUser
     USERNAME_FIELD = 'username'
@@ -44,7 +44,7 @@ class User(auth_models.AbstractBaseUser, auth_models.PermissionsMixin):
 
 
 class ResearchGroup(models.Model):
-    """A user research group tied to a slurm account"""
+    """A user research group tied to a slurm account."""
 
     name = models.CharField(max_length=255, unique=True)
     pi = models.ForeignKey(User, on_delete=models.CASCADE, related_name='research_group_pi')
@@ -54,16 +54,16 @@ class ResearchGroup(models.Model):
     objects = ResearchGroupManager()
 
     def get_all_members(self) -> tuple[User, ...]:
-        """Return all research group members"""
+        """Return all research group members."""
 
         return (self.pi,) + tuple(self.admins.all()) + tuple(self.members.all())
 
     def get_privileged_members(self) -> tuple[User, ...]:
-        """Return all research group members with admin privileges"""
+        """Return all research group members with admin privileges."""
 
         return (self.pi,) + tuple(self.admins.all())
 
-    def __str__(self) -> str:
-        """Return the research group's account name"""
+    def __str__(self) -> str:  # pragma: nocover  # pragma: nocover
+        """Return the research group's account name."""
 
         return str(self.name)

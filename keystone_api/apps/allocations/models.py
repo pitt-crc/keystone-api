@@ -49,7 +49,7 @@ class Allocation(RGModelInterface, models.Model):
 
         return self.request.group
 
-    def __str__(self) -> str:
+    def __str__(self) -> str:  # pragma: nocover
         """Return a human-readable summary of the allocation"""
 
         return f'{self.cluster} allocation for {self.request.group}'
@@ -91,7 +91,7 @@ class AllocationRequest(RGModelInterface, models.Model):
 
         return self.group
 
-    def __str__(self) -> str:
+    def __str__(self) -> str:  # pragma: nocover
         """Return the request title as a string"""
 
         return truncatechars(self.title, 100)
@@ -120,7 +120,7 @@ class AllocationRequestReview(RGModelInterface, models.Model):
 
         return self.request.group
 
-    def __str__(self) -> str:
+    def __str__(self) -> str:  # pragma: nocover
         """Return a human-readable identifier for the allocation request"""
 
         return f'{self.reviewer} review for \"{self.request.title}\"'
@@ -142,7 +142,7 @@ class Cluster(models.Model):
     description = models.TextField(max_length=150, null=True, blank=True)
     enabled = models.BooleanField(default=True)
 
-    def __str__(self) -> str:
+    def __str__(self) -> str:  # pragma: nocover
         """Return the cluster name as a string"""
 
         return str(self.name)

@@ -20,20 +20,20 @@ __all__ = [
 
 
 class ResearchGroupSerializer(serializers.ModelSerializer):
-    """Object serializer for the `ResearchGroup` class"""
+    """Object serializer for the `ResearchGroup` model."""
 
     class Meta:
-        """Serializer settings"""
+        """Serializer settings."""
 
         model = ResearchGroup
         fields = '__all__'
 
 
 class PrivilegeUserSerializer(serializers.ModelSerializer):
-    """Object serializer for the `User` class"""
+    """Object serializer for the `User` model."""
 
     class Meta:
-        """Serializer settings"""
+        """Serializer settings."""
 
         model = User
         fields = '__all__'
@@ -41,7 +41,7 @@ class PrivilegeUserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def validate(self, attrs: dict) -> None:
-        """Validate user attributes match the ORM data model
+        """Validate user attributes match the ORM data model.
 
         Args:
             attrs: Dictionary of user attributes
@@ -56,10 +56,10 @@ class PrivilegeUserSerializer(serializers.ModelSerializer):
 
 
 class RestrictedUserSerializer(PrivilegeUserSerializer):
-    """Object serializer for the `User` class with administrative fields marked as read only"""
+    """Object serializer for the `User` class with administrative fields marked as read only."""
 
     class Meta:
-        """Serializer settings"""
+        """Serializer settings."""
 
         model = User
         fields = '__all__'
@@ -67,7 +67,7 @@ class RestrictedUserSerializer(PrivilegeUserSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data: dict) -> None:
-        """Raises an error when attempting to create a new record
+        """Raises an error when attempting to create a new record.
 
         Raises:
             RuntimeError: Every time the function is called
