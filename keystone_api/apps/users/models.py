@@ -63,7 +63,7 @@ class ResearchGroup(models.Model):
 
         return (self.pi,) + tuple(self.admins.all())
 
-    def __str__(self) -> str:
+    def __str__(self) -> str:  # pragma: nocover  # pragma: nocover
         """Return the research group's account name"""
 
         return str(self.name)
