@@ -66,7 +66,7 @@ class AdvancedFilterBackend(DjangoFilterBackend):
     def field_filter_map(self) -> dict[type[models.Field], str]:
         return self._field_filter_map.copy()
 
-    def get_filterset_class(self, view: views.View, queryset: models.Manager = None) -> FactoryBuiltFilterSet:
+    def get_filterset_class(self, view: views.View, queryset: models.Manager = None) -> type[FactoryBuiltFilterSet]:
         """Get the filterSet class for a given view
 
         Args:
