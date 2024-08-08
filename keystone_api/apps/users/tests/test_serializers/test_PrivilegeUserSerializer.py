@@ -11,6 +11,8 @@ class Validate(TestCase):
     """Test data validation via the `validate`."""
 
     def setUp(self) -> None:
+        """Define dummy user data"""
+
         self.user_data = {
             'username': 'testuser',
             'password': 'Password123!',
