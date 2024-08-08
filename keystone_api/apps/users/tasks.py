@@ -15,7 +15,7 @@ from .models import User
 
 
 def get_ldap_connection() -> ldap.ldapobject.LDAPObject:
-    """Establish a new LDAP connection"""
+    """Establish a new LDAP connection."""
 
     conn = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
     if settings.AUTH_LDAP_BIND_DN:
@@ -29,14 +29,14 @@ def get_ldap_connection() -> ldap.ldapobject.LDAPObject:
 
 
 @shared_task()
-def ldap_update_users(prune=False) -> None:
-    """Update the user database with the latest data from LDAP
+def ldap_update_users(prune: bool = False) -> None:
+    """Update the user database with the latest data from LDAP.
 
     This function performs no action if the `AUTH_LDAP_SERVER_URI` setting
     is not configured in the application settings.
 
     Args:
-        prune: Optionally delete old LDAP accounts with usernames no longer found in LDAP
+        prune: Optionally delete accounts with usernames no longer found in LDAP
     """
 
     if not settings.AUTH_LDAP_SERVER_URI:

@@ -10,13 +10,13 @@ from apps.users.tasks import get_ldap_connection
 
 
 class TLSConfiguration(TestCase):
-    """Test the configuration of TLS based on application settings"""
+    """Test the configuration of TLS based on application settings."""
 
     @patch('ldap.initialize')
     @patch('ldap.set_option')
     @patch('ldap.ldapobject.LDAPObject')
     def test_get_ldap_connection(self, mock_ldap: Mock, mock_set_option: Mock, mock_initialize: Mock) -> None:
-        """Test an LDAP connection is correctly configured with TLS enabled"""
+        """Test an LDAP connection is correctly configured with TLS enabled."""
 
         # Set up mock objects
         mock_conn = mock_ldap.return_value
@@ -42,7 +42,7 @@ class TLSConfiguration(TestCase):
     @patch('ldap.initialize')
     @patch('ldap.ldapobject.LDAPObject')
     def test_get_ldap_connection_without_tls(self, mock_ldap: Mock, mock_initialize: Mock) -> None:
-        """Test an LDAP connection is correctly configured with TLS disabled"""
+        """Test an LDAP connection is correctly configured with TLS disabled."""
 
         # Set up mock objects
         mock_conn = mock_ldap.return_value

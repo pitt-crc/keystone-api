@@ -1,4 +1,4 @@
-"""Testing utilities specific to dealing with user accounts"""
+"""Testing utilities specific to dealing with user accounts."""
 
 from apps.users.models import User
 
@@ -11,7 +11,7 @@ def create_test_user(
     email: str = "foo@bar.com",
     **kwargs
 ) -> User:
-    """Create a user account for testing purposes
+    """Create a user account for testing purposes.
 
     Args:
         username: The account username

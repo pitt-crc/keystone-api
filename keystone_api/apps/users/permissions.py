@@ -16,13 +16,13 @@ __all__ = ['IsGroupAdminOrReadOnly', 'IsSelfOrReadOnly']
 
 
 class IsGroupAdminOrReadOnly(permissions.BasePermission):
-    """Grant read-only access is granted to all authenticated users.
+    """Grant read-only access to all authenticated users.
 
     Staff users retain all read/write permissions.
     """
 
     def has_permission(self, request: Request, view: View) -> bool:
-        """Return whether the request has permissions to access the requested resource"""
+        """Return whether the request has permissions to access the requested resource."""
 
         if request.method == 'TRACE':
             return request.user.is_staff
@@ -30,7 +30,7 @@ class IsGroupAdminOrReadOnly(permissions.BasePermission):
         return True
 
     def has_object_permission(self, request: Request, view: View, obj: ResearchGroup):
-        """Return whether the incoming HTTP request has permission to access a database record"""
+        """Return whether the incoming HTTP request has permission to access a database record."""
 
         # Read permissions are allowed to any request
         if request.method in permissions.SAFE_METHODS:
@@ -41,10 +41,10 @@ class IsGroupAdminOrReadOnly(permissions.BasePermission):
 
 
 class IsSelfOrReadOnly(permissions.BasePermission):
-    """Gives read-only permissions to everyone but limits write access to staff users and record owners"""
+    """Grant read-only permissions to everyone and limit write access to staff and record owners."""
 
     def has_permission(self, request: Request, view: View) -> bool:
-        """Return whether the request has permissions to access the requested resource"""
+        """Return whether the request has permissions to access the requested resource."""
 
         # Allow all users to read/update existing records
         # Rely on object level permissions for further refinement of update permissions
@@ -55,7 +55,7 @@ class IsSelfOrReadOnly(permissions.BasePermission):
         return request.user.is_staff
 
     def has_object_permission(self, request: Request, view: View, obj: User) -> bool:
-        """Return whether the incoming HTTP request has permission to access a database record"""
+        """Return whether the incoming HTTP request has permission to access a database record."""
 
         # Write operations are restricted to staff and user's modifying their own data
         is_record_owner = obj == request.user

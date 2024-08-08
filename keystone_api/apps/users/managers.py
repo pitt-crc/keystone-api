@@ -19,7 +19,7 @@ __all__ = ['ResearchGroupManager', 'UserManager']
 
 
 class UserManager(BaseUserManager):
-    """Object manager for the `User` database model"""
+    """Object manager for the `User` database model."""
 
     def create_user(
         self,
@@ -27,7 +27,7 @@ class UserManager(BaseUserManager):
         password: str,
         **extra_fields
     ) -> 'User':
-        """Create and a new user account
+        """Create a new user account.
 
         Args:
             username: The account username
@@ -54,7 +54,7 @@ class UserManager(BaseUserManager):
         password: str,
         **extra_fields
     ) -> 'User':
-        """Create and a new user account with superuser privileges
+        """Create a new user account with superuser privileges.
 
         Args:
             username: The account username
@@ -79,7 +79,7 @@ class UserManager(BaseUserManager):
 
 
 class ResearchGroupManager(models.Manager):
-    """Object manager for the `ResearchGroup` database model"""
+    """Object manager for the `ResearchGroup` database model."""
 
     def groups_for_user(self, user: 'User') -> models.QuerySet:
         """Get all research groups the user is affiliated with.

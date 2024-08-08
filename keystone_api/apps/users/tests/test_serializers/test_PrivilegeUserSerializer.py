@@ -11,7 +11,7 @@ class Validate(TestCase):
     """Test data validation via the `validate`."""
 
     def setUp(self) -> None:
-        """Define dummy user data"""
+        """Define dummy user data."""
 
         self.user_data = {
             'username': 'testuser',
@@ -35,7 +35,7 @@ class Validate(TestCase):
             serializer.is_valid(raise_exception=True)
 
     def test_validate_without_password(self) -> None:
-        """Test validation fails without providing a password."""
+        """Test validation fails when a password is not provided."""
 
         del self.user_data['password']
         serializer = PrivilegeUserSerializer(data=self.user_data)

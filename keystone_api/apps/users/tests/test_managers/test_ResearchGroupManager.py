@@ -1,4 +1,4 @@
-"""Tests for the `ResearchGroupManager` class"""
+"""Tests for the `ResearchGroupManager` class."""
 
 from django.test import TestCase
 
@@ -7,10 +7,10 @@ from apps.users.tests.utils import create_test_user
 
 
 class GroupsForUser(TestCase):
-    """Test fetching group affiliations via the `groups_for_user` method"""
+    """Test fetching group affiliations via the `groups_for_user` method."""
 
     def setUp(self):
-        """Create temporary users and groups"""
+        """Create temporary users and groups."""
 
         self.test_user = create_test_user(username='test_user')
         other_user = create_test_user(username='other_user')
@@ -30,7 +30,7 @@ class GroupsForUser(TestCase):
         self.group4 = ResearchGroup.objects.create(name='Group4', pi=other_user)
 
     def test_groups_for_user(self) -> None:
-        """Test all groups are returned for a test user"""
+        """Test all groups are returned for a test user."""
 
         result = ResearchGroup.objects.groups_for_user(self.test_user).all()
         self.assertCountEqual(result, [self.group1, self.group2, self.group3])
