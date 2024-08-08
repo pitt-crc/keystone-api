@@ -8,6 +8,13 @@ from django.db import models
 from django_filters.rest_framework import DjangoFilterBackend
 
 
+class FactoryBuiltFilterSet:
+    """A factory generated filterset class
+
+    This is an empty class used for type checking/hinting.
+    """
+
+
 class AdvancedFilterBackend(DjangoFilterBackend):
     """Custom filter backend for Django REST framework
 
@@ -51,6 +58,10 @@ class AdvancedFilterBackend(DjangoFilterBackend):
         models.UUIDField: _default_filters,
     }
 
+    @property
+    def field_filter_map(self) -> dict[type[models.Field], str]:
+        return self._field_filter_map.copy()
+
     def get_filterset_class(self, view, queryset=None):
         """Get the filterSet class for a given view
 
@@ -62,7 +73,7 @@ class AdvancedFilterBackend(DjangoFilterBackend):
             A FilterSet class
         """
 
-        # Default to user provided filterset class
+        # Default to the user defined filterset class
         # The super class method returns `None` if not defined
         if filterset_class := super().get_filterset_class(view, queryset=queryset):
             return filterset_class
@@ -73,9 +84,10 @@ class AdvancedFilterBackend(DjangoFilterBackend):
             if filters := self._field_filter_map.get(type(field), None):
                 field_filters[field.name] = filters
 
-        class AutoFilterSet(self.filterset_base):
+        # Create a filterset class with the appropriate filters for each field
+        class FactoryFilterSet(self.filterset_base, FactoryBuiltFilterSet):
             class Meta:
                 model = queryset.model
                 fields = field_filters
 
-        return AutoFilterSet
+        return FactoryFilterSet

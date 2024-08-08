@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'django_celery_results',
     'django_filters',
     'drf_spectacular',
+    'plugins',
     'apps.admin_utils',
     'apps.allocations',
     'apps.health',
