@@ -3665,7 +3665,7 @@ paths:
   /users/researchgroups/:
     get:
       operationId: users_researchgroups_list
-      description: Manage user membership in research groups
+      description: Manage user membership in research groups.
       parameters:
       - in: query
         name: id
@@ -3761,7 +3761,7 @@ paths:
           description: ''
     post:
       operationId: users_researchgroups_create
-      description: Manage user membership in research groups
+      description: Manage user membership in research groups.
       tags:
       - users
       requestBody:
@@ -3788,7 +3788,7 @@ paths:
   /users/researchgroups/{id}/:
     get:
       operationId: users_researchgroups_retrieve
-      description: Manage user membership in research groups
+      description: Manage user membership in research groups.
       parameters:
       - in: path
         name: id
@@ -3809,7 +3809,7 @@ paths:
           description: ''
     put:
       operationId: users_researchgroups_update
-      description: Manage user membership in research groups
+      description: Manage user membership in research groups.
       parameters:
       - in: path
         name: id
@@ -3842,7 +3842,7 @@ paths:
           description: ''
     patch:
       operationId: users_researchgroups_partial_update
-      description: Manage user membership in research groups
+      description: Manage user membership in research groups.
       parameters:
       - in: path
         name: id
@@ -3874,7 +3874,7 @@ paths:
           description: ''
     delete:
       operationId: users_researchgroups_destroy
-      description: Manage user membership in research groups
+      description: Manage user membership in research groups.
       parameters:
       - in: path
         name: id
@@ -3892,7 +3892,7 @@ paths:
   /users/users/:
     get:
       operationId: users_users_list
-      description: Read only access to user data
+      description: Manage user account data.
       parameters:
       - in: query
         name: date_joined
@@ -4355,7 +4355,7 @@ paths:
           description: ''
     post:
       operationId: users_users_create
-      description: Read only access to user data
+      description: Manage user account data.
       tags:
       - users
       requestBody:
@@ -4382,7 +4382,7 @@ paths:
   /users/users/{id}/:
     get:
       operationId: users_users_retrieve
-      description: Read only access to user data
+      description: Manage user account data.
       parameters:
       - in: path
         name: id
@@ -4403,7 +4403,7 @@ paths:
           description: ''
     put:
       operationId: users_users_update
-      description: Read only access to user data
+      description: Manage user account data.
       parameters:
       - in: path
         name: id
@@ -4436,7 +4436,7 @@ paths:
           description: ''
     patch:
       operationId: users_users_partial_update
-      description: Read only access to user data
+      description: Manage user account data.
       parameters:
       - in: path
         name: id
@@ -4468,7 +4468,7 @@ paths:
           description: ''
     delete:
       operationId: users_users_destroy
-      description: Read only access to user data
+      description: Manage user account data.
       parameters:
       - in: path
         name: id
@@ -4887,7 +4887,7 @@ components:
           type: integer
     PatchedResearchGroup:
       type: object
-      description: Object serializer for the `ResearchGroup` class
+      description: Object serializer for the `ResearchGroup` model.
       properties:
         id:
           type: integer
@@ -4908,7 +4908,7 @@ components:
     PatchedRestrictedUser:
       type: object
       description: Object serializer for the `User` class with administrative fields
-        marked as read only
+        marked as read only.
       properties:
         id:
           type: integer
@@ -5053,7 +5053,7 @@ components:
       - time
     ResearchGroup:
       type: object
-      description: Object serializer for the `ResearchGroup` class
+      description: Object serializer for the `ResearchGroup` model.
       properties:
         id:
           type: integer
@@ -5078,7 +5078,7 @@ components:
     RestrictedUser:
       type: object
       description: Object serializer for the `User` class with administrative fields
-        marked as read only
+        marked as read only.
       properties:
         id:
           type: integer
