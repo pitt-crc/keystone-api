@@ -5,6 +5,7 @@ for REST API calls based on URL parameters. This plugin customizes the default
 filters available for different field types (e.g., char, int, bool, etc.).
 """
 
+from django import views
 from django.db import models
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -65,12 +66,12 @@ class AdvancedFilterBackend(DjangoFilterBackend):
     def field_filter_map(self) -> dict[type[models.Field], str]:
         return self._field_filter_map.copy()
 
-    def get_filterset_class(self, view, queryset=None):
+    def get_filterset_class(self, view: views.View, queryset: models.Manager = None) -> FactoryBuiltFilterSet:
         """Get the filterSet class for a given view
 
         Args:
-            view: The view instance
-            queryset: The queryset for the view
+            view: The view used to handel requests that will be filtered
+            queryset: The queryset returning the data that will be filtered
 
         Returns:
             A FilterSet class
