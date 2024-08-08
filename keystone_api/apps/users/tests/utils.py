@@ -25,4 +25,10 @@ def create_test_user(
         The saved user account
     """
 
-    return User.objects.create_user(username, password, first_name=first_name, last_name=last_name, email=email, **kwargs)
+    return User.objects.create_user(
+        username=username,
+        password=password,
+        first_name=first_name,
+        last_name=last_name,
+        email=email,
+        **kwargs)
