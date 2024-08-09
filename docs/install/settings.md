@@ -100,16 +100,16 @@ AUTH_LDAP_ATTR_MAP="first_name=givenName,last_name=sn"
 
 See the `apps.users.models.User` class for a full list of available Keystone fields.
 
-| Setting Name              | Default Value            | Description                                                   |
-|---------------------------|--------------------------|---------------------------------------------------------------|
-| `AUTH_LDAP_SERVER_URI`    |                          | The URI of the LDAP server.                                   |
-| `AUTH_LDAP_START_TLS`     | `True`                   | Whether to use TLS when connecting to the LDAP server.        |
-| `AUTH_LDAP_BIND_DN`       |                          | Optionally bind LDAP queries to the given DN.                 |
-| `AUTH_LDAP_BIND_PASSWORD` |                          | The password to use when binding to the LDAP server.          |
-| `AUTH_LDAP_USER_SEARCH`   | `(uid=%(user)s)`         | The search query for finding a user in the LDAP server.       |
-| `AUTH_LDAP_REQUIRE_CERT`  | `False`                  | Whether to require certificate verification.                  |
-| `AUTH_LDAP_ATTR_MAP`      |                          | A mapping of user fields to LDAP attribute names.             |
-| `AUTH_LDAP_PURGE_REMOVED` | `False`                  | Delete users removed from LDAP instead of deactivating them.  |
+| Setting Name              | Default Value            | Description                                                       |
+|---------------------------|--------------------------|-------------------------------------------------------------------|
+| `AUTH_LDAP_SERVER_URI`    |                          | The URI of the LDAP server.                                       |
+| `AUTH_LDAP_START_TLS`     | `True`                   | Whether to use TLS when connecting to the LDAP server.            |
+| `AUTH_LDAP_BIND_DN`       |                          | Optionally bind LDAP queries to the given DN.                     |
+| `AUTH_LDAP_BIND_PASSWORD` |                          | The password to use when binding to the LDAP server.              |
+| `AUTH_LDAP_USER_SEARCH`   | `(uid=%(user)s)`         | The search query for finding a user in the LDAP server.           |
+| `AUTH_LDAP_REQUIRE_CERT`  | `False`                  | Whether to require certificate verification.                      |
+| `AUTH_LDAP_ATTR_MAP`      |                          | A mapping of user fields to LDAP attribute names.                 |
+| `AUTH_LDAP_PURGE_REMOVED` | `False`                  | Delete users when removed from LDAP instead of deactivating them. |
 
 ## Developer Settings
 
