@@ -54,27 +54,28 @@ class LdapUpdateUsers(TestCase):
         AUTH_LDAP_USER_ATTR_MAP={'username': 'uid'}
     )
     @patch('apps.users.tasks.get_ldap_connection')
-    def test_users_are_created(self, mock_get_ldap_connection: Mock) -> None:
-        """Test that users are updated from LDAP data."""
+    @patch('apps.users.tasks.LDAPBackend')
+    def test_users_are_created(self, ldap_backend: Mock, mock_get_ldap_connection: Mock) -> None:
+        """Test users are updated from LDAP data."""
 
         # Mock LDAP search results
-        mock_conn = MagicMock()
+        mock_conn = mock_get_ldap_connection.return_value
         mock_conn.search_s.return_value = [
-            ('cn=admin,dc=example,dc=com', {'uid': [b'user1']}),
-            ('cn=admin2,dc=example,dc=com', {'uid': [b'user2']})
+            ('uid=user1,ou=users,dc=example,dc=com', {'uid': [b'user1']}),
+            ('uid=user2,ou=users,dc=example,dc=com', {'uid': [b'user2']}),
         ]
-        mock_get_ldap_connection.return_value = mock_conn
 
-        # Execute the update
-        ldap_update_users()
+        # Mock backend to return user objects
+        mock_backend = ldap_backend.return_value
+        mock_backend.populate_user.side_effect = lambda username: User(username=username)
 
-        # Test users were created
-        self.assertTrue(User.objects.filter(username='user1').exists())
+        # Test users are created
+        ldap_update_users(prune=False)
         user1 = User.objects.get(username='user1')
-        self.assertTrue(user1.is_ldap_user)
-
-        self.assertTrue(User.objects.filter(username='user2').exists())
         user2 = User.objects.get(username='user2')
+
+        # Verify that the users have the is_ldap_user flag set
+        self.assertTrue(user1.is_ldap_user)
         self.assertTrue(user2.is_ldap_user)
 
     @override_settings(
