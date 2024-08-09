@@ -29,7 +29,7 @@ def get_ldap_connection() -> ldap.ldapobject.LDAPObject:
 
 
 @shared_task()
-def ldap_update_users(prune: bool = settings.AUTH_LDAP_PURGE_REMOVED) -> None:
+def ldap_update_users(prune: bool = settings.PURGE_REMOVED_LDAP_USERS) -> None:
     """Update the user database with the latest data from LDAP.
 
     This function performs no action if the `AUTH_LDAP_SERVER_URI` setting
