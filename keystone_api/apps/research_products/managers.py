@@ -16,7 +16,7 @@ __all__ = ['GrantManager', 'PublicationManager']
 
 
 class BaseManager(Manager):
-    """Base manager class for abstracting common database filters"""
+    """Base manager class for abstracting common database filters."""
 
     def affiliated_with_user(self, user: User) -> models.QuerySet:
         """Get all allocation requests affiliated with the given user
@@ -33,8 +33,8 @@ class BaseManager(Manager):
 
 
 class GrantManager(BaseManager):
-    """Object manager for the `Grant` database model"""
+    """Object manager for the `Grant` database model."""
 
 
 class PublicationManager(BaseManager):
-    """Object manager for the `Publication` database model"""
+    """Object manager for the `Publication` database model."""

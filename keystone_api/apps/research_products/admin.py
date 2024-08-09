@@ -17,12 +17,12 @@ settings.JAZZMIN_SETTINGS['icons'].update({
 
 @admin.register(Publication)
 class PublicationAdmin(admin.ModelAdmin):
-    """Admin interface for the `Publication` class"""
+    """Admin interface for the `Publication` class."""
 
     @staticmethod
     @admin.display
     def title(obj: Publication) -> str:
-        """Return a publication's title as a human/table friendly string"""
+        """Return a publication's title as a human/table friendly string."""
 
         # Rely on the object to determine the appropriate string title representation
         return str(obj)
@@ -37,12 +37,12 @@ class PublicationAdmin(admin.ModelAdmin):
 
 @admin.register(Grant)
 class GrantAdmin(admin.ModelAdmin):
-    """Admin interface for the `Grant` class"""
+    """Admin interface for the `Grant` class."""
 
     @staticmethod
     @admin.display
     def amount(obj: Grant) -> str:
-        """Return the allocation's service units as a human friendly string"""
+        """Return the allocation's service units as a human friendly string."""
 
         return f'${int(obj.amount):,}'
 
