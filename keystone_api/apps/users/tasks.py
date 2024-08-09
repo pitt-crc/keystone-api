@@ -51,14 +51,15 @@ def ldap_update_users(prune: bool = settings.AUTH_LDAP_PURGE_REMOVED) -> None:
     ldap_names = {uid.decode() for result in search for uid in result[1][ldap_username_attr]}
 
     # Update user data
+    backend = LDAPBackend()
     for username in tqdm(ldap_names):
-        user = LDAPBackend().populate_user(username)
+        user = backend.populate_user(username)
         if user is not None:
             user.is_ldap_user = True
             user.save()
 
     # Handle usernames that have been removed from LDAP
-    keystone_names = set(User.objects.filter(is_ldap=True).values_list('username', flat=True))
+    keystone_names = set(User.objects.filter(is_ldap_user=True).values_list('username', flat=True))
     removed_usernames = keystone_names - ldap_names
     if prune:
         User.objects.filter(username__in=removed_usernames).delete()
