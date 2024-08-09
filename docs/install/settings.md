@@ -109,6 +109,7 @@ See the `apps.users.models.User` class for a full list of available Keystone fie
 | `AUTH_LDAP_USER_SEARCH`   | `(uid=%(user)s)`         | The search query for finding a user in the LDAP server.       |
 | `AUTH_LDAP_REQUIRE_CERT`  | `False`                  | Whether to require certificate verification.                  |
 | `AUTH_LDAP_ATTR_MAP`      |                          | A mapping of user fields to LDAP attribute names.             |
+| `AUTH_LDAP_PURGE_REMOVED` | `False`                  | Delete users removed from LDAP instead of deactivating them.  |
 
 ## Developer Settings
 
