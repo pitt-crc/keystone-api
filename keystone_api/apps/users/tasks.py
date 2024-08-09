@@ -29,7 +29,7 @@ def get_ldap_connection() -> ldap.ldapobject.LDAPObject:
 
 
 @shared_task()
-def ldap_update_users(prune: bool = False) -> None:
+def ldap_update_users(prune: bool = settings.PURGE_REMOVED_LDAP_USERS) -> None:
     """Update the user database with the latest data from LDAP.
 
     This function performs no action if the `AUTH_LDAP_SERVER_URI` setting
@@ -46,17 +46,23 @@ def ldap_update_users(prune: bool = False) -> None:
     conn = get_ldap_connection()
     search = conn.search_s(settings.AUTH_LDAP_USER_SEARCH.base_dn, ldap.SCOPE_SUBTREE, '(objectClass=account)')
 
-    # Fetch keystone usernames using the LDAP attribute map defined in settings
+    # Fetch LDAP usernames using the LDAP attribute map defined in settings
     ldap_username_attr = settings.AUTH_LDAP_USER_ATTR_MAP.get('username', 'uid')
     ldap_names = {uid.decode() for result in search for uid in result[1][ldap_username_attr]}
 
+    # Update user data
+    backend = LDAPBackend()
     for username in tqdm(ldap_names):
-        user = LDAPBackend().populate_user(username)
+        user = backend.populate_user(username)
         if user is not None:
             user.is_ldap_user = True
             user.save()
 
+    # Handle usernames that have been removed from LDAP
+    keystone_names = set(User.objects.filter(is_ldap_user=True).values_list('username', flat=True))
+    removed_usernames = keystone_names - ldap_names
     if prune:
-        usernames = set(User.objects.filter(is_ldap=True).values_list('username', flat=True))
-        users_to_delete = usernames - ldap_names
-        User.objects.filter(username__in=users_to_delete).delete()
+        User.objects.filter(username__in=removed_usernames).delete()
+
+    else:
+        User.objects.filter(username__in=removed_usernames).update(is_active=False)
