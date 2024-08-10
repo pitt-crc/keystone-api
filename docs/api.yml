@@ -4672,7 +4672,7 @@ components:
       - name
     Grant:
       type: object
-      description: Object serializer for the `Grant` class
+      description: Object serializer for the `Grant` class.
       properties:
         id:
           type: integer
@@ -4829,7 +4829,7 @@ components:
           type: boolean
     PatchedGrant:
       type: object
-      description: Object serializer for the `Grant` class
+      description: Object serializer for the `Grant` class.
       properties:
         id:
           type: integer
@@ -4862,7 +4862,7 @@ components:
           type: integer
     PatchedPublication:
       type: object
-      description: Object serializer for the `Publication` class
+      description: Object serializer for the `Publication` class.
       properties:
         id:
           type: integer
@@ -4980,7 +4980,7 @@ components:
           description: Specific permissions for this user.
     Publication:
       type: object
-      description: Object serializer for the `Publication` class
+      description: Object serializer for the `Publication` class.
       properties:
         id:
           type: integer
