@@ -22,10 +22,10 @@ class BaseManager(Manager):
         """Get all allocation requests affiliated with the given user
 
         Args:
-            user: The user to return affiliated records for
+            user: The user to return affiliated records for.
 
         Return:
-            A filtered queryset
+            A filtered queryset.
         """
 
         research_groups = ResearchGroup.objects.groups_for_user(user)

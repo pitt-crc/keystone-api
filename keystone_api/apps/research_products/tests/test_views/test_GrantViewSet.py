@@ -50,10 +50,10 @@ class GetQueryset(TestCase):
         Create a viewset for testing purposes.
 
         Args:
-            user: The user submitting a request to the viewset
+            user: The user submitting a request to the viewset.
 
         Returns:
-            A viewset instance tied to a request from the given user
+            A viewset instance tied to a request from the given user.
         """
 
         viewset = GrantViewSet()
