@@ -16,7 +16,7 @@ __all__ = ['Grant', 'Publication']
 
 
 class Grant(models.Model):
-    """Metadata for a funding grant"""
+    """Metadata for a funding grant."""
 
     title = models.CharField(max_length=250)
     agency = models.CharField(max_length=100)
@@ -31,13 +31,13 @@ class Grant(models.Model):
     objects = GrantManager()
 
     def __str__(self) -> str:  # pragma: nocover
-        """Return the grant title truncated to 50 characters"""
+        """Return the grant title truncated to 50 characters."""
 
         return truncatechars(self.title, 100)
 
 
 class Publication(models.Model):
-    """Metadata for an academic publication"""
+    """Metadata for an academic publication."""
 
     title = models.CharField(max_length=250)
     abstract = models.TextField()
@@ -50,6 +50,6 @@ class Publication(models.Model):
     objects = PublicationManager()
 
     def __str__(self) -> str:  # pragma: nocover
-        """Return the publication title truncated to 50 characters"""
+        """Return the publication title truncated to 50 characters."""
 
         return truncatechars(self.title, 100)
