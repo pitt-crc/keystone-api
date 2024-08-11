@@ -17,7 +17,7 @@ if settings.AUTH_LDAP_SERVER_URI:
     import ldap
 
 
-def get_ldap_connection() -> ldap.ldapobject.LDAPObject:
+def get_ldap_connection() -> 'ldap.ldapobject.LDAPObject':
     """Establish a new LDAP connection."""
 
     conn = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
