@@ -21,10 +21,10 @@ def _default_expiry_thresholds() -> list[int]:
 
 
 class Notification(models.Model):
-    """User notification"""
+    """User notification."""
 
     class NotificationType(models.TextChoices):
-        """Enumerated choices for the `notification_type` field"""
+        """Enumerated choices for the `notification_type` field."""
 
         resource_usage = 'RU', 'Resource Usage'
         general_message = 'GM', 'General Message'
@@ -45,7 +45,7 @@ class Notification(models.Model):
 
 
 class Preference(models.Model):
-    """User notification preferences"""
+    """User notification preferences."""
 
     alloc_thresholds = models.JSONField(default=_default_alloc_thresholds)
     notify_status_update = models.BooleanField(default=True)
@@ -55,13 +55,13 @@ class Preference(models.Model):
 
     @classmethod
     def get_user_preference(cls, user: settings.AUTH_USER_MODEL) -> Preference:
-        """Retrieve user preferences or create them if they don't exist"""
+        """Retrieve user preferences or create them if they don't exist."""
 
         preference, _ = cls.objects.get_or_create(user=user)
         return preference
 
     @classmethod
     def set_user_preference(cls, *args, **kwargs) -> None:
-        """Set user preferences, creating or updating as necessary"""
+        """Set user preferences, creating or updating as necessary."""
 
         cls.objects.create(*args, **kwargs)

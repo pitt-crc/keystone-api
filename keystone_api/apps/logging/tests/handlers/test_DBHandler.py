@@ -1,4 +1,4 @@
-"""Tests for the `DBHandler` class."""
+"""Unit tests for the `DBHandler` class."""
 
 import logging
 
@@ -9,17 +9,17 @@ from apps.logging.models import AppLog
 
 
 class EmitToDatabase(TestCase):
-    """Test emitted log data is recorded into the application database"""
+    """Test emitted log data is recorded into the application database."""
 
     def assert_db_record_matches_log_content(
             self, handler: logging.Handler, log_record: logging.LogRecord, db_record: AppLog
     ) -> None:
-        """Assert the content of a database record matches the content of a log record
+        """Assert the content of a database record matches the content of a log record.
 
         Args:
-            handler: The logging record used to format the log record
-            log_record: The log record
-            db_record: The database record
+            handler: The logging record used to format the log record.
+            log_record: The log record.
+            db_record: The database record.
         """
 
         self.assertEqual(db_record.name, log_record.name)
@@ -31,7 +31,7 @@ class EmitToDatabase(TestCase):
         self.assertEqual(db_record.sinfo, log_record.stack_info)
 
     def test_record_above_logging_threshold(self) -> None:
-        """Test log data is saved when the log message level is above the logging threshold"""
+        """Test log data is saved when the log message level is above the logging threshold."""
 
         log_record = logging.LogRecord('test', logging.INFO, 'pathname', 1, 'message', (), None, 'func')
         handler = DBHandler()
@@ -42,7 +42,7 @@ class EmitToDatabase(TestCase):
         self.assert_db_record_matches_log_content(handler, log_record, db_record)
 
     def test_record_equal_logging_threshold(self) -> None:
-        """Test log data is saved when the log message level is equal to the logging threshold"""
+        """Test log data is saved when the log message level is equal to the logging threshold."""
 
         log_record = logging.LogRecord('test', logging.INFO, 'pathname', 1, 'message', (), None, 'func')
         handler = DBHandler(logging.INFO)
@@ -53,7 +53,7 @@ class EmitToDatabase(TestCase):
         self.assert_db_record_matches_log_content(handler, log_record, db_record)
 
     def test_record_below_logging_threshold(self) -> None:
-        """Test log data is not saved when the log message level is below the logging threshold"""
+        """Test log data is not saved when the log message level is below the logging threshold."""
 
         record = logging.LogRecord('test', logging.INFO, 'pathname', 1, 'message', (), None, 'func')
         handler = DBHandler(level=logging.ERROR)

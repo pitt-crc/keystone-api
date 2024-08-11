@@ -12,11 +12,11 @@ class Command(BaseCommand):
     help = __doc__
 
     def handle(self, *args, **options) -> None:
-        """Handle the command execution
+        """Handle the command execution.
 
         Args:
-          *args: Additional positional arguments
-          **options: Additional keyword arguments
+          *args: Additional positional arguments.
+          **options: Additional keyword arguments.
         """
 
         try:
@@ -27,7 +27,7 @@ class Command(BaseCommand):
             exit(1)
 
     def _handle(self) -> None:
-        """Execute the application logic"""
+        """Execute the application logic."""
 
         if not self.prompt_for_confirmation():
             return
@@ -49,10 +49,10 @@ class Command(BaseCommand):
 
     @staticmethod
     def prompt_for_confirmation() -> bool:
-        """Prompt the user to confirm executing of the parent command
+        """Prompt the user to confirm executing of the parent command.
 
         Args:
-            A boolean indicating whether the user confirmed execution
+            A boolean indicating whether the user confirmed execution.
         """
 
         print(
@@ -73,12 +73,12 @@ class Command(BaseCommand):
 
     @staticmethod
     def get_profile_path() -> Path | None:
-        """Search the user's home directory .bash_profile or .bashrc file
+        """Search the user's home directory .bash_profile or .bashrc file.
 
         The .bash_profile file is given preference over .bashrc.
 
-        Return:
-            The file path object if a file is found, otherwise None
+        Returns:
+            The file path object if a file is found, otherwise `None`.
         """
 
         bash_profile_path = Path.home() / '.bash_profile'

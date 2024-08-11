@@ -1,4 +1,4 @@
-"""Tests for the `GrantViewSet` class."""
+"""Unit tests for the `GrantViewSet` class."""
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase

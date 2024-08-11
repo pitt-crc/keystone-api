@@ -21,7 +21,7 @@ settings.JAZZMIN_SETTINGS['order_with_respect_to'].extend([
 
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
-    """Admin interface for user notifications"""
+    """Admin interface for user notifications."""
 
     list_display = ('user', 'notification_type', 'subject', 'time', 'read')
     list_filter = ('read', 'notification_type', 'time')
@@ -36,7 +36,7 @@ class NotificationAdmin(admin.ModelAdmin):
 
 @admin.register(Preference)
 class PreferenceAdmin(admin.ModelAdmin):
-    """Admin interface for user notification preferences"""
+    """Admin interface for user notification preferences."""
 
     list_display = ('user',)
     search_fields = ('user__username',)

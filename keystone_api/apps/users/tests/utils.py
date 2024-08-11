@@ -14,15 +14,15 @@ def create_test_user(
     """Create a user account for testing purposes.
 
     Args:
-        username: The account username
-        password: The account password
-        first_name: The first name of the user
-        last_name: The last name of the user
-        email: The email of the user
-        **kwargs: Any other values in the user model
+        username: The account username.
+        password: The account password.
+        first_name: The first name of the user.
+        last_name: The last name of the user.
+        email: The email of the user.
+        **kwargs: Any other values in the user model.
 
-    Return:
-        The saved user account
+    Returns:
+        The saved user account.
     """
 
     return User.objects.create_user(

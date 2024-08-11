@@ -1299,7 +1299,7 @@ paths:
           description: ''
     post:
       operationId: allocations_reviews_create
-      description: Create a new `AllocationRequestReview` object
+      description: Create a new `AllocationRequestReview` object.
       tags:
       - allocations
       requestBody:
@@ -1551,7 +1551,7 @@ paths:
   /logs/apps/:
     get:
       operationId: logs_apps_list
-      description: Returns application log data
+      description: Returns application log data.
       parameters:
       - in: query
         name: func
@@ -1880,7 +1880,7 @@ paths:
   /logs/apps/{id}/:
     get:
       operationId: logs_apps_retrieve
-      description: Returns application log data
+      description: Returns application log data.
       parameters:
       - in: path
         name: id
@@ -1902,7 +1902,7 @@ paths:
   /logs/requests/:
     get:
       operationId: logs_requests_list
-      description: Returns HTTP request log data
+      description: Returns HTTP request log data.
       parameters:
       - in: query
         name: body_request
@@ -2219,7 +2219,7 @@ paths:
   /logs/requests/{id}/:
     get:
       operationId: logs_requests_retrieve
-      description: Returns HTTP request log data
+      description: Returns HTTP request log data.
       parameters:
       - in: path
         name: id
@@ -2241,7 +2241,7 @@ paths:
   /logs/tasks/:
     get:
       operationId: logs_tasks_list
-      description: Returns results from scheduled background tasks
+      description: Returns results from scheduled background tasks.
       parameters:
       - in: query
         name: content_encoding
@@ -2801,7 +2801,7 @@ paths:
   /logs/tasks/{id}/:
     get:
       operationId: logs_tasks_retrieve
-      description: Returns results from scheduled background tasks
+      description: Returns results from scheduled background tasks.
       parameters:
       - in: path
         name: id
@@ -4487,7 +4487,7 @@ components:
   schemas:
     Allocation:
       type: object
-      description: Object serializer for the `Allocation` class
+      description: Object serializer for the `Allocation` class.
       properties:
         id:
           type: integer
@@ -4520,7 +4520,7 @@ components:
       - requested
     AllocationRequest:
       type: object
-      description: Object serializer for the `AllocationRequest` class
+      description: Object serializer for the `AllocationRequest` class.
       properties:
         id:
           type: integer
@@ -4559,7 +4559,7 @@ components:
       - title
     AllocationRequestReview:
       type: object
-      description: Object serializer for the `AllocationRequestReview` class
+      description: Object serializer for the `AllocationRequestReview` class.
       properties:
         id:
           type: integer
@@ -4611,7 +4611,7 @@ components:
         * `CR` - Changes Requested
     AppLog:
       type: object
-      description: Object serializer for the `AppLog` class
+      description: Object serializer for the `AppLog` class.
       properties:
         id:
           type: integer
@@ -4653,7 +4653,7 @@ components:
       - time
     Cluster:
       type: object
-      description: Object serializer for the `Cluster` class
+      description: Object serializer for the `Cluster` class.
       properties:
         id:
           type: integer
@@ -4727,7 +4727,7 @@ components:
           default: true
     PatchedAllocation:
       type: object
-      description: Object serializer for the `Allocation` class
+      description: Object serializer for the `Allocation` class.
       properties:
         id:
           type: integer
@@ -4755,7 +4755,7 @@ components:
           type: integer
     PatchedAllocationRequest:
       type: object
-      description: Object serializer for the `AllocationRequest` class
+      description: Object serializer for the `AllocationRequest` class.
       properties:
         id:
           type: integer
@@ -4788,7 +4788,7 @@ components:
             type: integer
     PatchedAllocationRequestReview:
       type: object
-      description: Object serializer for the `AllocationRequestReview` class
+      description: Object serializer for the `AllocationRequestReview` class.
       properties:
         id:
           type: integer
@@ -4813,7 +4813,7 @@ components:
           type: integer
     PatchedCluster:
       type: object
-      description: Object serializer for the `Cluster` class
+      description: Object serializer for the `Cluster` class.
       properties:
         id:
           type: integer
@@ -5012,7 +5012,7 @@ components:
       - title
     RequestLog:
       type: object
-      description: Object serializer for the `RequestLog` class
+      description: Object serializer for the `RequestLog` class.
       properties:
         id:
           type: integer
@@ -5159,7 +5159,7 @@ components:
       - username
     TaskResult:
       type: object
-      description: Object serializer for the `TaskResult` class
+      description: Object serializer for the `TaskResult` class.
       properties:
         id:
           type: integer

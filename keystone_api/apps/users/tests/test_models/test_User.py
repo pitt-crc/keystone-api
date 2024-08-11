@@ -1,4 +1,4 @@
-"""Tests for the `User` class."""
+"""Unit tests for the `User` class."""
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase

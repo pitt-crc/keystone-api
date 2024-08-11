@@ -1,4 +1,4 @@
-"""URL routing for the parent application"""
+"""URL routing for the parent application."""
 
 from rest_framework.routers import DefaultRouter
 

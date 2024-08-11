@@ -1,4 +1,4 @@
-"""Tests for the `HealthCheckJsonView` class."""
+"""Unit tests for the `HealthCheckJsonView` class."""
 
 import json
 
@@ -10,10 +10,10 @@ from apps.health.views import HealthCheckJsonView
 
 
 class RenderResponse(TestCase):
-    """Tests for the `render_response` function"""
+    """Tests for the `render_response` function."""
 
     def test_return_matches_health_checks(self) -> None:
-        """Test the rendering of application health checks as JSON data"""
+        """Test the rendering of application health checks as JSON data."""
 
         health_checks = {
             'plugin1': create_mock_plugin(1, 'OK', True),

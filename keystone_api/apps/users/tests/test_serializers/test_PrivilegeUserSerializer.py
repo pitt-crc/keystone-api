@@ -1,4 +1,4 @@
-"""Tests for the `PrivilegeUserSerializer` class."""
+"""Unit tests for the `PrivilegeUserSerializer` class."""
 
 from django.contrib.auth.hashers import check_password
 from django.test import TestCase
@@ -8,7 +8,7 @@ from apps.users.serializers import PrivilegeUserSerializer
 
 
 class Validate(TestCase):
-    """Test data validation via the `validate`."""
+    """Test data validation via the `validate` method."""
 
     def setUp(self) -> None:
         """Define dummy user data."""

@@ -1,4 +1,4 @@
-"""Tests for the `PublicationViewSet` class."""
+"""Unit tests for the `PublicationViewSet` class."""
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase

@@ -1,4 +1,4 @@
-"""Tests for the `/allocations/allocations/` endpoint"""
+"""Function tests for the `/allocations/allocations/` endpoint."""
 
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -8,7 +8,7 @@ from tests.utils import CustomAsserts
 
 
 class EndpointPermissions(APITestCase, CustomAsserts):
-    """Test endpoint user permissions
+    """Test endpoint user permissions.
 
     Endpoint permissions are tested against the following matrix of HTTP responses.
 
@@ -23,7 +23,7 @@ class EndpointPermissions(APITestCase, CustomAsserts):
     fixtures = ['multi_research_group.yaml']
 
     def test_anonymous_user_permissions(self) -> None:
-        """Test unauthenticated users are returned a 401 status code for all request types"""
+        """Test unauthenticated users are returned a 401 status code for all request types."""
 
         self.assert_http_responses(
             self.endpoint,
@@ -38,7 +38,7 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         )
 
     def test_authenticated_user_permissions(self) -> None:
-        """Test general authenticated users have read-only permissions"""
+        """Test general authenticated users have read-only permissions."""
 
         user = User.objects.get(username='generic_user')
         self.client.force_authenticate(user=user)
@@ -56,7 +56,7 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         )
 
     def test_staff_user_permissions(self) -> None:
-        """Test staff users have read and write permissions"""
+        """Test staff users have read and write permissions."""
 
         user = User.objects.get(username='staff_user')
         self.client.force_authenticate(user=user)

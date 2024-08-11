@@ -1,4 +1,4 @@
-"""Tests for the `LogRequestMiddleware` class."""
+"""Unit tests for the `LogRequestMiddleware` class."""
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
@@ -11,10 +11,10 @@ from apps.logging.models import RequestLog
 
 
 class LoggingToDatabase(TestCase):
-    """Test the logging of requests to the database"""
+    """Test the logging of requests to the database."""
 
     def test_authenticated_user(self) -> None:
-        """Test requests are logged for authenticated users"""
+        """Test requests are logged for authenticated users."""
 
         rf = RequestFactory()
         request = rf.get('/hello/')
@@ -27,7 +27,7 @@ class LoggingToDatabase(TestCase):
         self.assertEqual(RequestLog.objects.first().user, request.user)
 
     def test_anonymous_user(self) -> None:
-        """Test requests are logged for anonymous users"""
+        """Test requests are logged for anonymous users."""
 
         rf = RequestFactory()
         request = rf.get('/hello/')
@@ -41,10 +41,10 @@ class LoggingToDatabase(TestCase):
 
 
 class GetClientIP(TestCase):
-    """Test the fetching of client IP data from incoming requests"""
+    """Test the fetching of client IP data from incoming requests."""
 
     def test_ip_with_x_forwarded_for(self) -> None:
-        """Test the fetching of IP data from the `HTTP_X_FORWARDED_FOR` header"""
+        """Test the fetching of IP data from the `HTTP_X_FORWARDED_FOR` header."""
 
         request = HttpRequest()
         request.META['HTTP_X_FORWARDED_FOR'] = '192.168.1.1, 10.0.0.1'
@@ -53,7 +53,7 @@ class GetClientIP(TestCase):
         self.assertEqual(client_ip, '192.168.1.1')
 
     def test_ip_with_remote_addr(self) -> None:
-        """Test the fetching of IP data from the `REMOTE_ADDR` header"""
+        """Test the fetching of IP data from the `REMOTE_ADDR` header."""
 
         request = HttpRequest()
         request.META['REMOTE_ADDR'] = '192.168.1.1'
@@ -62,7 +62,7 @@ class GetClientIP(TestCase):
         self.assertEqual(client_ip, '192.168.1.1')
 
     def test_ip_without_headers(self) -> None:
-        """Test the return value is None when no headers are specified"""
+        """Test the return value is None when no headers are specified."""
 
         request = HttpRequest()
         client_ip = LogRequestMiddleware.get_client_ip(request)

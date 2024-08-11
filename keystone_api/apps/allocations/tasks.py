@@ -22,7 +22,7 @@ log = logging.getLogger(__name__)
 
 @shared_task()
 def update_limits() -> None:
-    """Adjust TRES billing limits for all Slurm accounts on all enabled clusters"""
+    """Adjust TRES billing limits for all Slurm accounts on all enabled clusters."""
 
     for cluster in Cluster.objects.filter(enabled=True).all():
         update_limits_for_cluster(cluster)
@@ -30,12 +30,12 @@ def update_limits() -> None:
 
 @shared_task()
 def update_limits_for_cluster(cluster: Cluster) -> None:
-    """Adjust TRES billing limits for all Slurm accounts on a given Slurm cluster
+    """Adjust TRES billing limits for all Slurm accounts on a given Slurm cluster.
 
     The Slurm accounts for `root` and any that are missing from Keystone are automatically ignored.
 
     Args:
-        cluster: The name of the Slurm cluster
+        cluster: The name of the Slurm cluster.
     """
 
     for account_name in get_slurm_account_names(cluster.name):
@@ -54,11 +54,11 @@ def update_limits_for_cluster(cluster: Cluster) -> None:
 
 @shared_task()
 def update_limit_for_account(account: ResearchGroup, cluster: Cluster) -> None:
-    """Update the TRES billing usage limits for an individual Slurm account, closing out any expired allocations
+    """Update the TRES billing usage limits for an individual Slurm account, closing out any expired allocations.
 
     Args:
-        account: ResearchGroup object for the account
-        cluster: Cluster object corresponding to the Slurm cluster
+        account: ResearchGroup object for the account.
+        cluster: Cluster object corresponding to the Slurm cluster.
     """
 
     # Base query for approved Allocations under the given account on the given cluster
@@ -78,7 +78,7 @@ def update_limit_for_account(account: ResearchGroup, cluster: Cluster) -> None:
     historical_usage = current_limit - active_sus - closing_sus
     if historical_usage < 0:
         log.warning(f"Negative Historical usage found for {account.name} on {cluster.name}:\n"
-                    f"historical: {historical_usage} = current limit: {current_limit} - active: {active_sus} - closing: {closing_sus}\n"
+                    f"historical: {historical_usage}, current: {current_limit}, active: {active_sus}, closing: {closing_sus}\n"
                     f"Assuming zero...")
         historical_usage = 0
 
@@ -92,42 +92,43 @@ def update_limit_for_account(account: ResearchGroup, cluster: Cluster) -> None:
         current_usage = historical_usage
 
     closing_summary = (f"Summary of closing allocations:\n"
-                       f"    Current Usage before closing: {current_usage}\n")
+                       f"> Current Usage before closing: {current_usage}\n")
     for allocation in closing_query.all():
         allocation.final = min(current_usage, allocation.awarded)
-        closing_summary += f"    Allocation {allocation.id}: {current_usage} - {allocation.final} -> {current_usage - allocation.final}\n"
+        closing_summary += f"> Allocation {allocation.id}: {current_usage} - {allocation.final} -> {current_usage - allocation.final}\n"
         current_usage -= allocation.final
         allocation.save()
-    closing_summary += f"    Current Usage after closing: {current_usage}"
+    closing_summary += f"> Current Usage after closing: {current_usage}"
 
     # This shouldn't happen but if it does somehow, create a warning so an admin will notice
     if current_usage > active_sus:
         log.warning(f"The current usage is somehow higher than the limit for {account.name}!")
 
     # Set the new account usage limit using the updated historical usage after closing any expired allocations
-    updated_historical_usage = approved_query.filter(request__expire__lte=date.today()).aggregate(Sum("final"))['final__sum'] or 0
+    expired_requests = approved_query.filter(request__expire__lte=date.today())
+    updated_historical_usage = expired_requests.aggregate(Sum("final"))['final__sum'] or 0
 
     updated_limit = updated_historical_usage + active_sus
     set_cluster_limit(account.name, cluster.name, updated_limit)
 
     # Log summary of changes during limits update for this Slurm account on this cluster
     log.debug(f"Summary of limits update for {account.name} on {cluster.name}:\n"
-              f"    Approved allocations found: {len(approved_query)}\n"
-              f"    Service units from {len(active_query)} active allocations: {active_sus}\n"
-              f"    Service units from {len(closing_query)} closing allocations: {closing_sus}\n"
-              f"    {closing_summary}"
-              f"    historical usage change: {historical_usage} -> {updated_historical_usage}\n"
-              f"    limit change: {current_limit} -> {updated_limit}")
+              f"> Approved allocations found: {len(approved_query)}\n"
+              f"> Service units from {len(active_query)} active allocations: {active_sus}\n"
+              f"> Service units from {len(closing_query)} closing allocations: {closing_sus}\n"
+              f"> {closing_summary}"
+              f"> historical usage change: {historical_usage} -> {updated_historical_usage}\n"
+              f"> limit change: {current_limit} -> {updated_limit}")
 
 
 def send_expiry_notification_for_request(user: User, request: AllocationRequest) -> None:
-    """Send any pending expiration notices to the given user
+    """Send any pending expiration notices to the given user.
 
     A notification is only generated if warranted by the user's notification preferences.
 
     Args:
-        user: The user to notify
-        request: The allocation request to check for pending notifications
+        user: The user to notify.
+        request: The allocation request to check for pending notifications.
     """
 
     # There are no notifications if the allocation does not expire
@@ -145,7 +146,7 @@ def send_expiry_notification_for_request(user: User, request: AllocationRequest)
     )
 
     # Exit early if we have not hit a threshold yet
-    log.debug(f'Request #{request.id} expires in {days_until_expire} days with next threshold at {next_threshold} days.')
+    log.debug(f'Request #{request.id} expires in {days_until_expire} days. Next threshold at {next_threshold} days.')
     if next_threshold is None:
         return
 
@@ -178,7 +179,7 @@ def send_expiry_notification_for_request(user: User, request: AllocationRequest)
 
 @shared_task()
 def send_expiry_notifications() -> None:
-    """Send any pending expiration notices to all users"""
+    """Send any pending expiration notices to all users."""
 
     expiring_requests = AllocationRequest.objects.filter(
         status=AllocationRequest.StatusChoices.APPROVED,

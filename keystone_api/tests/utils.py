@@ -5,19 +5,19 @@ from django.test import Client
 
 
 class CustomAsserts:
-    """Custom assert methods for testing responses from REST endpoints"""
+    """Custom assert methods for testing responses from REST endpoints."""
 
     client: Client
     assertEqual: callable
 
     def assert_http_responses(self, endpoint: str, **kwargs) -> None:
-        """Execute a series of API calls and assert the returned status matches the given values
+        """Execute a series of API calls and assert the returned status matches the given values.
 
         Args:
-            endpoint: The partial URL endpoint to perform requests against
-            **<request>: The integer status code expected by the given request type (get, post, etc.)
-            **<request>_body: The data to include in the request (get_body, post_body, etc.)
-            **<request>_headers: Header values to include in the request (get_headers, post_headers, etc.)
+            endpoint: The partial URL endpoint to perform requests against.
+            **<request>: The integer status code expected by the given request type (get, post, etc.).
+            **<request>_body: The data to include in the request (get_body, post_body, etc.).
+            **<request>_headers: Header values to include in the request (get_headers, post_headers, etc.).
         """
 
         http_methods = ['get', 'head', 'options', 'post', 'put', 'patch', 'delete', 'trace']
@@ -27,13 +27,13 @@ class CustomAsserts:
                 self._assert_http_response(method, endpoint, expected_status, kwargs)
 
     def _assert_http_response(self, method, endpoint, expected_status, kwargs):
-        """Assert the HTTP response for a specific method matches the expected status
+        """Assert the HTTP response for a specific method matches the expected status.
 
         Args:
-            method: The HTTP method to use (get, post, etc.)
-            endpoint: The partial URL endpoint to perform requests against
-            expected_status: The integer status code expected by the given request type
-            kwargs: Additional keyword arguments for building the request
+            method: The HTTP method to use (get, post, etc.).
+            endpoint: The partial URL endpoint to perform requests against.
+            expected_status: The integer status code expected by the given request type.
+            kwargs: Additional keyword arguments for building the request.
         """
 
         http_method = getattr(self.client, method)
@@ -50,14 +50,14 @@ class CustomAsserts:
 
     @staticmethod
     def _build_request_args(method: str, kwargs: dict) -> dict:
-        """Isolate head and body arguments for a given HTTP method from a dict of arguments
+        """Isolate head and body arguments for a given HTTP method from a dict of arguments.
 
         Args:
-            method: The HTTP method to identify arguments for
-            kwargs: A dictionary of arguments
+            method: The HTTP method to identify arguments for.
+            kwargs: A dictionary of arguments.
 
-        Return:
-            A dictionary with formatted arguments
+        Returns:
+            A dictionary with formatted arguments.
         """
 
         arg_names = ('data', 'headers')

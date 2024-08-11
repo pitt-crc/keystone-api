@@ -1,18 +1,18 @@
-"""Tests for the `rotate_log_files` task."""
+"""Unit tests for the `rotate_log_files` task."""
 
 from time import sleep
 
 from django.test import override_settings, TestCase
 
-from apps.logging.models import *
+from apps.logging.models import AppLog, RequestLog
 from apps.logging.tasks import rotate_log_files
 
 
 class LogFileDeletion(TestCase):
-    """Test the deletion of log records"""
+    """Test the deletion of log records."""
 
     def create_dummy_records(self) -> None:
-        """Create a single record in each logging database table"""
+        """Create a single record in each logging database table."""
 
         AppLog.objects.create(
             name='mock.log.test',
@@ -30,7 +30,7 @@ class LogFileDeletion(TestCase):
 
     @override_settings(LOG_RECORD_ROTATION=4)
     def test_log_files_rotated(self) -> None:
-        """Test expired log files are deleted"""
+        """Test expired log files are deleted."""
 
         # Create a set of older and younger records
         self.create_dummy_records()
@@ -50,7 +50,7 @@ class LogFileDeletion(TestCase):
 
     @override_settings(LOG_RECORD_ROTATION=0)
     def test_rotation_disabled(self) -> None:
-        """Test log files are not deleted when rotation is disabled"""
+        """Test log files are not deleted when rotation is disabled."""
 
         self.create_dummy_records()
 

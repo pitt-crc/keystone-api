@@ -23,7 +23,7 @@ class Command(BaseCommand):
           parser: The argument parser instance
         """
 
-        parser.add_argument('--prune', action='store_true', help='Delete any accounts with usernames not found in LDAP.')
+        parser.add_argument('--prune', action='store_true', help='Delete accounts with usernames not found in LDAP.')
 
     def handle(self, *args, **options) -> None:
         """Handle the command execution."""

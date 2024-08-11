@@ -1,4 +1,4 @@
-"""Tests for the `UserViewSet` class."""
+"""Unit tests for the `UserViewSet` class."""
 
 from django.test import RequestFactory, TestCase
 

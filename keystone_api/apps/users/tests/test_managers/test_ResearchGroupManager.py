@@ -1,4 +1,4 @@
-"""Tests for the `ResearchGroupManager` class."""
+"""Unit tests for the `ResearchGroupManager` class."""
 
 from django.test import TestCase
 

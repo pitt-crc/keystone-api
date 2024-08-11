@@ -1,4 +1,4 @@
-"""Tests for the `ResearchGroup` model."""
+"""Unit tests for the `ResearchGroup` model."""
 
 from django.test import TestCase
 

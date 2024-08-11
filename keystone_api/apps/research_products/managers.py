@@ -24,7 +24,7 @@ class BaseManager(Manager):
         Args:
             user: The user to return affiliated records for.
 
-        Return:
+        Returns:
             A filtered queryset.
         """
 

@@ -7,7 +7,7 @@ appropriately rendered HTML template or other HTTP response.
 from django.http import HttpResponse, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
-from drf_spectacular.utils import extend_schema, inline_serializer, OpenApiExample
+from drf_spectacular.utils import extend_schema, inline_serializer
 from health_check.mixins import CheckMixin
 from rest_framework import serializers
 from rest_framework.generics import GenericAPIView
@@ -16,19 +16,19 @@ __all__ = ['HealthCheckView', 'HealthCheckJsonView', 'HealthCheckPrometheusView'
 
 
 class HealthCheckView(GenericAPIView, CheckMixin):
-    """Return a 200 status code if all health checks pass and 500 otherwise"""
+    """Return a 200 status code if all health checks pass and 500 otherwise."""
 
     permission_classes = []
 
     @staticmethod
     def render_response(plugins: dict) -> HttpResponse:
-        """Return an HTTP response with a status code matching system health checks
+        """Return an HTTP response with a status code matching system health checks.
 
         Args:
-            plugins: A mapping of healthcheck names to health check objects
+            plugins: A mapping of healthcheck names to health check objects.
 
         Returns:
-            An HTTPResponse with status 200 if all checks are passing or 500 otherwise
+            An HTTPResponse with status 200 if all checks are passing or 500 otherwise.
         """
 
         for plugin in plugins.values():
@@ -50,19 +50,19 @@ class HealthCheckView(GenericAPIView, CheckMixin):
 
 
 class HealthCheckJsonView(GenericAPIView, CheckMixin):
-    """Return system health checks in JSON format"""
+    """Return system health checks in JSON format."""
 
     permission_classes = []
 
     @staticmethod
     def render_response(plugins: dict) -> JsonResponse:
-        """Return a JSON response summarizing a collection of health checks
+        """Return a JSON response summarizing a collection of health checks.
 
         Args:
-            plugins: A mapping of healthcheck names to health check objects
+            plugins: A mapping of healthcheck names to health check objects.
 
         Returns:
-            A JSON response
+            A JSON response.
         """
 
         data = dict()
@@ -95,19 +95,19 @@ class HealthCheckJsonView(GenericAPIView, CheckMixin):
 
 
 class HealthCheckPrometheusView(GenericAPIView, CheckMixin):
-    """Return system health checks in Prometheus format"""
+    """Return system health checks in Prometheus format."""
 
     permission_classes = []
 
     @staticmethod
     def render_response(plugins: dict) -> HttpResponse:
-        """Return an HTTP response summarizing a collection of health checks
+        """Return an HTTP response summarizing a collection of health checks.
 
         Args:
-            plugins: A mapping of healthcheck names to health check objects
+            plugins: A mapping of healthcheck names to health check objects.
 
         Returns:
-            An HTTP response
+            An HTTP response.
         """
 
         prom_format = (

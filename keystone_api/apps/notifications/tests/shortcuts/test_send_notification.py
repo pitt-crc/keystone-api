@@ -1,4 +1,4 @@
-"""Tests for the `send_notification` function."""
+"""Unit tests for the `send_notification` function."""
 
 from django.conf import settings
 from django.core import mail

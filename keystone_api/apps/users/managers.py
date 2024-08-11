@@ -30,12 +30,12 @@ class UserManager(BaseUserManager):
         """Create a new user account.
 
         Args:
-            username: The account username
-            password: The account password
-            **extra_fields: See fields of the `models.User` class for other accepted arguments
+            username: The account username.
+            password: The account password.
+            **extra_fields: See fields of the `models.User` class for other accepted arguments.
 
-        Return:
-            The saved user account
+        Returns:
+            The saved user account.
         """
 
         if 'email' in extra_fields:
@@ -57,12 +57,12 @@ class UserManager(BaseUserManager):
         """Create a new user account with superuser privileges.
 
         Args:
-            username: The account username
-            password: The account password
-            **extra_fields: See fields of the `models.User` class for other accepted arguments
+            username: The account username.
+            password: The account password.
+            **extra_fields: See fields of the `models.User` class for other accepted arguments.
 
-        Return:
-            The saved user account
+        Returns:
+            The saved user account.
         """
 
         extra_fields.setdefault('is_staff', True)
@@ -85,10 +85,10 @@ class ResearchGroupManager(models.Manager):
         """Get all research groups the user is affiliated with.
 
         Args:
-            user: The user to return affiliate groups for
+            user: The user to return affiliate groups for.
 
-        Return:
-            A filtered queryset
+        Returns:
+            A filtered queryset.
         """
 
         return self.get_queryset().filter(models.Q(pi=user.id) | models.Q(admins=user.id) | models.Q(members=user.id))

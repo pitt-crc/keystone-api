@@ -1,4 +1,4 @@
-"""Tests for the `HealthCheckView` class."""
+"""Unit tests for the `HealthCheckView` class."""
 
 from django.test import TestCase
 
@@ -7,10 +7,10 @@ from apps.health.views import HealthCheckView
 
 
 class RenderResponse(TestCase):
-    """Tests for the `render_response` function"""
+    """Tests for the `render_response` function."""
 
     def test_failing_health_checks(self) -> None:
-        """Test the returned status code is 500 when some health checks are failing"""
+        """Test the returned status code is 500 when some health checks are failing."""
 
         health_checks = {
             'plugin1': create_mock_plugin(1, 'OK', True),
@@ -21,7 +21,7 @@ class RenderResponse(TestCase):
         self.assertEqual(response.status_code, 500)
 
     def test_passing_health_checks(self) -> None:
-        """Test the returned status code is 200 when all health checks are passing"""
+        """Test the returned status code is 200 when all health checks are passing."""
 
         health_checks = {
             'plugin1': create_mock_plugin(1, 'OK', True),
