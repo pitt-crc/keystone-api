@@ -31,12 +31,18 @@ class ReadOnlyModelAdminMixin:
     """Mixin class for creating model admins with read only permissions."""
 
     def has_change_permission(self, request, obj=None) -> False:
+        """Disable permissions for modifying records."""
+
         return False
 
     def has_add_permission(self, request, obj=None) -> False:
+        """Disable permissions for creating new records."""
+
         return False
 
     def has_delete_permission(self, request, obj=None) -> False:
+        """Disable permissions for deleting records."""
+
         return False
 
 

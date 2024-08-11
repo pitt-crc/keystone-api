@@ -4,7 +4,7 @@ from time import sleep
 
 from django.test import override_settings, TestCase
 
-from apps.logging.models import *
+from apps.logging.models import AppLog, RequestLog
 from apps.logging.tasks import rotate_log_files
 
 
