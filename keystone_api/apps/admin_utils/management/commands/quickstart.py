@@ -66,7 +66,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS('Starting Celery worker...'))
             self.run_celery()
 
-        if options['demo_user'] or options['all']:
+        if options['admin'] or options['all']:
             self.stdout.write(self.style.SUCCESS('Checking for admin account...'))
             self.create_admin()
 
