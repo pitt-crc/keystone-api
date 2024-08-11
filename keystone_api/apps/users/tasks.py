@@ -5,13 +5,16 @@ asynchronously from the rest of the application and log their results in the
 application database.
 """
 
-import ldap
 from celery import shared_task
 from django.conf import settings
 from django_auth_ldap.backend import LDAPBackend
 from tqdm import tqdm
 
 from .models import User
+
+# Optional dependencies
+if settings.AUTH_LDAP_SERVER_URI:
+    import ldap
 
 
 def get_ldap_connection() -> ldap.ldapobject.LDAPObject:
