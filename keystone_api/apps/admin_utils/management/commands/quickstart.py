@@ -40,7 +40,7 @@ class Command(BaseCommand):
         group.add_argument('--static', action='store_true', help='Collect static files.')
         group.add_argument('--migrate', action='store_true', help='Run database migrations.')
         group.add_argument('--celery', action='store_true', help='Launch a background Celery worker.')
-        group.add_argument('--demo-user', action='store_true', help='Create an admin user account if no other accounts exist.')
+        group.add_argument('--admin', action='store_true', help='Create an admin account if no other accounts exist.')
         group.add_argument('--gunicorn', action='store_true', help='Run a web server using Gunicorn.')
         group.add_argument('--all', action='store_true', help='Launch all available services.')
 
