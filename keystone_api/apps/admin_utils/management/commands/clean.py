@@ -24,10 +24,10 @@ class Command(BaseCommand):
     help = __doc__
 
     def add_arguments(self, parser: ArgumentParser) -> None:
-        """Define command-line arguments
+        """Define command-line arguments.
 
         Args:
-          parser: The parser instance to add arguments under
+          parser: The parser instance to add arguments under.
         """
 
         group = parser.add_argument_group('clean options')
@@ -37,7 +37,7 @@ class Command(BaseCommand):
         group.add_argument('--all', action='store_true', help='Shorthand for deleting all targets')
 
     def handle(self, *args, **options) -> None:
-        """Handle the command execution
+        """Handle the command execution.
 
         Args:
           *args: Additional positional arguments.

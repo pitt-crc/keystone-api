@@ -36,7 +36,7 @@ def ldap_update_users(prune: bool = settings.PURGE_REMOVED_LDAP_USERS) -> None:
     is not configured in the application settings.
 
     Args:
-        prune: Optionally delete accounts with usernames no longer found in LDAP
+        prune: Optionally delete accounts with usernames no longer found in LDAP.
     """
 
     if not settings.AUTH_LDAP_SERVER_URI:

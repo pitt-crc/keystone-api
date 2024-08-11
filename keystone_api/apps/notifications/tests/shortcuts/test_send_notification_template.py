@@ -12,10 +12,10 @@ from main import settings
 
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
 class EmailSending(TestCase):
-    """Test sending emails via the `send_notification` function"""
+    """Test sending email templates via the `send_notification_template` function."""
 
     def setUp(self) -> None:
-        """Send an email template to a dummy user"""
+        """Send an email template to a dummy user."""
 
         self.user = User.objects.create_user(
             email='test@example.com',
@@ -30,7 +30,7 @@ class EmailSending(TestCase):
         self.notification_metadata = {'key': 'value'}
 
     def test_email_content(self) -> None:
-        """Test an email notification is sent with the correct content"""
+        """Test an email notification is sent with the correct content."""
 
         send_notification_template(
             self.user,
@@ -48,7 +48,7 @@ class EmailSending(TestCase):
         self.assertEqual(email.to, [self.user.email])
 
     def test_database_is_updated(self) -> None:
-        """Test a record of the email is stored in the database"""
+        """Test a record of the email is stored in the database."""
 
         send_notification_template(
             self.user,
@@ -63,7 +63,7 @@ class EmailSending(TestCase):
         self.assertEqual(notification.metadata, self.notification_metadata)
 
     def test_missing_template(self) -> None:
-        """Test an error is raised when a template is not found"""
+        """Test an error is raised when a template is not found."""
 
         with self.assertRaises(TemplateDoesNotExist):
             send_notification_template(

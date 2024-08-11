@@ -23,7 +23,7 @@ settings.JAZZMIN_SETTINGS['order_with_respect_to'].extend([
 
 
 class AllocationInline(admin.TabularInline):
-    """Inline admin interface for the `Allocation` model"""
+    """Inline admin interface for the `Allocation` model."""
 
     model = Allocation
     show_change_link = True
@@ -31,7 +31,7 @@ class AllocationInline(admin.TabularInline):
 
 
 class AllocationRequestReviewInline(admin.StackedInline):
-    """Inline admin interface for the `AllocationRequestReview` model"""
+    """Inline admin interface for the `AllocationRequestReview` model."""
 
     model = AllocationRequestReview
     verbose_name = 'Review'
@@ -41,7 +41,7 @@ class AllocationRequestReviewInline(admin.StackedInline):
 
 
 class AttachmentInline(admin.TabularInline):
-    """Inline interface for the `Attachment` model"""
+    """Inline interface for the `Attachment` model."""
 
     model = Attachment
     show_change_link = True
@@ -50,33 +50,33 @@ class AttachmentInline(admin.TabularInline):
 
 @admin.register(Allocation)
 class AllocationAdmin(admin.ModelAdmin):
-    """Admin interface for the `Allocation` model"""
+    """Admin interface for the `Allocation` model."""
 
     @staticmethod
     @admin.display
     def group(obj: Allocation) -> str:
-        """Return the name of the group the allocation is assigned to"""
+        """Return the name of the group the allocation is assigned to."""
 
         return obj.request.group.name
 
     @staticmethod
     @admin.display
     def request(obj: Allocation) -> str:
-        """Return the title of the allocation's corresponding request"""
+        """Return the title of the allocation's corresponding request."""
 
         return obj.request.title
 
     @staticmethod
     @admin.display
     def cluster(obj: Allocation) -> str:
-        """Return the name of the cluster the allocation is assigned to"""
+        """Return the name of the cluster the allocation is assigned to."""
 
         return obj.cluster.name
 
     @staticmethod
     @admin.display
     def status(obj: Allocation) -> str:
-        """Return the status of the corresponding allocation request"""
+        """Return the status of the corresponding allocation request."""
 
         return obj.request.StatusChoices(obj.request.status).label
 
@@ -96,19 +96,19 @@ class AllocationAdmin(admin.ModelAdmin):
 
 @admin.register(AllocationRequest)
 class AllocationRequestAdmin(admin.ModelAdmin):
-    """Admin interface for the `AllocationRequest` model"""
+    """Admin interface for the `AllocationRequest` model."""
 
     @staticmethod
     @admin.display
     def group(obj: Allocation) -> str:
-        """Return the name of the group the allocation is assigned to"""
+        """Return the name of the group the allocation is assigned to."""
 
         return obj.group.name
 
     @staticmethod
     @admin.display
     def reviews(obj: AllocationRequest) -> int:
-        """Return the total number of submitted reviews"""
+        """Return the total number of submitted reviews."""
 
         return sum(1 for _ in obj.allocationrequestreview_set.all())
 
@@ -129,17 +129,17 @@ class AllocationRequestAdmin(admin.ModelAdmin):
 
 @admin.register(Cluster)
 class ClusterAdmin(admin.ModelAdmin):
-    """Admin interface for the `Cluster` model"""
+    """Admin interface for the `Cluster` model."""
 
     @admin.action
     def enable_selected_clusters(self, request, queryset) -> None:
-        """Mark selected clusters as enabled"""
+        """Mark selected clusters as enabled."""
 
         queryset.update(enabled=True)
 
     @admin.action
     def disable_selected_clusters(self, request, queryset) -> None:
-        """Mark selected clusters as disabled"""
+        """Mark selected clusters as disabled."""
 
         queryset.update(enabled=False)
 

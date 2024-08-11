@@ -44,7 +44,7 @@ class PrivilegeUserSerializer(serializers.ModelSerializer):
         """Validate user attributes match the ORM data model.
 
         Args:
-            attrs: Dictionary of user attributes
+            attrs: Dictionary of user attributes.
         """
 
         # Hash the password value
@@ -70,7 +70,7 @@ class RestrictedUserSerializer(PrivilegeUserSerializer):
         """Raises an error when attempting to create a new record.
 
         Raises:
-            RuntimeError: Every time the function is called
+            RuntimeError: Every time the function is called.
         """
 
         raise RuntimeError('Attempted to create new user record using a serializer with restricted permissions.')

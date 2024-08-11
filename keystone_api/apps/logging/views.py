@@ -13,7 +13,7 @@ __all__ = ['AppLogViewSet', 'RequestLogViewSet', 'TaskResultViewSet']
 
 
 class AppLogViewSet(viewsets.ReadOnlyModelViewSet):
-    """Returns application log data"""
+    """Returns application log data."""
 
     queryset = AppLog.objects.all()
     serializer_class = AppLogSerializer
@@ -21,7 +21,7 @@ class AppLogViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class RequestLogViewSet(viewsets.ReadOnlyModelViewSet):
-    """Returns HTTP request log data"""
+    """Returns HTTP request log data."""
 
     queryset = RequestLog.objects.all()
     serializer_class = RequestLogSerializer
@@ -29,7 +29,7 @@ class RequestLogViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class TaskResultViewSet(viewsets.ReadOnlyModelViewSet):
-    """Returns results from scheduled background tasks"""
+    """Returns results from scheduled background tasks."""
 
     queryset = TaskResult.objects.all()
     serializer_class = TaskResultSerializer

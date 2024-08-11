@@ -1,4 +1,4 @@
-"""URL routing for the parent application"""
+"""URL routing for the parent application."""
 
 from django.urls import path
 from drf_spectacular.views import SpectacularJSONAPIView, SpectacularYAMLAPIView

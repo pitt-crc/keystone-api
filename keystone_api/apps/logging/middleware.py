@@ -13,20 +13,20 @@ __all__ = ['LogRequestMiddleware']
 
 
 class LogRequestMiddleware:
-    """Log metadata from incoming HTTP requests to the database"""
+    """Log metadata from incoming HTTP requests to the database."""
 
     # __init__ signature required by Django for dependency injection
     def __init__(self, get_response: callable) -> None:
         self.get_response = get_response
 
     def __call__(self, request: HttpRequest) -> HttpRequest:
-        """Execute the middleware on an incoming HTTP request
+        """Execute the middleware on an incoming HTTP request.
 
         Args:
-            request: The incoming HTTP request
+            request: The incoming HTTP request.
 
-        Return:
-            The processed request object
+        Returns:
+            The processed request object.
         """
 
         response = self.get_response(request)
@@ -47,13 +47,13 @@ class LogRequestMiddleware:
 
     @staticmethod
     def get_client_ip(request: HttpRequest) -> str:
-        """Return the client IP for the incoming request
+        """Return the client IP for the incoming request.
 
         Args:
-            request: The incoming HTTP request
+            request: The incoming HTTP request.
 
-        Return:
-            The requesting IP address
+        Returns:
+            The requesting IP address.
         """
 
         if x_forwarded_for := request.META.get('HTTP_X_FORWARDED_FOR'):

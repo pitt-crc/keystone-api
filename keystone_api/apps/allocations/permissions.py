@@ -21,7 +21,7 @@ class GroupAdminCreateGroupRead(permissions.BasePermission):
     """
 
     def has_permission(self, request, view) -> bool:
-        """Return whether the request has permissions to access the requested resource"""
+        """Return whether the request has permissions to access the requested resource."""
 
         # Staff users are OK. Read operations are also OK.
         if request.user.is_staff or request.method in permissions.SAFE_METHODS:
@@ -39,7 +39,7 @@ class GroupAdminCreateGroupRead(permissions.BasePermission):
         return request.user in group.get_privileged_members()
 
     def has_object_permission(self, request, view, obj: RGModelInterface) -> bool:
-        """Return whether the incoming HTTP request has permission to access a database record"""
+        """Return whether the incoming HTTP request has permission to access a database record."""
 
         is_staff = request.user.is_staff
         is_group_member = request.user in obj.get_research_group().get_all_members()
@@ -57,7 +57,7 @@ class StaffWriteAuthenticatedRead(permissions.BasePermission):
     """
 
     def has_permission(self, request, view) -> bool:
-        """Return whether the request has permissions to access the requested resource"""
+        """Return whether the request has permissions to access the requested resource."""
 
         if request.method in permissions.SAFE_METHODS:
             return request.user.is_authenticated
@@ -72,7 +72,7 @@ class StaffWriteGroupRead(permissions.BasePermission):
     """
 
     def has_permission(self, request, view) -> bool:
-        """Return whether the request has permissions to access the requested resource"""
+        """Return whether the request has permissions to access the requested resource."""
 
         if request.method in permissions.SAFE_METHODS:
             return request.user.is_authenticated
@@ -80,7 +80,7 @@ class StaffWriteGroupRead(permissions.BasePermission):
         return request.user.is_staff
 
     def has_object_permission(self, request, view, obj: RGModelInterface) -> bool:
-        """Return whether the incoming HTTP request has permission to access a database record"""
+        """Return whether the incoming HTTP request has permission to access a database record."""
 
         if request.user.is_staff:
             return True

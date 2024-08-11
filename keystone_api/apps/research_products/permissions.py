@@ -25,7 +25,7 @@ class CustomPermissionsBase(permissions.BasePermission):
         Args:
             request: The HTTP request
 
-        Return:
+        Returns:
             The research group or None
         """
 

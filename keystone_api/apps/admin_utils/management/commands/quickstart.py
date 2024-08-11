@@ -30,10 +30,10 @@ class Command(BaseCommand):
     help = __doc__
 
     def add_arguments(self, parser: ArgumentParser) -> None:
-        """Add command-line arguments to the parser
+        """Add command-line arguments to the parser.
 
         Args:
-          parser: The argument parser instance
+          parser: The argument parser instance.
         """
 
         group = parser.add_argument_group('quickstart options')
@@ -45,11 +45,11 @@ class Command(BaseCommand):
         group.add_argument('--all', action='store_true', help='Launch all available services.')
 
     def handle(self, *args, **options) -> None:
-        """Handle the command execution
+        """Handle the command execution.
 
         Args:
-          *args: Additional positional arguments
-          **options: Additional keyword arguments
+          *args: Additional positional arguments.
+          **options: Additional keyword arguments.
         """
 
         # Note: `no_input=False` indicates the user should not be prompted for input
@@ -75,7 +75,7 @@ class Command(BaseCommand):
             self.run_gunicorn()
 
     def create_admin(self) -> None:
-        """Create an `admin` user account if no other accounts already exist"""
+        """Create an `admin` user account if no other accounts already exist."""
 
         user = get_user_model()
         if user.objects.exists():
@@ -86,7 +86,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def run_celery() -> None:
-        """Start a Celery worker"""
+        """Start a Celery worker."""
 
         subprocess.Popen(['redis-server'])
         subprocess.Popen(['celery', '-A', 'keystone_api.apps.scheduler', 'worker'])
@@ -95,11 +95,11 @@ class Command(BaseCommand):
 
     @staticmethod
     def run_gunicorn(host: str = '0.0.0.0', port: int = 8000) -> None:
-        """Start a Gunicorn server
+        """Start a Gunicorn server.
 
         Args:
-          host: The host to bind to
-          port: The port to bind to
+          host: The host to bind to.
+          port: The port to bind to.
         """
 
         command = ['gunicorn', '--bind', f'{host}:{port}', 'keystone_api.main.wsgi:application']

@@ -1,4 +1,4 @@
-"""Tests for the `HealthCheckPrometheusView` class."""
+"""Unit tests for the `HealthCheckPrometheusView` class."""
 
 from django.test import TestCase
 
@@ -7,10 +7,10 @@ from apps.health.views import HealthCheckPrometheusView
 
 
 class RenderResponse(TestCase):
-    """Tests for the `render_response` function"""
+    """Tests for the `render_response` function."""
 
     def test_return_matches_health_checks(self) -> None:
-        """Test the rendering of application health checks in Prometheus format"""
+        """Test the rendering of application health checks in Prometheus format."""
 
         health_checks = {
             'plugin1': create_mock_plugin(1, 'OK', True),

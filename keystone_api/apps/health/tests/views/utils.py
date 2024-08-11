@@ -11,7 +11,7 @@ def create_mock_plugin(status: int, pretty_status: str, critical_service: bool) 
         pretty_status: The health check status message
         critical_service: Whether the health check represents a critical service
 
-    Return:
+    Returns:
         A MagicMock object
     """
 

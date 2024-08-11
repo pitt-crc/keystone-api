@@ -21,15 +21,15 @@ def send_notification(
     notification_type: Notification.NotificationType = None,
     notification_metadata: dict = None
 ) -> None:
-    """Send a notification email to a specified user with both plain text and HTML content
+    """Send a notification email to a specified user with both plain text and HTML content.
 
     Args:
-        user: The user object to whom the email will be sent
-        subject: The subject line of the email
+        user: The user object to whom the email will be sent.
+        subject: The subject line of the email.
         plain_text: The plain text version of the email content
-        html_text: The HTML version of the email content
-        notification_type: Optionally categorize the notification type
-        notification_metadata: Metadata to store alongside the notification
+        html_text: The HTML version of the email content.
+        notification_type: Optionally categorize the notification type.
+        notification_metadata: Metadata to store alongside the notification.
     """
 
     send_mail(
@@ -55,14 +55,14 @@ def send_notification_template(
     notification_type: Notification.NotificationType = None,
     notification_metadata: dict = None
 ) -> None:
-    """Render an email template and send it to a specified user
+    """Render an email template and send it to a specified user.
 
     Args:
-        user: The user object to whom the email will be sent
-        subject: The subject line of the email
-        template: The name of the template file to render
-        notification_type: Optionally categorize the notification type
-        notification_metadata: Metadata to store alongside the notification
+        user: The user object to whom the email will be sent.
+        subject: The subject line of the email.
+        template: The name of the template file to render.
+        notification_type: Optionally categorize the notification type.
+        notification_metadata: Metadata to store alongside the notification.
     """
 
     context = {'user': user}
@@ -82,12 +82,12 @@ def send_notification_template(
 
 
 def send_general_notification(user: User, subject: str, message: str) -> None:
-    """Send a general notification email to a specified user
+    """Send a general notification email to a specified user.
 
     Args:
-        user: The user object to whom the email will be sent
-        subject: The subject line of the email
-        message: The message content to included
+        user: The user object to whom the email will be sent.
+        subject: The subject line of the email.
+        message: The message content to included.
     """
 
     send_notification_template(

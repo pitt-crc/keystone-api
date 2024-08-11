@@ -28,7 +28,7 @@ admin.site.unregister(django_celery_results.models.GroupResult)
 
 
 class ReadOnlyModelAdminMixin:
-    """Mixin class for creating model admins with read only permissions"""
+    """Mixin class for creating model admins with read only permissions."""
 
     def has_change_permission(self, request, obj=None) -> False:
         return False
@@ -42,7 +42,7 @@ class ReadOnlyModelAdminMixin:
 
 @admin.register(AppLog)
 class AppLogAdmin(ReadOnlyModelAdminMixin, admin.ModelAdmin):
-    """Admin interface for viewing application logs"""
+    """Admin interface for viewing application logs."""
 
     readonly_fields = [field.name for field in AppLog._meta.fields]
     list_display = ['time', 'level', 'name']
@@ -58,7 +58,7 @@ class AppLogAdmin(ReadOnlyModelAdminMixin, admin.ModelAdmin):
 
 @admin.register(RequestLog)
 class RequestLogAdmin(ReadOnlyModelAdminMixin, admin.ModelAdmin):
-    """Admin interface for viewing request logs"""
+    """Admin interface for viewing request logs."""
 
     readonly_fields = [field.name for field in RequestLog._meta.fields]
     list_display = ['time', 'method', 'endpoint', 'response_code', 'remote_address']
@@ -74,4 +74,4 @@ class RequestLogAdmin(ReadOnlyModelAdminMixin, admin.ModelAdmin):
 
 @admin.register(TaskResult)
 class TaskResultAdmin(ReadOnlyModelAdminMixin, django_celery_results.admin.TaskResultAdmin):
-    """Admin interface for viewing Celery task results"""
+    """Admin interface for viewing Celery task results."""
