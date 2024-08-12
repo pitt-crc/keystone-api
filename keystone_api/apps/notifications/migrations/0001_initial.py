@@ -31,9 +31,9 @@ class Migration(migrations.Migration):
             name='Preference',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('alloc_thresholds', models.JSONField(default=apps.notifications.models._default_alloc_thresholds)),
+                ('alloc_thresholds', models.JSONField(default=apps.notifications.models.default_alloc_thresholds)),
                 ('notify_status_update', models.BooleanField(default=True)),
-                ('expiry_thresholds', models.JSONField(default=apps.notifications.models._default_expiry_thresholds)),
+                ('expiry_thresholds', models.JSONField(default=apps.notifications.models.default_expiry_thresholds)),
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),

@@ -11,12 +11,24 @@ from __future__ import annotations
 from django.conf import settings
 from django.db import models
 
+__all__ = ['Notification', 'Preference']
 
-def _default_alloc_thresholds() -> list[int]:
+
+def default_alloc_thresholds() -> list[int]:  # pragma: nocover
+    """The default allocating usage thresholds at which to issue a user notification.
+
+    Returned values are defined in units of percent usage.
+    """
+
     return [90]
 
 
-def _default_expiry_thresholds() -> list[int]:
+def default_expiry_thresholds() -> list[int]:  # pragma: nocover
+    """The default expiration thresholds at which to issue a user notification.
+
+    Returned values are defined in units of days until expiration.
+    """
+
     return [30, 14, 0]
 
 
@@ -47,9 +59,9 @@ class Notification(models.Model):
 class Preference(models.Model):
     """User notification preferences."""
 
-    alloc_thresholds = models.JSONField(default=_default_alloc_thresholds)
+    alloc_thresholds = models.JSONField(default=default_alloc_thresholds)
     notify_status_update = models.BooleanField(default=True)
-    expiry_thresholds = models.JSONField(default=_default_expiry_thresholds)
+    expiry_thresholds = models.JSONField(default=default_expiry_thresholds)
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
@@ -61,7 +73,7 @@ class Preference(models.Model):
         return preference
 
     @classmethod
-    def set_user_preference(cls, *args, **kwargs) -> None:
+    def set_user_preference(cls, user: settings.AUTH_USER_MODEL, **kwargs) -> None:
         """Set user preferences, creating or updating as necessary."""
 
-        cls.objects.create(*args, **kwargs)
+        cls.objects.update_or_create(user=user, defaults=kwargs)
