@@ -73,7 +73,7 @@ class Preference(models.Model):
         return preference
 
     @classmethod
-    def set_user_preference(cls, *args, **kwargs) -> None:
+    def set_user_preference(cls, user: settings.AUTH_USER_MODEL, **kwargs) -> None:
         """Set user preferences, creating or updating as necessary."""
 
-        cls.objects.create(*args, **kwargs)
+        cls.objects.update_or_create(user=user, defaults=kwargs)

@@ -19,6 +19,7 @@ class PreferenceModelTest(TestCase):
     def test_get_user_preference_creates_new_preference(self) -> None:
         """Test a new Preference object is created if one does not exist."""
 
+        # Test a record is created
         self.assertFalse(Preference.objects.filter(user=self.user).exists())
         preference = Preference.get_user_preference(user=self.user)
         self.assertTrue(Preference.objects.filter(user=self.user).exists())
