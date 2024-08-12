@@ -160,24 +160,24 @@ def send_expiry_notification_for_request(user: User, request: AllocationRequest)
 
     if notification_sent:
         log.debug(f'Existing notification found.')
+        return
 
-    else:
-        log.debug(f'Sending new notification for request #{request.id} to user {user.username}.')
-        send_notification_template(
-            user=user,
-            subject=f'Allocation Expires on {request.expire}',
-            template='expiration_email.html',
-            context={
-                'user': user,
-                'request': request,
-                'days_to_expire': days_until_expire
-            },
-            notification_type=Notification.NotificationType.request_status,
-            notification_metadata={
-                'request_id': request.id,
-                'days_to_expire': days_until_expire
-            }
-        )
+    log.debug(f'Sending new notification for request #{request.id} to user {user.username}.')
+    send_notification_template(
+        user=user,
+        subject=f'Allocation Expires on {request.expire}',
+        template='expiration_email.html',
+        context={
+            'user': user,
+            'request': request,
+            'days_to_expire': days_until_expire
+        },
+        notification_type=Notification.NotificationType.request_status,
+        notification_metadata={
+            'request_id': request.id,
+            'days_to_expire': days_until_expire
+        }
+    )
 
 
 @shared_task()
