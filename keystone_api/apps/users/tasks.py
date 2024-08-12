@@ -13,8 +13,11 @@ from tqdm import tqdm
 from .models import User
 
 # Optional dependencies
-if settings.AUTH_LDAP_SERVER_URI:
+try:
     import ldap
+
+except ImportError:  # pragma: nocover
+    pass
 
 
 def get_ldap_connection() -> 'ldap.ldapobject.LDAPObject':
