@@ -20,8 +20,6 @@ __all__ = ['HealthCheckView', 'HealthCheckJsonView', 'HealthCheckPrometheusView'
 class BaseHealthCheckView(GenericAPIView, CheckMixin, ABC):
     """Abstract base view for rendering health checks."""
 
-    permission_classes = []
-
     @staticmethod
     @abstractmethod
     def render_response(plugins: dict) -> HttpResponse:
@@ -62,7 +60,7 @@ class HealthCheckView(BaseHealthCheckView):
     def get(self, request, *args, **kwargs) -> HttpResponse:
         """Summarize health checks in Prometheus format."""
 
-        return super().get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs) # pragma: nocover
 
 
 class HealthCheckJsonView(BaseHealthCheckView):
