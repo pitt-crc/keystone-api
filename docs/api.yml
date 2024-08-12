@@ -1511,8 +1511,7 @@ paths:
   /health/:
     get:
       operationId: health_retrieve
-      description: Return a status code reflecting the global status of system health
-        checks.
+      description: Summarize health checks in Prometheus format.
       tags:
       - health
       security:

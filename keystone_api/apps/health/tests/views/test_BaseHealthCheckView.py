@@ -2,8 +2,10 @@
 
 from unittest.mock import Mock, patch
 
+from django.core.cache import cache
 from django.http import HttpRequest, HttpResponse
 from django.test import TestCase
+from django.utils.cache import get_cache_key
 
 from apps.health.views import BaseHealthCheckView
 
