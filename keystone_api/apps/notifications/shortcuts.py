@@ -6,9 +6,7 @@ redirecting URLs, and handling HTTP responses.
 
 from django.conf import settings
 from django.core.mail import send_mail
-from django.template.backends.django import Template
-from django.template.base import Template as T
-from django.template.loader import get_template, render_to_string
+from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
 from apps.notifications.models import Notification
