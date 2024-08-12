@@ -167,11 +167,14 @@ def send_expiry_notification_for_request(user: User, request: AllocationRequest)
             user=user,
             subject=f'Allocation Expires on {request.expire}',
             template='expiration_email.html',
+            context={
+                'user': user,
+                'request': request,
+                'days_to_expire': days_until_expire
+            },
             notification_type=Notification.NotificationType.request_status,
             notification_metadata={
                 'request_id': request.id,
-                'request_title': request.title,
-                'request_expire': request.expire.isoformat(),
                 'days_to_expire': days_until_expire
             }
         )
