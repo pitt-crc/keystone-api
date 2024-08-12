@@ -60,7 +60,7 @@ class HealthCheckView(BaseHealthCheckView):
     def get(self, request, *args, **kwargs) -> HttpResponse:
         """Summarize health checks in Prometheus format."""
 
-        return super().get(request, *args, **kwargs) # pragma: nocover
+        return super().get(request, *args, **kwargs)  # pragma: nocover
 
 
 class HealthCheckJsonView(BaseHealthCheckView):
@@ -87,7 +87,7 @@ class HealthCheckJsonView(BaseHealthCheckView):
                 'critical_service': plugin.critical_service
             }
 
-        return JsonResponse(data=data, status=200)  # pragma: nocover
+        return JsonResponse(data=data, status=200)
 
     @extend_schema(responses={
         '200': inline_serializer('health_json_ok', fields={
