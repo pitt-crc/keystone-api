@@ -4,6 +4,7 @@ Extends and customizes the site-wide administration utility with
 interfaces for managing application database constructs.
 """
 
+from django.conf import settings
 from django.contrib import admin
 
 from .models import *
