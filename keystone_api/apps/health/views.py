@@ -36,6 +36,8 @@ class BaseHealthCheckView(GenericAPIView, CheckMixin, ABC):
 class HealthCheckView(BaseHealthCheckView):
     """Return a 200 status code if all health checks pass and 500 otherwise."""
 
+    permission_classes = []
+
     @staticmethod
     def render_response(plugins: dict) -> HttpResponse:
         """Return an HTTP response with a status code matching system health checks.
