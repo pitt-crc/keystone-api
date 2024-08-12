@@ -44,16 +44,16 @@ class EmailSending(TestCase):
         self.assertEqual(len(mail.outbox), 1)
 
         email = mail.outbox[0]
-        self.assertEqual(email.subject, self.subject)
-        self.assertEqual(email.body, self.plain_text)
-        self.assertEqual(email.from_email, settings.EMAIL_FROM_ADDRESS)
-        self.assertEqual(email.to, [self.user.email])
-        self.assertEqual(email.alternatives, [(self.html_text, 'text/html')])
+        self.assertEqual(self.subject, email.subject)
+        self.assertEqual(self.plain_text, email.body)
+        self.assertEqual(settings.EMAIL_FROM_ADDRESS, email.from_email)
+        self.assertEqual([self.user.email], email.to)
+        self.assertEqual([(self.html_text, 'text/html')], email.alternatives)
 
     def test_database_is_updated(self) -> None:
         """Test a record of the email is stored in the database"""
 
         notification = Notification.objects.get(user=self.user)
-        self.assertEqual(notification.message, self.plain_text)
-        self.assertEqual(notification.notification_type, self.notification_type)
-        self.assertEqual(notification.metadata, self.notification_metadata)
+        self.assertEqual(self.plain_text, notification.message)
+        self.assertEqual(self.notification_type, notification.notification_type)
+        self.assertEqual(self.notification_metadata, notification.metadata)
