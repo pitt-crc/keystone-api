@@ -6,7 +6,9 @@ redirecting URLs, and handling HTTP responses.
 
 from django.conf import settings
 from django.core.mail import send_mail
-from django.template.loader import render_to_string
+from django.template.backends.django import Template
+from django.template.base import Template as T
+from django.template.loader import get_template, render_to_string
 from django.utils.html import strip_tags
 
 from apps.notifications.models import Notification
@@ -63,12 +65,17 @@ def send_notification_template(
         template: The name of the template file to render.
         notification_type: Optionally categorize the notification type.
         notification_metadata: Metadata to store alongside the notification.
+
+    Raises:
+        UndefinedError: When template variables are not defined in the notification metadata
     """
+
+    notification_metadata = notification_metadata or dict()
 
     context = {'user': user}
     context.update(notification_metadata)
 
-    html_content = render_to_string(template, context)
+    html_content = render_to_string(template, context, using='jinja2')
     text_content = strip_tags(html_content)
 
     send_notification(

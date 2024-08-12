@@ -37,6 +37,7 @@ whitenoise = "6.7.0"
 
 # Optional dependencies installed via extras
 django-auth-ldap = { version = "4.8.0", optional = true }
+jinja2 = "^3.1.4"
 
 [tool.poetry.extras]
 ldap = ["django-auth-ldap"]

@@ -1,5 +1,5 @@
 """Tests for the `send_notification_template` function."""
-
+import jinja2
 from django.core import mail
 from django.template.exceptions import TemplateDoesNotExist
 from django.test import override_settings, TestCase
@@ -27,7 +27,7 @@ class EmailSending(TestCase):
 
         self.subject = 'Test Subject'
         self.notification_type = Notification.NotificationType.general_message
-        self.notification_metadata = {'key': 'value'}
+        self.notification_metadata = {'message': 'this is a message'}
 
     def test_email_content(self) -> None:
         """Test an email notification is sent with the correct content."""
@@ -72,4 +72,15 @@ class EmailSending(TestCase):
                 'this_template_does_not_exist',
                 self.notification_type,
                 self.notification_metadata
+            )
+
+    def test_incomplete_rendering(self) -> None:
+        """Test an error is raise when a template isn't completely rendered"""
+
+        with self.assertRaises(jinja2.UndefinedError):
+            send_notification_template(
+                self.user,
+                self.subject,
+                'general.html',
+                self.notification_type
             )

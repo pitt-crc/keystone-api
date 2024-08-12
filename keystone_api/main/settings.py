@@ -8,6 +8,7 @@ from pathlib import Path
 
 import environ
 from django.core.management.utils import get_random_secret_key
+from jinja2 import StrictUndefined
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR))
@@ -95,7 +96,7 @@ MIDDLEWARE = [
 ]
 
 TEMPLATES = [
-    {
+    {  # The default backend rquired by Django builtins (e.g., the admin)
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'APP_DIRS': True,
         'OPTIONS': {
@@ -105,6 +106,13 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+        },
+    },
+    {  # Jinja2 backend used when rendering user notifications
+        "BACKEND": "django.template.backends.jinja2.Jinja2",
+        'APP_DIRS': True,
+        "OPTIONS": {
+            "undefined": StrictUndefined,
         },
     },
 ]
