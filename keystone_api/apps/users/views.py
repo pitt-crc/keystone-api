@@ -11,10 +11,7 @@ from .models import *
 from .permissions import IsGroupAdminOrReadOnly, IsSelfOrReadOnly
 from .serializers import *
 
-__all__ = [
-    'ResearchGroupViewSet',
-    'UserViewSet',
-]
+__all__ = ['ResearchGroupViewSet', 'UserViewSet']
 
 
 class ResearchGroupViewSet(viewsets.ModelViewSet):

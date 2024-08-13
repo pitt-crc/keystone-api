@@ -22,7 +22,7 @@ __all__ = [
     'AllocationRequestReview',
     'Attachment',
     'Cluster',
-    'RGModelInterface'
+    'RGModelInterface',
 ]
 
 

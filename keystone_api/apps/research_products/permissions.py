@@ -8,12 +8,9 @@ predefined access rules.
 
 from rest_framework import permissions
 
-__all__ = [
-    'GroupMemberAll',
-    'GroupMemberReadGroupAdminWrite'
-]
-
 from apps.users.models import ResearchGroup
+
+__all__ = ['GroupMemberAll', 'GroupMemberReadGroupAdminWrite']
 
 
 class CustomPermissionsBase(permissions.BasePermission):

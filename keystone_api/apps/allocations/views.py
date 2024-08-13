@@ -10,15 +10,14 @@ from rest_framework.response import Response
 from .models import *
 from .permissions import *
 from .serializers import *
+from ..users.models import ResearchGroup
 
 __all__ = [
     'AllocationViewSet',
     'AllocationRequestViewSet',
     'AllocationRequestReviewViewSet',
-    'ClusterViewSet'
+    'ClusterViewSet',
 ]
-
-from ..users.models import ResearchGroup
 
 
 class AllocationViewSet(viewsets.ModelViewSet):

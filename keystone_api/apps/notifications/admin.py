@@ -29,9 +29,13 @@ class NotificationAdmin(admin.ModelAdmin):
     search_fields = ('user__username', 'subject', 'message')
 
     def has_change_permission(self, request, obj=None) -> False:
+        """Disable permissions for modifying records."""
+
         return False
 
     def has_add_permission(self, request, obj=None) -> False:
+        """Disable permissions for creating new records."""
+
         return False
 
 

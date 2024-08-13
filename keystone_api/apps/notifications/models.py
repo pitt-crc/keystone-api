@@ -6,8 +6,6 @@ Each model reflects a different database and defines low-level defaults for how
 the associated table/fields/records are presented by parent interfaces.
 """
 
-from __future__ import annotations
-
 from django.conf import settings
 from django.db import models
 
@@ -66,7 +64,7 @@ class Preference(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     @classmethod
-    def get_user_preference(cls, user: settings.AUTH_USER_MODEL) -> Preference:
+    def get_user_preference(cls, user: settings.AUTH_USER_MODEL) -> 'Preference':
         """Retrieve user preferences or create them if they don't exist."""
 
         preference, _ = cls.objects.get_or_create(user=user)
