@@ -11,7 +11,11 @@ from rest_framework import permissions
 from apps.users.models import ResearchGroup
 from .models import RGModelInterface
 
-__all__ = ['GroupAdminCreateGroupRead', 'StaffWriteAuthenticatedRead', 'StaffWriteGroupRead']
+__all__ = [
+    'GroupAdminCreateGroupRead',
+    'StaffWriteAuthenticatedRead',
+    'StaffWriteGroupRead',
+]
 
 
 class GroupAdminCreateGroupRead(permissions.BasePermission):

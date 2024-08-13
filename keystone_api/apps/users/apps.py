@@ -9,8 +9,10 @@ from django.core.checks import register
 
 from .management import checks
 
+__all__ = ['UsersAppConfig']
 
-class MyAppConfig(AppConfig):
+
+class UsersAppConfig(AppConfig):
     """General application configuration and metadata."""
 
     name = 'apps.users'

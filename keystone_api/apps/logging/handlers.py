@@ -8,6 +8,8 @@ destination and formatting of log messages within the logging framework.
 import logging
 from logging import Handler
 
+__all__ = ['DBHandler']
+
 
 class DBHandler(Handler):
     """Logging handler for storing log records in the application database."""

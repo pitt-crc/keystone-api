@@ -15,7 +15,7 @@ from .models import *
 __all__ = [
     'PrivilegeUserSerializer',
     'ResearchGroupSerializer',
-    'RestrictedUserSerializer'
+    'RestrictedUserSerializer',
 ]
 
 
