@@ -12,7 +12,7 @@ class EmitToDatabase(TestCase):
     """Test emitted log data is recorded into the application database."""
 
     def assert_db_record_matches_log_content(
-            self, handler: logging.Handler, log_record: logging.LogRecord, db_record: AppLog
+        self, handler: logging.Handler, log_record: logging.LogRecord, db_record: AppLog
     ) -> None:
         """Assert the content of a database record matches the content of a log record.
 
