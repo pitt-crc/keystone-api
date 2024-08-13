@@ -18,8 +18,8 @@ def send_notification(
     subject: str,
     plain_text: str,
     html_text: str,
-    notification_type: Notification.NotificationType = None,
-    notification_metadata: dict = None
+    notification_type: Notification.NotificationType,
+    notification_metadata: dict | None = None
 ) -> None:
     """Send a notification email to a specified user with both plain text and HTML content.
 
@@ -52,8 +52,9 @@ def send_notification_template(
     user: User,
     subject: str,
     template: str,
-    notification_type: Notification.NotificationType = None,
-    notification_metadata: dict = None
+    context: dict,
+    notification_type: Notification.NotificationType,
+    notification_metadata: dict | None = None
 ) -> None:
     """Render an email template and send it to a specified user.
 
@@ -61,14 +62,15 @@ def send_notification_template(
         user: The user object to whom the email will be sent.
         subject: The subject line of the email.
         template: The name of the template file to render.
+        context: Variable definitions used to populate the template.
         notification_type: Optionally categorize the notification type.
         notification_metadata: Metadata to store alongside the notification.
+
+    Raises:
+        UndefinedError: When template variables are not defined in the notification metadata
     """
 
-    context = {'user': user}
-    context.update(notification_metadata)
-
-    html_content = render_to_string(template, context)
+    html_content = render_to_string(template, context, using='jinja2')
     text_content = strip_tags(html_content)
 
     send_notification(
@@ -95,5 +97,5 @@ def send_general_notification(user: User, subject: str, message: str) -> None:
         subject=subject,
         template='general.html',
         notification_type=Notification.NotificationType.general_message,
-        notification_metadata={'message': message}
+        context={'user': user, 'message': message}
     )

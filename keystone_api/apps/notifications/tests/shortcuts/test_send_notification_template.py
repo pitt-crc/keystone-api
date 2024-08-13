@@ -1,5 +1,6 @@
-"""Tests for the `send_notification_template` function."""
+"""Unit tests for the `send_notification_template` function."""
 
+import jinja2
 from django.core import mail
 from django.template.exceptions import TemplateDoesNotExist
 from django.test import override_settings, TestCase
@@ -25,42 +26,44 @@ class EmailSending(TestCase):
             password='foobar123'
         )
 
-        self.subject = 'Test Subject'
-        self.notification_type = Notification.NotificationType.general_message
-        self.notification_metadata = {'key': 'value'}
-
     def test_email_content(self) -> None:
         """Test an email notification is sent with the correct content."""
 
+        subject = 'Test subject'
+
         send_notification_template(
             self.user,
-            self.subject,
-            'general.html',
-            self.notification_type,
-            self.notification_metadata
+            subject,
+            template='general.html',
+            context={"user": self.user, "message": "this is a message"},
+            notification_type=Notification.NotificationType.general_message
         )
 
         self.assertEqual(len(mail.outbox), 1)
         email = mail.outbox[0]
 
-        self.assertEqual(email.subject, self.subject)
-        self.assertEqual(email.from_email, settings.EMAIL_FROM_ADDRESS)
-        self.assertEqual(email.to, [self.user.email])
+        self.assertEqual(subject, email.subject)
+        self.assertEqual(settings.EMAIL_FROM_ADDRESS, email.from_email)
+        self.assertEqual([self.user.email], email.to)
 
     def test_database_is_updated(self) -> None:
         """Test a record of the email is stored in the database."""
 
+        notification_type = Notification.NotificationType.general_message
+        notification_metadata = {'key': 'value'}
+
         send_notification_template(
             self.user,
-            self.subject,
-            'general.html',
-            self.notification_type,
-            self.notification_metadata
+            "Test subject",
+            template='general.html',
+            context={"user": self.user, "message": "this is a message"},
+            notification_type=notification_type,
+            notification_metadata=notification_metadata
         )
 
         notification = Notification.objects.get(user=self.user)
-        self.assertEqual(notification.notification_type, self.notification_type)
-        self.assertEqual(notification.metadata, self.notification_metadata)
+        self.assertEqual(notification_type, notification.notification_type)
+        self.assertEqual(notification_metadata, notification.metadata)
 
     def test_missing_template(self) -> None:
         """Test an error is raised when a template is not found."""
@@ -68,8 +71,20 @@ class EmailSending(TestCase):
         with self.assertRaises(TemplateDoesNotExist):
             send_notification_template(
                 self.user,
-                self.subject,
-                'this_template_does_not_exist',
-                self.notification_type,
-                self.notification_metadata
+                "Test subject",
+                template='this_template_does_not_exist',
+                context=dict(),
+                notification_type=Notification.NotificationType.general_message
+            )
+
+    def test_incomplete_rendering(self) -> None:
+        """Test an error is raise when a template isn't completely rendered."""
+
+        with self.assertRaises(jinja2.UndefinedError):
+            send_notification_template(
+                self.user,
+                "Test subject",
+                template='general.html',
+                context=dict(),
+                notification_type=Notification.NotificationType.general_message
             )
