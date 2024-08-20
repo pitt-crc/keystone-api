@@ -1,7 +1,9 @@
-"""Unit tests for the `tasks` module."""
+"""Unit tests for the `flush_expired_tokens` function."""
+
+from datetime import timedelta
 
 from django.test import TestCase
-from django.utils.timezone import now, timedelta
+from django.utils.timezone import now
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
 from rest_framework_simplejwt.tokens import AccessToken
 

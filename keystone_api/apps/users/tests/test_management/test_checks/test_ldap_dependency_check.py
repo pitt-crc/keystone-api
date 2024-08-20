@@ -1,4 +1,4 @@
-"""Unit tests for the `checks` module."""
+"""Unit tests for the `ldap_dependency_check` function."""
 
 from unittest import mock
 from unittest.mock import Mock
@@ -8,8 +8,8 @@ from django.test import override_settings, SimpleTestCase
 from apps.users.management.checks import ldap_dependency_check
 
 
-class LdapDependencyCheckTests(SimpleTestCase):
-    """Tests the verification of LDAP dependencies via the`ldap_dependency_check` function."""
+class LdapVerification(SimpleTestCase):
+    """Test the verification of LDAP dependencies."""
 
     @override_settings(AUTH_LDAP_SERVER_URI="ldap://example.com")
     @mock.patch("builtins.__import__")

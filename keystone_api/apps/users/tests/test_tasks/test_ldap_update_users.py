@@ -1,46 +1,15 @@
-"""Unit tests for the `tasks` module."""
+"""Unit tests for the `ldap_update_users` function."""
 
 from unittest.mock import MagicMock, Mock, patch
 
-import ldap
 from django.test import override_settings, TestCase
 
 from apps.users.models import User
-from apps.users.tasks import get_ldap_connection, ldap_update_users
+from apps.users.tasks import ldap_update_users
 
 
-class GetLdapConnection(TestCase):
-    """Test connecting to LDAP via the `test_get_ldap_connection` function."""
-
-    @override_settings(
-        AUTH_LDAP_SERVER_URI='ldap://testserver',
-        AUTH_LDAP_BIND_DN='cn=admin,dc=example,dc=com',
-        AUTH_LDAP_BIND_PASSWORD='password123',
-        AUTH_LDAP_START_TLS=True
-    )
-    @patch('ldap.initialize')
-    @patch('ldap.set_option')
-    @patch('ldap.ldapobject.LDAPObject')
-    def test_tls_configuration(self, mock_ldap: Mock, mock_set_option: Mock, mock_initialize: Mock) -> None:
-        """Test an LDAP connection is correctly configured with TLS enabled."""
-
-        # Set up mock objects
-        mock_conn = mock_ldap.return_value
-        mock_initialize.return_value = mock_conn
-        mock_set_option.return_value = None
-
-        # Call the function to test
-        conn = get_ldap_connection()
-        self.assertEqual(conn, mock_conn)
-
-        # Check the connection calls
-        mock_initialize.assert_called_once_with('ldap://testserver')
-        mock_conn.bind.assert_called_once_with('cn=admin,dc=example,dc=com', 'password123')
-        mock_set_option.assert_called_once_with(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
-
-
-class LdapUpdateUsers(TestCase):
-    """Test updating user data via the `ldap_update_users` function."""
+class UpdateUsers(TestCase):
+    """Test the updating of user data."""
 
     @override_settings(AUTH_LDAP_SERVER_URI=None)
     def test_exit_silently_when_uri_is_none(self) -> None:
@@ -77,6 +46,10 @@ class LdapUpdateUsers(TestCase):
         # Verify that the users have the is_ldap_user flag set
         self.assertTrue(user1.is_ldap_user)
         self.assertTrue(user2.is_ldap_user)
+
+
+class UserRemoval(TestCase):
+    """Test the removal and/or deactivation of user accounts."""
 
     @override_settings(
         AUTH_LDAP_SERVER_URI='ldap://ds.example.com:389',

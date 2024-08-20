@@ -5,7 +5,7 @@ import json
 from django.http import JsonResponse
 from django.test import TestCase
 
-from apps.health.tests.views.utils import create_mock_plugin
+from apps.health.tests.test_views.utils import create_mock_plugin
 from apps.health.views import HealthCheckJsonView
 
 
