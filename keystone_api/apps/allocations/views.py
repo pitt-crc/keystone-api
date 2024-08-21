@@ -10,15 +10,14 @@ from rest_framework.response import Response
 from .models import *
 from .permissions import *
 from .serializers import *
+from ..users.models import ResearchGroup
 
 __all__ = [
     'AllocationViewSet',
     'AllocationRequestViewSet',
     'AllocationRequestReviewViewSet',
-    'ClusterViewSet'
+    'ClusterViewSet',
 ]
-
-from ..users.models import ResearchGroup
 
 
 class AllocationViewSet(viewsets.ModelViewSet):
@@ -29,9 +28,9 @@ class AllocationViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, StaffWriteGroupRead]
 
     def get_queryset(self) -> list[Allocation]:
-        """Return a list of allocations for the currently authenticated user"""
+        """Return a list of allocations for the currently authenticated user."""
 
-        if self.request.user.is_staff or self.request.user.is_superuser:
+        if self.request.user.is_staff:
             return self.queryset
 
         research_groups = ResearchGroup.objects.groups_for_user(self.request.user)
@@ -46,9 +45,9 @@ class AllocationRequestViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, GroupAdminCreateGroupRead]
 
     def get_queryset(self) -> list[AllocationRequest]:
-        """Return a list of allocation requests for the currently authenticated user"""
+        """Return a list of allocation requests for the currently authenticated user."""
 
-        if self.request.user.is_staff or self.request.user.is_superuser:
+        if self.request.user.is_staff:
             return self.queryset
 
         research_groups = ResearchGroup.objects.groups_for_user(self.request.user)
@@ -63,16 +62,16 @@ class AllocationRequestReviewViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, StaffWriteGroupRead]
 
     def get_queryset(self) -> list[Allocation]:
-        """Return a list of allocation reviews for the currently authenticated user"""
+        """Return a list of allocation reviews for the currently authenticated user."""
 
-        if self.request.user.is_staff or self.request.user.is_superuser:
+        if self.request.user.is_staff:
             return self.queryset
 
         research_groups = ResearchGroup.objects.groups_for_user(self.request.user)
         return AllocationRequestReview.objects.filter(request__group__in=research_groups)
 
     def create(self, request, *args, **kwargs) -> Response:
-        """Create a new `AllocationRequestReview` object"""
+        """Create a new `AllocationRequestReview` object."""
 
         data = request.data.copy()
         data.setdefault('reviewer', request.user.pk)

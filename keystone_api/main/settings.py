@@ -8,6 +8,7 @@ from pathlib import Path
 
 import environ
 from django.core.management.utils import get_random_secret_key
+from jinja2 import StrictUndefined
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR))
@@ -69,10 +70,13 @@ INSTALLED_APPS = [
     'django_celery_results',
     'django_filters',
     'drf_spectacular',
+    'plugins',
     'apps.admin_utils',
     'apps.allocations',
+    'apps.authentication',
     'apps.health',
     'apps.logging',
+    'apps.notifications',
     'apps.openapi',
     'apps.research_products',
     'apps.scheduler',
@@ -93,7 +97,7 @@ MIDDLEWARE = [
 ]
 
 TEMPLATES = [
-    {
+    {  # The default backend rquired by Django builtins (e.g., the admin)
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'APP_DIRS': True,
         'OPTIONS': {
@@ -105,11 +109,18 @@ TEMPLATES = [
             ],
         },
     },
+    {  # Jinja2 backend used when rendering user notifications
+        "BACKEND": "django.template.backends.jinja2.Jinja2",
+        'APP_DIRS': True,
+        "OPTIONS": {
+            "undefined": StrictUndefined,
+        },
+    },
 ]
 
 # Base styling for the Admin UI
 
-USE_THOUSAND_SEPARATOR=True
+USE_THOUSAND_SEPARATOR = True
 JAZZMIN_SETTINGS = {
     "site_title": "Keystone",
     "site_header": "Keystone",
@@ -175,6 +186,21 @@ CELERY_CACHE_BACKEND = 'django-cache'
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_RESULT_EXTENDED = True
 
+# Email server
+
+EMAIL_FROM_ADDRESS = env.str('EMAIL_FROM_ADDRESS', 'noreply@keystone.bot')
+if _email_path := env.get_value('DEBUG_EMAIL_DIR', default=None):
+    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+    EMAIL_FILE_PATH = _email_path
+
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = env.str('EMAIL_HOST', 'localhost')
+    EMAIL_PORT = env.int('EMAIL_PORT', 25)
+    EMAIL_HOST_USER = env.str('EMAIL_HOST_USER', '')
+    EMAIL_HOST_PASSWORD = env.str('your_email_password', '')
+    EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', False)
+
 # Database
 
 DATABASES = dict()
@@ -203,6 +229,7 @@ else:
 AUTH_USER_MODEL = "users.User"
 AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.ModelBackend"]
 
+PURGE_REMOVED_LDAP_USERS = env.bool("AUTH_LDAP_PURGE_REMOVED", False)
 if AUTH_LDAP_SERVER_URI := env.url("AUTH_LDAP_SERVER_URI", "").geturl():
     import ldap
     from django_auth_ldap.config import LDAPSearch
@@ -232,7 +259,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(seconds=env.int('SECURE_ACCESS_TOKEN_LIFETIME', 5 * 60)),
-    'REFRESH_TOKEN_LIFETIME': timedelta(seconds=env.int('SECURE_REFRESH_TOKEN_LIFETIME', 24 * 60 * 60))
+    'REFRESH_TOKEN_LIFETIME': timedelta(seconds=env.int('SECURE_REFRESH_TOKEN_LIFETIME', 24 * 60 * 60)),
+    'UPDATE_LAST_LOGIN': True
 }
 
 # Static file handling (CSS, JavaScript, Images)

@@ -24,7 +24,7 @@ class PublicationViewSet(viewsets.ModelViewSet):
     ]
 
     def get_queryset(self) -> list[Publication]:
-        """Return a list of allocation requests for the currently authenticated user"""
+        """Return a list of allocation requests for the currently authenticated user."""
 
         if self.request.user.is_staff:
             return self.queryset
@@ -43,7 +43,7 @@ class GrantViewSet(viewsets.ModelViewSet):
     ]
 
     def get_queryset(self) -> list[Grant]:
-        """Return a list of allocation requests for the currently authenticated user"""
+        """Return a list of allocation requests for the currently authenticated user."""
 
         if self.request.user.is_staff:
             return self.queryset

@@ -8,57 +8,61 @@ associated model class called `objects`.
 
 from typing import TYPE_CHECKING
 
+from django.contrib.auth import password_validation
 from django.contrib.auth.base_user import BaseUserManager
 from django.db import models
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: nocover
     from apps.users.models import User
 
 __all__ = ['ResearchGroupManager', 'UserManager']
 
 
 class UserManager(BaseUserManager):
-    """Object manager for the `User` database model"""
+    """Object manager for the `User` database model."""
 
     def create_user(
-        self, username: str, first_name: str, last_name: str, email: str, password: str, **extra_fields
+        self,
+        username: str,
+        password: str,
+        **extra_fields
     ) -> 'User':
-        """Create and a new user account
+        """Create a new user account.
 
         Args:
-            username: The account username
-            first_name: The user's first name
-            last_name: The user's last name
-            email: A valid email address
-            password: The account password
-            **extra_fields: See fields of the `models.User` class for other accepted arguments
+            username: The account username.
+            password: The account password.
+            **extra_fields: See fields of the `models.User` class for other accepted arguments.
 
-        Return:
-            The saved user account
+        Returns:
+            The saved user account.
         """
 
-        email = self.normalize_email(email)
-        user = self.model(username=username, first_name=first_name, last_name=last_name, email=email, **extra_fields)
+        if 'email' in extra_fields:
+            extra_fields['email'] = self.normalize_email(extra_fields['email'])
+        password_validation.validate_password(password)
+
+        user = self.model(username=username, **extra_fields)
         user.set_password(password)
         user.save()
 
         return user
 
     def create_superuser(
-        self, username: str, first_name: str, last_name: str, email: str, password: str, **extra_fields
+        self,
+        username: str,
+        password: str,
+        **extra_fields
     ) -> 'User':
-        """Create and a new user account with superuser privileges
+        """Create a new user account with superuser privileges.
 
         Args:
-            username: The account username
-            first_name: The user's first name
-            last_name: The user's last name
-            email: A valid email address
-            password: The account password
-            **extra_fields: See fields of the `models.User` class for other accepted arguments
+            username: The account username.
+            password: The account password.
+            **extra_fields: See fields of the `models.User` class for other accepted arguments.
 
-        Return:
-            The saved user account
+        Returns:
+            The saved user account.
         """
 
         extra_fields.setdefault('is_staff', True)
@@ -71,20 +75,20 @@ class UserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('When creating a superuser you must set  `is_superuser=True`.')
 
-        return self.create_user(username, first_name, last_name, email, password, **extra_fields)
+        return self.create_user(username, password, **extra_fields)
 
 
 class ResearchGroupManager(models.Manager):
-    """Object manager for the `ResearchGroup` database model"""
+    """Object manager for the `ResearchGroup` database model."""
 
     def groups_for_user(self, user: 'User') -> models.QuerySet:
         """Get all research groups the user is affiliated with.
 
         Args:
-            user: The user to return affiliate groups for
+            user: The user to return affiliate groups for.
 
-        Return:
-            A filtered queryset
+        Returns:
+            A filtered queryset.
         """
 
         return self.get_queryset().filter(models.Q(pi=user.id) | models.Q(admins=user.id) | models.Q(members=user.id))

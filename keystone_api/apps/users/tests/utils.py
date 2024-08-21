@@ -1,28 +1,34 @@
-"""Testing utilities specific to dealing with user accounts"""
+"""Testing utilities specific to dealing with user accounts."""
 
 from apps.users.models import User
 
 
 def create_test_user(
     username: str,
+    password: str = "foobar123",
     first_name: str = "foo",
     last_name: str = "bar",
     email: str = "foo@bar.com",
-    password: str = "foobar123",
     **kwargs
 ) -> User:
-    """Create a user account for testing purposes
+    """Create a user account for testing purposes.
 
     Args:
-        username: The account username
-        first_name: The user's first name
-        last_name: The user's last name
-        email: A valid email address
-        password: The account password
-        **kwargs: Any other values in the user model
+        username: The account username.
+        password: The account password.
+        first_name: The first name of the user.
+        last_name: The last name of the user.
+        email: The email of the user.
+        **kwargs: Any other values in the user model.
 
-    Return:
-        The saved user account
+    Returns:
+        The saved user account.
     """
 
-    return User.objects.create_user(username, first_name, last_name, email, password, **kwargs)
+    return User.objects.create_user(
+        username=username,
+        password=password,
+        first_name=first_name,
+        last_name=last_name,
+        email=email,
+        **kwargs)

@@ -14,10 +14,10 @@ __all__ = ['GrantSerializer', 'PublicationSerializer']
 
 
 class PublicationSerializer(serializers.HyperlinkedModelSerializer):
-    """Object serializer for the `Publication` class"""
+    """Object serializer for the `Publication` class."""
 
     class Meta:
-        """Serializer settings"""
+        """Serializer settings."""
 
         model = Publication
         fields = '__all__'
@@ -25,10 +25,10 @@ class PublicationSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class GrantSerializer(serializers.HyperlinkedModelSerializer):
-    """Object serializer for the `Grant` class"""
+    """Object serializer for the `Grant` class."""
 
     class Meta:
-        """Serializer settings"""
+        """Serializer settings."""
 
         model = Grant
         fields = '__all__'

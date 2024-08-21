@@ -22,24 +22,24 @@ settings.JAZZMIN_SETTINGS['order_with_respect_to'].extend([
 
 @admin.register(User)
 class UserAdmin(auth.admin.UserAdmin):
-    """Admin interface for managing user accounts"""
+    """Admin interface for managing user accounts."""
 
     @admin.action
     def activate_selected_users(self, request, queryset) -> None:
-        """Mark selected users as active"""
+        """Mark selected users as active."""
 
         queryset.update(is_active=True)
 
     @admin.action
     def deactivate_selected_users(self, request, queryset) -> None:
-        """Mark selected users as inactive"""
+        """Mark selected users as inactive."""
 
         queryset.update(is_active=False)
 
     readonly_fields = ("last_login", "date_joined", "is_ldap_user")
     actions = [activate_selected_users, deactivate_selected_users]
     fieldsets = (
-        ("User Info", {"fields": ("first_name", "last_name", "email", "last_login", "date_joined", 'is_ldap_user')}),
+        ("User Info", {"fields": ("first_name", "last_name", "email", "department", "role", "last_login", "date_joined", 'is_ldap_user')}),
         ("Credentials", {"fields": ("username", "password")}),
         ("Permissions",
          {"fields": (
@@ -52,12 +52,12 @@ class UserAdmin(auth.admin.UserAdmin):
 
 @admin.register(ResearchGroup)
 class ResearchGroupAdmin(admin.ModelAdmin):
-    """Admin interface for managing research group delegates"""
+    """Admin interface for managing research group delegates."""
 
     @staticmethod
     @admin.display
     def pi(obj: ResearchGroup) -> str:
-        """Return the username of the research group PI"""
+        """Return the username of the research group PI."""
 
         return obj.pi.username
 

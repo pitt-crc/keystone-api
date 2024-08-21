@@ -8,15 +8,17 @@ destination and formatting of log messages within the logging framework.
 import logging
 from logging import Handler
 
+__all__ = ['DBHandler']
+
 
 class DBHandler(Handler):
-    """Logging handler for storing log records in the application database"""
+    """Logging handler for storing log records in the application database."""
 
     def emit(self, record: logging.LogRecord) -> None:
-        """Record a log record to the database
+        """Record a log record to the database,
 
         Args:
-            record: The log record to save
+            record: The log record to save.
         """
 
         # Models cannot be imported until Django has loaded the app registry

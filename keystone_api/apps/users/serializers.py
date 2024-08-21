@@ -6,31 +6,81 @@ They encapsulate object serialization, data validation, and database object
 creation.
 """
 
+from django.contrib.auth import password_validation
+from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 
 from .models import *
 
 __all__ = [
+    'PrivilegeUserSerializer',
     'ResearchGroupSerializer',
-    'UserSerializer',
+    'RestrictedUserSerializer',
 ]
 
 
+<<<<<<< HEAD
 class ResearchGroupSerializer(serializers.HyperlinkedModelSerializer):
     """Object serializer for the `ResearchGroup` class"""
+=======
+class ResearchGroupSerializer(serializers.ModelSerializer):
+    """Object serializer for the `ResearchGroup` model."""
+>>>>>>> main
 
     class Meta:
-        """Serializer settings"""
+        """Serializer settings."""
 
         model = ResearchGroup
         fields = '__all__'
 
 
+<<<<<<< HEAD
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     """Object serializer for the `User` class"""
+=======
+class PrivilegeUserSerializer(serializers.ModelSerializer):
+    """Object serializer for the `User` model."""
+>>>>>>> main
 
     class Meta:
-        """Serializer settings"""
+        """Serializer settings."""
 
         model = User
-        exclude = ['password']
+        fields = '__all__'
+        read_only_fields = ['date_joined', 'last_login']
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def validate(self, attrs: dict) -> None:
+        """Validate user attributes match the ORM data model.
+
+        Args:
+            attrs: Dictionary of user attributes.
+        """
+
+        # Hash the password value
+        if 'password' in attrs:
+            password_validation.validate_password(attrs['password'])
+            attrs['password'] = make_password(attrs['password'])
+
+        return super().validate(attrs)
+
+
+class RestrictedUserSerializer(PrivilegeUserSerializer):
+    """Object serializer for the `User` class with administrative fields marked as read only."""
+
+    class Meta:
+        """Serializer settings."""
+
+        model = User
+        fields = '__all__'
+        read_only_fields = ['is_active', 'is_staff', 'is_ldap_user', 'date_joined', 'last_login']
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data: dict) -> None:
+        """Raises an error when attempting to create a new record.
+
+        Raises:
+            RuntimeError: Every time the function is called.
+        """
+
+        raise RuntimeError('Attempted to create new user record using a serializer with restricted permissions.')

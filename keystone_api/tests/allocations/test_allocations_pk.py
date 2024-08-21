@@ -1,4 +1,4 @@
-"""Tests for the `/allocations/allocations/<pk>/` endpoint"""
+"""Function tests for the `/allocations/allocations/<pk>/` endpoint."""
 
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -8,7 +8,7 @@ from tests.utils import CustomAsserts
 
 
 class EndpointPermissions(APITestCase, CustomAsserts):
-    """Test endpoint user permissions
+    """Test endpoint user permissions.
 
     Permissions depend on whether the user is a member of the record's associated research group.
 
@@ -26,7 +26,7 @@ class EndpointPermissions(APITestCase, CustomAsserts):
     fixtures = ['multi_research_group.yaml']
 
     def test_anonymous_user_permissions(self) -> None:
-        """Test unauthenticated users cannot access resources"""
+        """Test unauthenticated users cannot access resources."""
 
         endpoint = self.endpoint_pattern.format(pk=1)
         self.assert_http_responses(
@@ -42,7 +42,7 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         )
 
     def test_authenticated_user_same_group(self) -> None:
-        """Test permissions for authenticated users accessing records owned by their research group"""
+        """Test permissions for authenticated users accessing records owned by their research group."""
 
         # Define a user / record endpoint from the SAME research groups
         endpoint = self.endpoint_pattern.format(pk=1)
@@ -62,7 +62,7 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         )
 
     def test_authenticated_user_different_group(self) -> None:
-        """Test permissions for authenticated users accessing records owned by someone else's research group"""
+        """Test permissions for authenticated users accessing records owned by someone else's research group."""
 
         # Define a user / record endpoint from DIFFERENT research groups
         endpoint = self.endpoint_pattern.format(pk=1)
@@ -82,7 +82,7 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         )
 
     def test_staff_user_permissions(self) -> None:
-        """Test staff users have read and write permissions"""
+        """Test staff users have read and write permissions."""
 
         endpoint = self.endpoint_pattern.format(pk=1)
         user = User.objects.get(username='staff_user')

@@ -33,9 +33,12 @@ jobs:
     name: Test
     needs: build
     uses: ./.github/workflows/Test.yml
+    secrets: inherit
   
   publish:
     name: Publish
-    needs: test
+    needs: [ version, test ]
     uses: ./.github/workflows/Publish.yml
     secrets: inherit
+    with:
+      version: ${{needs.version.outputs.version}}

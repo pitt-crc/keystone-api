@@ -1,4 +1,4 @@
-"""Tests for the `/allocations/requests/<pk>/` endpoint"""
+"""Function tests for the `/allocations/requests/<pk>/` endpoint."""
 
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -8,7 +8,7 @@ from tests.utils import CustomAsserts
 
 
 class EndpointPermissions(APITestCase, CustomAsserts):
-    """Test endpoint user permissions
+    """Test endpoint user permissions.
 
     Endpoint permissions are tested against the following matrix of HTTP responses.
 
@@ -27,7 +27,7 @@ class EndpointPermissions(APITestCase, CustomAsserts):
     fixtures = ['multi_research_group.yaml']
 
     def test_anonymous_user_permissions(self) -> None:
-        """Test unauthenticated users cannot access resources"""
+        """Test unauthenticated users cannot access resources."""
 
         endpoint = self.endpoint.format(pk=1)
         self.assert_http_responses(
@@ -43,7 +43,7 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         )
 
     def test_non_group_member_permissions(self) -> None:
-        """Test authenticated users cannot access records for research groups where they are not members"""
+        """Test authenticated users cannot access records for research groups where they are not members."""
 
         self.client.force_authenticate(user=User.objects.get(username='generic_user'))
 
@@ -61,7 +61,7 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         )
 
     def test_group_member_permissions(self) -> None:
-        """Test regular research group members have read-only access"""
+        """Test regular research group members have read-only access."""
 
         self.client.force_authenticate(user=User.objects.get(username='member_1'))
 
@@ -79,7 +79,7 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         )
 
     def test_group_admin_permissions(self) -> None:
-        """Test research group admins have read-only access"""
+        """Test research group admins have read-only access."""
 
         self.client.force_authenticate(user=User.objects.get(username='group_admin_1'))
 
@@ -97,7 +97,7 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         )
 
     def test_group_pi_permissions(self) -> None:
-        """Test research group PIs have read-only access"""
+        """Test research group PIs have read-only access."""
 
         self.client.force_authenticate(user=User.objects.get(username='pi_1'))
 
@@ -115,7 +115,7 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         )
 
     def test_staff_user(self) -> None:
-        """Test staff users have read and write permissions"""
+        """Test staff users have read and write permissions."""
 
         user = User.objects.get(username='staff_user')
         self.client.force_authenticate(user=user)

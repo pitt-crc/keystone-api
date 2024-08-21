@@ -15,7 +15,7 @@ __all__ = ['AppLog', 'RequestLog', 'TaskResult']
 
 
 class AppLog(models.Model):
-    """An application log entry"""
+    """An application log entry."""
 
     name = models.CharField(max_length=100)
     level = models.CharField(max_length=10)
@@ -28,10 +28,10 @@ class AppLog(models.Model):
 
 
 class RequestLog(models.Model):
-    """Log entry for an incoming HTTP request"""
+    """Log entry for an incoming HTTP request."""
 
     method = models.CharField(max_length=10)
-    endpoint = models.CharField(max_length=100)
+    endpoint = models.CharField(max_length=2048)  # Maximum URL length for most browsers
     response_code = models.PositiveSmallIntegerField()
     body_request = models.TextField()
     body_response = models.TextField()
@@ -42,9 +42,9 @@ class RequestLog(models.Model):
 
 
 class TaskResult(django_celery_results.models.TaskResult):
-    """Proxy model for the Celery task result backend"""
+    """Proxy model for the Celery task result backend."""
 
     class Meta:
-        """Database model settings"""
+        """Database model settings."""
 
         proxy = True

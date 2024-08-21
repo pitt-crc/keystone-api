@@ -12,7 +12,7 @@ from rest_framework_simplejwt.utils import aware_utcnow
 
 
 @shared_task()
-def flush_expired_tokens():
-    """Flush expired JWT tokens from the database"""
+def flush_expired_tokens() -> None:
+    """Flush expired JWT tokens from the database."""
 
     OutstandingToken.objects.filter(expires_at__lte=aware_utcnow()).delete()

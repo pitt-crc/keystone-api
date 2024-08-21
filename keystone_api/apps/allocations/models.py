@@ -22,20 +22,20 @@ __all__ = [
     'AllocationRequestReview',
     'Attachment',
     'Cluster',
-    'RGModelInterface'
+    'RGModelInterface',
 ]
 
 
 class RGModelInterface:
-    """Interface class for database models affiliated with a research group"""
+    """Interface class for database models affiliated with a research group."""
 
     @abc.abstractmethod
     def get_research_group(self) -> ResearchGroup:
-        """Return the research group tied to the current record"""
+        """Return the research group tied to the current record."""
 
 
 class Allocation(RGModelInterface, models.Model):
-    """User service unit allocation"""
+    """User service unit allocation."""
 
     requested = models.PositiveIntegerField()
     awarded = models.PositiveIntegerField(null=True, blank=True)
@@ -45,21 +45,21 @@ class Allocation(RGModelInterface, models.Model):
     request: AllocationRequest = models.ForeignKey('AllocationRequest', on_delete=models.CASCADE)
 
     def get_research_group(self) -> ResearchGroup:
-        """Return the research group tied to the current record"""
+        """Return the research group tied to the current record."""
 
         return self.request.group
 
-    def __str__(self) -> str:
-        """Return a human-readable summary of the allocation"""
+    def __str__(self) -> str:  # pragma: nocover
+        """Return a human-readable summary of the allocation."""
 
         return f'{self.cluster} allocation for {self.request.group}'
 
 
 class AllocationRequest(RGModelInterface, models.Model):
-    """User request for additional service units on one or more clusters"""
+    """User request for additional service units on one or more clusters."""
 
     class StatusChoices(models.TextChoices):
-        """Enumerated choices for the `status` field"""
+        """Enumerated choices for the `status` field."""
 
         PENDING = 'PD', 'Pending'
         APPROVED = 'AP', 'Approved'
@@ -67,40 +67,41 @@ class AllocationRequest(RGModelInterface, models.Model):
         CHANGES = 'CR', 'Changes Requested'
 
     title = models.CharField(max_length=250)
-    description = models.TextField(max_length=1600)
+    description = models.TextField(max_length=20_000)
     submitted = models.DateField(auto_now=True)
     status = models.CharField(max_length=2, choices=StatusChoices.choices, default=StatusChoices.PENDING)
     active = models.DateField(null=True, blank=True)
     expire = models.DateField(null=True, blank=True)
 
     group: ResearchGroup = models.ForeignKey(ResearchGroup, on_delete=models.CASCADE)
+    assignees: User = models.ManyToManyField(User, blank=True)
 
     def clean(self) -> None:
-        """Validate the model instance
+        """Validate the model instance.
 
         Raises:
-            ValidationError: When the model instance data is not valid
+            ValidationError: When the model instance data is not valid.
         """
 
         if self.active and self.expire and self.active >= self.expire:
             raise ValidationError('The expiration date must come after the activation date.')
 
     def get_research_group(self) -> ResearchGroup:
-        """Return the research group tied to the current record"""
+        """Return the research group tied to the current record."""
 
         return self.group
 
-    def __str__(self) -> str:
-        """Return the request title as a string"""
+    def __str__(self) -> str:  # pragma: nocover
+        """Return the request title as a string."""
 
         return truncatechars(self.title, 100)
 
 
 class AllocationRequestReview(RGModelInterface, models.Model):
-    """Reviewer feedback for an allocation request"""
+    """Reviewer feedback for an allocation request."""
 
     class StatusChoices(models.TextChoices):
-        """Enumerated choices for the `status` field"""
+        """Enumerated choices for the `status` field."""
 
         APPROVED = 'AP', 'Approved'
         DECLINED = 'DC', 'Declined'
@@ -115,18 +116,18 @@ class AllocationRequestReview(RGModelInterface, models.Model):
     reviewer: User = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def get_research_group(self) -> ResearchGroup:
-        """Return the research group tied to the current record"""
+        """Return the research group tied to the current record."""
 
         return self.request.group
 
-    def __str__(self) -> str:
-        """Return a human-readable identifier for the allocation request"""
+    def __str__(self) -> str:  # pragma: nocover
+        """Return a human-readable identifier for the allocation request."""
 
         return f'{self.reviewer} review for \"{self.request.title}\"'
 
 
 class Attachment(models.Model):
-    """File data uploaded by users"""
+    """File data uploaded by users."""
 
     file_data = models.FileField()
     uploaded = models.DateTimeField(auto_now=True)
@@ -135,13 +136,13 @@ class Attachment(models.Model):
 
 
 class Cluster(models.Model):
-    """A slurm cluster and it's associated management settings"""
+    """A slurm cluster and it's associated management settings."""
 
     name = models.CharField(max_length=50)
     description = models.TextField(max_length=150, null=True, blank=True)
     enabled = models.BooleanField(default=True)
 
-    def __str__(self) -> str:
-        """Return the cluster name as a string"""
+    def __str__(self) -> str:  # pragma: nocover
+        """Return the cluster name as a string."""
 
         return str(self.name)

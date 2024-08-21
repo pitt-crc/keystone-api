@@ -20,37 +20,37 @@ __all__ = [
 
 
 class AllocationSerializer(serializers.HyperlinkedModelSerializer):
-    """Object serializer for the `Allocation` class"""
+    """Object serializer for the `Allocation` class."""
 
     class Meta:
-        """Serializer settings"""
+        """Serializer settings."""
 
         model = Allocation
         fields = '__all__'
 
 
 class AllocationRequestSerializer(serializers.HyperlinkedModelSerializer):
-    """Object serializer for the `AllocationRequest` class"""
+    """Object serializer for the `AllocationRequest` class."""
 
     class Meta:
-        """Serializer settings"""
+        """Serializer settings."""
 
         model = AllocationRequest
         fields = '__all__'
 
 
 class AllocationRequestReviewSerializer(serializers.HyperlinkedModelSerializer):
-    """Object serializer for the `AllocationRequestReview` class"""
+    """Object serializer for the `AllocationRequestReview` class."""
 
     class Meta:
-        """Serializer settings"""
+        """Serializer settings."""
 
         model = AllocationRequestReview
         fields = '__all__'
         extra_kwargs = {'reviewer': {'required': False}}  # Default reviewer value is set by the view class
 
     def validate_reviewer(self, value: User) -> User:
-        """Validate the reviewer matches the user submitting the request"""
+        """Validate the reviewer matches the user submitting the request."""
 
         if value != self.context['request'].user:
             raise serializers.ValidationError("Reviewer cannot be set to a different user than the submitter")
@@ -59,10 +59,10 @@ class AllocationRequestReviewSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ClusterSerializer(serializers.HyperlinkedModelSerializer):
-    """Object serializer for the `Cluster` class"""
+    """Object serializer for the `Cluster` class."""
 
     class Meta:
-        """Serializer settings"""
+        """Serializer settings."""
 
         model = Cluster
         fields = '__all__'

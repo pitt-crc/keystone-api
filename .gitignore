@@ -14,3 +14,9 @@ dist/
 
 # OS
 .DS_Store
+
+# Documentation
+site/
+
+# Testing
+*.coverage
