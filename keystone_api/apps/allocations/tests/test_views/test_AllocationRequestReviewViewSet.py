@@ -1,39 +1,47 @@
 """Unit tests for the `AllocationRequestReviewViewSet` class."""
 
-from typing import Any
-from unittest.mock import MagicMock, patch
+from django.test import RequestFactory, TestCase
 
-from django.test import TestCase
-
+from apps.allocations.models import AllocationRequestReview
 from apps.allocations.views import AllocationRequestReviewViewSet
+from apps.users.models import ResearchGroup, User
 
 
 class GetQueryset(TestCase):
     """Test the generation of database queries based on user permissions."""
 
     def setUp(self) -> None:
-        """Create a new viewset instance."""
+        self.user1 = User.objects.create_user('user', 'foobar123!', is_staff=False)
+        self.group1 = ResearchGroup.objects.create(name='group1', pi=self.user1)
 
-        self.viewset = AllocationRequestReviewViewSet()
+        self.user2 = User.objects.create_user('user', 'foobar123!', is_staff=False)
+        self.group1 = ResearchGroup.objects.create(name='group2', pi=self.user1)
 
-    @patch('apps.allocations.models.AllocationRequestReview.objects.filter')
-    @patch('apps.users.models.ResearchGroup.objects.groups_for_user')
-    def test_get_queryset_for_non_staff_user(self, mock_groups_for_user: Any, mock_filtered_reviews: Any) -> None:
+        self.staff_user = User.objects.create_user('user', 'foobar123!', is_staff=False)
+
+    def test_get_queryset_for_staff_user(self) -> None:
+        """Test staff users can query all allocations."""
+
+        request = RequestFactory()
+        request.user = User.objects.get('general_user')
+
+        viewset = AllocationRequestReviewViewSet()
+        viewset.request = request
+
+        queryset = viewset.get_queryset()
+        self.assertEqual(queryset, AllocationRequestReview.objects.all())
+
+    def test_get_queryset_for_non_staff_user(self) -> None:
         """Test non-staff users can only query allocations for their own research groups."""
 
-        # Mock request and user
-        request: MagicMock = MagicMock()
-        request.user.is_staff = False
-        self.viewset.request = request
+        request = RequestFactory()
+        request.user = User.objects.get('staff_user')
 
-        # Generate the DB query
-        mock_groups_for_user.return_value = ['group1', 'group2']
-        queryset = self.viewset.get_queryset()
+        viewset = AllocationRequestReviewViewSet()
+        viewset.request = request
 
-        # Assert the queryset returned is filtered by user's research groups
-        self.assertEqual(queryset, mock_filtered_reviews.return_value)
-        mock_groups_for_user.assert_called_once_with(request.user)
-        mock_filtered_reviews.assert_called_once_with(request__group__in=['group1', 'group2'])
+        queryset = viewset.get_queryset()
+        self.assertEqual(queryset, AllocationRequestReview.objects.filter(request__group__in=[1, 2]))
 
 
 class Create(TestCase):
