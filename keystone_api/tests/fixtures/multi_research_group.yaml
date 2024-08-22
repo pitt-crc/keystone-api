@@ -2,19 +2,19 @@
 # Each group has a single allocation request with a single allocation, grant, and publication.
 #
 # Research Group 1:
-#   - pi_1          (Research group PI)
-#   - group_admin_1 (Research group admin)
-#   - member_1      (Generic group member)
+#    pi_1          (Research group PI)
+#    group_admin_1 (Research group admin)
+#    member_1      (Generic group member)
 #
 # Research Group 2:
-#   - pi_2          (Research group PI)
-#   - group_admin_2 (Research group admin)
-#   - member_2      (Generic group member)
+#    pi_2          (Research group PI)
+#    group_admin_2 (Research group admin)
+#    member_2      (Generic group member)
 #
 # Accounts not affiliated with a group:
-#   - super_user  (Superuser account)
-#   - staff_user  (Staff user account)
-#   - generic_user (Generic user account)
+#    super_user  (Superuser account)
+#    staff_user  (Staff user account)
+#    generic_user (Generic user account)
 
 # Clusters
 - model: allocations.cluster
