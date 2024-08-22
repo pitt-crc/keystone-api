@@ -2,7 +2,7 @@
 
 from django.test import RequestFactory, TestCase
 
-from apps.allocations.models import Allocation, AllocationRequest, AllocationRequestReview
+from apps.allocations.models import Allocation
 from apps.allocations.views import AllocationViewSet
 from apps.users.models import ResearchGroup, User
 
