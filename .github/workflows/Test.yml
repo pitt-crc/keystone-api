@@ -8,7 +8,7 @@ jobs:
   # System configuration tests including checks for obviously
   # incorrect settings and missing database migrations
   system-config:
-    name: System Configuration
+    name: System Tests
     runs-on: ubuntu-latest
 
     steps:
