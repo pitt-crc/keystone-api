@@ -1,9 +1,9 @@
-"""Unit tests for the `AllocationViewSet` class."""
+"""Unit tests for the `AllocationRequestViewSet` class."""
 
 from django.test import RequestFactory, TestCase
 
-from apps.allocations.models import Allocation, AllocationRequest, AllocationRequestReview
-from apps.allocations.views import AllocationViewSet
+from apps.allocations.models import AllocationRequest, AllocationRequestReview
+from apps.allocations.views import AllocationRequestViewSet
 from apps.users.models import ResearchGroup, User
 
 
@@ -31,20 +31,20 @@ class GetQueryset(TestCase):
         request = RequestFactory()
         request.user = self.staff_user
 
-        viewset = AllocationViewSet()
+        viewset = AllocationRequestViewSet()
         viewset.request = request
 
-        expected_queryset = Allocation.objects.all()
+        expected_queryset = AllocationRequest.objects.all()
         self.assertQuerysetEqual(expected_queryset, viewset.get_queryset(), ordered=False)
 
     def test_get_queryset_for_non_staff_user(self) -> None:
-        """Test non-staff users can only query allocations for their own research groups."""
+        """Test non-staff users can only query requests from their own research groups."""
 
         request = RequestFactory()
         request.user = self.user1
 
-        viewset = AllocationViewSet()
+        viewset = AllocationRequestViewSet()
         viewset.request = request
 
-        expected_queryset = Allocation.objects.filter(request__group__in=[self.group1.id])
+        expected_queryset = AllocationRequest.objects.filter(group__in=[self.group1.id])
         self.assertQuerysetEqual(expected_queryset, viewset.get_queryset(), ordered=False)
