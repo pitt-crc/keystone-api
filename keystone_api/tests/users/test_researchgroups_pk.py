@@ -1,5 +1,5 @@
 """Function tests for the `/users/researchgroups/<pk>/` endpoint."""
-from django.urls import reverse
+
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -85,11 +85,10 @@ class EndpointPermissions(APITestCase, CustomAsserts):
     def test_authenticated_group_admin(self) -> None:
         """Test group admins have read and write permissions for their own research group."""
 
-        admin_user = User.objects.get(username='group_admin_1')
-        member_user = User.objects.get(username='group_member_1')
-
         endpoint = self.endpoint_pattern.format(pk=1)
-        self.client.force_authenticate(user=admin_user)
+        user = User.objects.get(username='group_admin_1')
+        self.client.force_authenticate(user=user)
+
         self.assert_http_responses(
             endpoint,
             get=status.HTTP_200_OK,
@@ -100,10 +99,7 @@ class EndpointPermissions(APITestCase, CustomAsserts):
             patch=status.HTTP_200_OK,
             delete=status.HTTP_204_NO_CONTENT,
             trace=status.HTTP_403_FORBIDDEN,
-            put_body={
-                'name': 'Research Group 3',
-                'pi': reverse('user-detail', args=[admin_user.pk]),
-                'members': [reverse('user-detail', args=[member_user.pk])]},
+            put_body={'name': 'Research Group 3', 'pi': 1, 'admins': [2], 'members': [3]},
             patch_body={'admins': []},
         )
 
