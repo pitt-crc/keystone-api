@@ -26,7 +26,7 @@ class GetSerializerClass(TestCase):
         self.assertEqual(serializer_class, PrivilegeUserSerializer)
 
     def test_get_serializer_class_for_regular_user(self) -> None:
-        """Test the `RestrictedUserSerializer` serializer is returned for a staff user."""
+        """Test the `RestrictedUserSerializer` serializer is returned for a generic user."""
 
         request = self.factory.get('/users/')
         request.user = self.regular_user

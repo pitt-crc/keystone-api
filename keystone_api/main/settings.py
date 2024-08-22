@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     'plugins',
     'apps.admin_utils',
     'apps.allocations',
+    'apps.authentication',
     'apps.health',
     'apps.logging',
     'apps.notifications',
