@@ -1,0 +1,73 @@
+# Users
+- model: users.user
+  pk: 1
+  fields:
+    username: staff
+    password: "foobar123!"
+    is_staff: true
+
+- model: users.user
+  pk: 2
+  fields:
+    username: reviewer
+    password: "foobar123!"
+    is_staff: false
+
+- model: users.user
+  pk: 3
+  fields:
+    username: user1
+    password: "foobar123!"
+    is_staff: false
+
+- model: users.user
+  pk: 4
+  fields:
+    username: user2
+    password: "foobar123!"
+    is_staff: false
+
+# Research Groups
+- model: users.ResearchGroup
+  pk: 1
+  fields:
+    name: group1
+    pi: 3  # user1
+
+- model: users.ResearchGroup
+  pk: 2
+  fields:
+    name: group2
+    pi: 4  # user2
+
+# Allocation Requests
+- model: allocations.AllocationRequest
+  pk: 1
+  fields:
+    title: request1
+    group: 1  # group1
+    submitted: "2023-01-01"
+
+- model: allocations.AllocationRequest
+  pk: 2
+  fields:
+    title: request2
+    group: 2  # group2
+    submitted: "2023-01-01"
+
+# Reviews
+- model: allocations.AllocationRequestReview
+  pk: 1
+  fields:
+    request: 1  # request1
+    reviewer: 2  # reviewer
+    status: AP
+    date_modified: "2023-01-01T12:00:00Z"
+
+- model: allocations.AllocationRequestReview
+  pk: 2
+  fields:
+    request: 2  # request2
+    reviewer: 2  # reviewer
+    status: AP
+    date_modified: "2023-01-01T12:00:00Z"
