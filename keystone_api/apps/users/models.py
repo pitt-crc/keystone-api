@@ -47,9 +47,10 @@ class ResearchGroup(models.Model):
     """A user research group tied to a slurm account."""
 
     name = models.CharField(max_length=255, unique=True)
-    pi = models.ForeignKey(User, on_delete=models.CASCADE, related_name='research_group_pi')
+    pi = models.ForeignKey(User, on_delete=models.RESTRICT, related_name='research_group_pi')
     admins = models.ManyToManyField(User, related_name='research_group_admins', blank=True)
     members = models.ManyToManyField(User, related_name='research_group_unprivileged', blank=True)
+    is_active = models.BooleanField(default=True)
 
     objects = ResearchGroupManager()
 
