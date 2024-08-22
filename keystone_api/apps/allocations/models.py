@@ -113,7 +113,7 @@ class AllocationRequestReview(RGModelInterface, models.Model):
     date_modified = models.DateTimeField(auto_now=True)
 
     request: AllocationRequest = models.ForeignKey(AllocationRequest, on_delete=models.CASCADE)
-    reviewer: User = models.ForeignKey(User, on_delete=models.CASCADE)
+    reviewer: User = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=False)
 
     def get_research_group(self) -> ResearchGroup:
         """Return the research group tied to the current record."""

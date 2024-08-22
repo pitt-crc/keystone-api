@@ -28,7 +28,9 @@ class EndpointPermissions(APITestCase, CustomAsserts):
     def test_anonymous_user_permissions(self) -> None:
         """Test unauthenticated users cannot access resources."""
 
-        endpoint = self.endpoint_pattern.format(pk=1)
+        generic_user = User.objects.get(username='generic_user')
+        endpoint = self.endpoint_pattern.format(pk=generic_user.id)
+
         self.assert_http_responses(
             endpoint,
             get=status.HTTP_401_UNAUTHORIZED,
@@ -45,8 +47,8 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         """Test permissions for authenticated users accessing their own user record."""
 
         # Define a user / record endpoint from the SAME user
-        endpoint = self.endpoint_pattern.format(pk=3)
         user = User.objects.get(username='member_1')
+        endpoint = self.endpoint_pattern.format(pk=user.id)
         self.client.force_authenticate(user=user)
 
         self.assert_http_responses(
@@ -72,9 +74,11 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         """Test permissions for authenticated users accessing records of another user."""
 
         # Define a user / record endpoint from a DIFFERENT user
-        endpoint = self.endpoint_pattern.format(pk=1)
-        user = User.objects.get(username='member_2')
-        self.client.force_authenticate(user=user)
+        user_1 = User.objects.get(username='member_1')
+        endpoint = self.endpoint_pattern.format(pk=user_1.id)
+
+        user_2 = User.objects.get(username='member_2')
+        self.client.force_authenticate(user=user_2)
 
         self.assert_http_responses(
             endpoint,
@@ -91,9 +95,11 @@ class EndpointPermissions(APITestCase, CustomAsserts):
     def test_staff_user_permissions(self) -> None:
         """Test staff users have read and write permissions."""
 
-        endpoint = self.endpoint_pattern.format(pk=1)
-        user = User.objects.get(username='staff_user')
-        self.client.force_authenticate(user=user)
+        generic_user = User.objects.get(username='generic_user')
+        endpoint = self.endpoint_pattern.format(pk=generic_user.id)
+
+        staff_user = User.objects.get(username='staff_user')
+        self.client.force_authenticate(user=staff_user)
 
         self.assert_http_responses(
             endpoint,

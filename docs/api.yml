@@ -3700,6 +3700,23 @@ paths:
         schema:
           type: integer
       - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - in: query
+        name: is_active__in
+        schema:
+          type: array
+          items:
+            type: boolean
+        description: Multiple values may be separated by commas.
+        explode: false
+        style: form
+      - in: query
+        name: is_active__isnull
+        schema:
+          type: boolean
+      - in: query
         name: name
         schema:
           type: string
@@ -4581,6 +4598,7 @@ components:
           type: integer
         reviewer:
           type: integer
+          nullable: true
       required:
       - date_modified
       - id
@@ -4810,6 +4828,7 @@ components:
           type: integer
         reviewer:
           type: integer
+          nullable: true
     PatchedCluster:
       type: object
       description: Object serializer for the `Cluster` class.
@@ -4894,6 +4913,8 @@ components:
         name:
           type: string
           maxLength: 255
+        is_active:
+          type: boolean
         pi:
           type: integer
         admins:
@@ -5060,6 +5081,8 @@ components:
         name:
           type: string
           maxLength: 255
+        is_active:
+          type: boolean
         pi:
           type: integer
         admins:
