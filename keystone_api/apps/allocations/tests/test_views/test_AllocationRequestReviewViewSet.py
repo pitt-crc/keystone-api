@@ -11,7 +11,7 @@ from apps.users.models import ResearchGroup, User
 class GetQueryset(TestCase):
     """Test the filtering of database records based on user permissions."""
 
-    fixtures = ['fixtures.yaml']
+    fixtures = ['common.yaml']
 
     def test_get_queryset_for_staff_user(self) -> None:
         """Test staff users can query all reviews."""
@@ -42,13 +42,13 @@ class GetQueryset(TestCase):
 class Create(TestCase):
     """Test the creation of new records."""
 
-    # TODO: Move into fixture
-    def setUp(self) -> None:
-        self.staff_user = User.objects.create_user('staff', 'foobar123!', is_staff=True)
+    fixtures = ['common.yaml']
 
-        self.user1 = User.objects.create_user('user1', 'foobar123!', is_staff=False)
-        self.group1 = ResearchGroup.objects.create(name='group1', pi=self.user1)
-        self.request1 = AllocationRequest.objects.create(title='request1', group=self.group1)
+    def setUp(self) -> None:
+        """Load test data from fixtures."""
+
+        self.staff_user = User.objects.get(username='staff')
+        self.request = AllocationRequest.objects.get(pk=1)
 
     def test_create_with_automatic_reviewer(self) -> None:
         """Test the reviewer field is automatically set to the current user."""
@@ -56,7 +56,7 @@ class Create(TestCase):
         request = RequestFactory().post('/allocation-reviews/')
         request.user = self.staff_user
         request.data = {
-            'request': self.request1.id,
+            'request': self.request.id,
             'status': 'AP'
         }
 
@@ -72,7 +72,7 @@ class Create(TestCase):
         # Test the created DB record
         review = AllocationRequestReview.objects.get(pk=response.data['id'])
         self.assertEqual(review.reviewer, self.staff_user)
-        self.assertEqual(review.request, self.request1)
+        self.assertEqual(review.request, self.request)
         self.assertEqual(review.status, 'AP')
 
     def test_create_with_provided_reviewer(self) -> None:
@@ -81,7 +81,7 @@ class Create(TestCase):
         request = RequestFactory().post('/allocation-reviews/')
         request.user = self.staff_user
         request.data = {
-            'request': self.request1.id,
+            'request': self.request.id,
             'reviewer': self.staff_user.id,
             'status': 'AP'
         }
@@ -98,5 +98,5 @@ class Create(TestCase):
         # Test the created DB record
         review = AllocationRequestReview.objects.get(pk=response.data['id'])
         self.assertEqual(review.reviewer, self.staff_user)
-        self.assertEqual(review.request, self.request1)
+        self.assertEqual(review.request, self.request)
         self.assertEqual(review.status, 'AP')
