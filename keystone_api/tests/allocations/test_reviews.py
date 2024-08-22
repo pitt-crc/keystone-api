@@ -73,3 +73,43 @@ class EndpointPermissions(APITestCase, CustomAsserts):
             trace=status.HTTP_405_METHOD_NOT_ALLOWED,
             post_body={'status': 'AP', 'request': 1}
         )
+
+
+class ReviewerAssignment(APITestCase):
+    """Test the automatic assignment and verification of the `reviewer` field."""
+
+    endpoint = '/allocations/reviews/'
+    fixtures = ['multi_research_group.yaml']
+
+    def test_default_reviewer(self) -> None:
+        """Test the reviewer field defaults to the current user."""
+
+        staff_user = User.objects.get(username='staff_user')
+        self.client.force_authenticate(user=staff_user)
+
+        response = self.client.post(self.endpoint, {'request': 1, 'status': 'AP'})
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+        self.assertEqual(staff_user.id, response.data['reviewer'])
+
+    def test_reviewer_provided(self) -> None:
+        """Test the reviewer is set correctly when provided."""
+
+        staff_user = User.objects.get(username='staff_user')
+        self.client.force_authenticate(user=staff_user)
+
+        response = self.client.post(self.endpoint, {'request': 1, 'reviewer': staff_user.id, 'status': 'AP'})
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+        self.assertEqual(staff_user.id, response.data['reviewer'])
+
+    def test_error_when_not_matching_submitter(self) -> None:
+        """Test an error is raised when the reviewer field does not match the request submitter."""
+
+        staff_user = User.objects.get(username='staff_user')
+        other_user = User.objects.get(username='member_1')
+        self.client.force_authenticate(user=staff_user)
+
+        response = self.client.post(self.endpoint, {'request': 1, 'reviewer': other_user.id, 'status': 'AP'})
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('reviewer', response.data)
+        self.assertEqual('reviewer cannot be set to a different user than the submitter', response.data['reviewer'][0].lower())
