@@ -199,31 +199,31 @@ When upgrading the application, ensure the database and static files are up-to-d
 === "pip"
 
     ```bash
-    systemcl stop keystone-server
-    systemcl stop keystone-beat
-    systemcl stop keystone-worker
+    systemctl stop keystone-server
+    systemctl stop keystone-beat
+    systemctl stop keystone-worker
     
     pip install --upgrade keystone-api
     keystone-api migrate
     keystone-api collectstatic
     
-    systemcl start keystone-worker
-    systemcl start keystone-beat
-    systemcl start keystone-server
+    systemctl start keystone-worker
+    systemctl start keystone-beat
+    systemctl start keystone-server
     ```
 
 === "pipx"
 
     ```bash
-    systemcl stop keystone-server
-    systemcl stop keystone-beat
-    systemcl stop keystone-worker
+    systemctl stop keystone-server
+    systemctl stop keystone-beat
+    systemctl stop keystone-worker
     
     pipx upgrade keystone-api
     keystone-api migrate
     keystone-api collectstatic
     
-    systemcl start keystone-worker
-    systemcl start keystone-beat
-    systemcl start keystone-server
+    systemctl start keystone-worker
+    systemctl start keystone-beat
+    systemctl start keystone-server
     ```
