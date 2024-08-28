@@ -61,6 +61,7 @@ jobs:
   publish-pypi:
     name: Python Distribution
     runs-on: ubuntu-latest
+    environment: pypi
 
     steps:
       - name: Set up Python
