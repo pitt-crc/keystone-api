@@ -83,8 +83,6 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           print-hash: true
-          user: ${{ secrets.REPO_USER }}
-          password: ${{ secrets.REPO_PASSWORD }}
 
   trigger-docs:
     name: Trigger Docs
