@@ -13,6 +13,7 @@ jobs:
   publish-docker:
     runs-on: ubuntu-latest
     name: Docker Image
+    environment: publish
 
     steps:
       - name: Checkout source
@@ -61,7 +62,7 @@ jobs:
   publish-pypi:
     name: Python Distribution
     runs-on: ubuntu-latest
-    environment: pypi
+    environment: publish
 
     steps:
       - name: Set up Python
@@ -88,6 +89,8 @@ jobs:
   trigger-docs:
     name: Trigger Docs
     runs-on: ubuntu-latest
+    environment: publish
+
     steps:
       - name: Update docs
         uses: pitt-crc/keystone-docs/.github/actions/update-action/@main
