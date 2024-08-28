@@ -5,6 +5,7 @@ from unittest.mock import Mock
 from django.db import models
 from django.test import TestCase
 from django_filters import FilterSet
+
 from plugins.filter import AdvancedFilterBackend, FactoryBuiltFilterSet
 
 
@@ -18,9 +19,6 @@ class SampleModel(models.Model):
     time_field = models.TimeField(auto_now_add=True)
     datetime_field = models.DateTimeField(auto_now_add=True)
     text_field = models.TextField()
-
-    class Meta:
-        abstract = True
 
 
 class GetFiltersetClass(TestCase):
