@@ -7,7 +7,7 @@ The following sections outline common tasks for application developers and contr
 Start by cloning the project repository from GitHub.
 
 ```bash
-git clone https://github.com/pitt-crc/keystone-api
+git clone https://github.com/better-hpc/keystone-api
 ```
 
 Keystone-API uses [Poetry](https://python-poetry.org/docs/) to manage application dependencies.
