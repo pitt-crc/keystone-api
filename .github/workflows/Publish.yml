@@ -61,7 +61,6 @@ jobs:
   publish-pypi:
     name: Python Distribution
     runs-on: ubuntu-latest
-    environment: pypi
 
     steps:
       - name: Set up Python
@@ -88,6 +87,7 @@ jobs:
   trigger-docs:
     name: Trigger Docs
     runs-on: ubuntu-latest
+
     steps:
       - name: Update docs
         uses: pitt-crc/keystone-docs/.github/actions/update-action/@main
