@@ -9,6 +9,7 @@ the associated table/fields/records are presented by parent interfaces.
 from __future__ import annotations
 
 import abc
+from datetime import date
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -90,6 +91,11 @@ class AllocationRequest(RGModelInterface, models.Model):
         """Return the research group tied to the current record."""
 
         return self.group
+
+    def get_days_until_expire(self) -> int:
+        """Calculate the number of days until this request expires."""
+
+        return (self.expire - date.today()).days if self.expire else None
 
     def __str__(self) -> str:  # pragma: nocover
         """Return the request title as a string."""

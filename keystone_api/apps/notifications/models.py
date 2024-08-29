@@ -57,9 +57,9 @@ class Notification(models.Model):
 class Preference(models.Model):
     """User notification preferences."""
 
-    alloc_thresholds = models.JSONField(default=default_alloc_thresholds)
     notify_status_update = models.BooleanField(default=True)
-    expiry_thresholds = models.JSONField(default=default_expiry_thresholds)
+    allocation_usage_thresholds = models.JSONField(default=default_alloc_thresholds)
+    request_expiry_thresholds = models.JSONField(default=default_expiry_thresholds)
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
@@ -75,3 +75,21 @@ class Preference(models.Model):
         """Set user preferences, creating or updating as necessary."""
 
         cls.objects.update_or_create(user=user, defaults=kwargs)
+
+    def get_next_expiration_threshold(self, days_until_expire: int) -> int | None:
+        """Return the next threshold att which an expiration notification should be sent
+
+        The next notification occurs at the smallest threshold that is
+        greater than or equal the days until expiration
+
+        Args:
+            days_until_expire: The number of days until an allocation expires
+
+        Return:
+            The next notification threshold in days
+        """
+
+        return min(
+            filter(lambda x: x >= days_until_expire, self.request_expiry_thresholds),
+            default=None
+        )

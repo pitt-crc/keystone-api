@@ -1,7 +1,7 @@
 """Background tasks for issuing user notifications."""
 
 import logging
-from datetime import date, timedelta
+from datetime import timedelta
 
 from celery import shared_task
 from django.utils import timezone
@@ -26,38 +26,34 @@ def send_expiry_notification_for_request(user: User, request: AllocationRequest)
         request: The allocation request to check for pending notifications.
     """
 
+    log.debug(f'Checking notifications for user {user.username} on request {request.id}.')
+
     # There are no notifications if the allocation does not expire
-    log.debug(f'Checking notifications for user {user.username} on request #{request.id}.')
-    if not request.expire:
-        log.debug('Request does not expire')
+    days_until_expire = request.get_days_until_expire()
+    if days_until_expire is None:
+        log.debug(f'Request {request.id} does not expire')
         return
 
-    # The next notification occurs at the smallest threshold that is greater than or equal the days until expiration
-    days_until_expire = (request.expire - date.today()).days
-    notification_thresholds = Preference.get_user_preference(user).expiry_thresholds
-    next_threshold = min(
-        filter(lambda x: x >= days_until_expire, notification_thresholds),
-        default=None
-    )
+    elif days_until_expire <= 0:
+        log.debug(f'Request {request.id} has already expired')
+        return
 
-    # Exit early if we have not hit a threshold yet
-    log.debug(f'Request #{request.id} expires in {days_until_expire} days. Next threshold at {next_threshold} days.')
+    # Exit early if we have not hit a notification threshold yet
+    next_threshold = Preference.get_user_preference(user).get_next_expiration_threshold(days_until_expire)
+    log.debug(f'Request {request.id} expires in {days_until_expire} days. Next threshold at {next_threshold} days.')
     if next_threshold is None:
         return
 
-    # Check if a notification has already been sent
-    notification_sent = Notification.objects.filter(
+    # Check if a notification has already been sent for the next threshold or any smaller threshold
+    if Notification.objects.filter(
         user=user,
         notification_type=Notification.NotificationType.request_status,
         metadata__request_id=request.id,
         metadata__days_to_expire__lte=next_threshold
-    ).exists()
-
-    if notification_sent:
-        log.debug(f'Existing notification found.')
+    ).exists():
         return
 
-    log.debug(f'Sending new notification for request #{request.id} to user {user.username}.')
+    log.debug(f'Sending new notification for request {request.id} to user {user.username}.')
     send_notification_template(
         user=user,
         subject=f'Allocation Expires on {request.expire}',
@@ -92,7 +88,7 @@ def send_expiry_notifications() -> None:
                 send_expiry_notification_for_request(user, request)
 
             except Exception as error:
-                log.exception(f'Error notifying user {user.username} for request #{request.id}: {error}')
+                log.exception(f'Error notifying user {user.username} for request {request.id}: {error}')
                 failed = True
 
     if failed:
