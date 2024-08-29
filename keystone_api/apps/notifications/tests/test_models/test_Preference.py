@@ -68,7 +68,7 @@ class SetUserPreference(TestCase):
 class GetNextExpirationThreshold(TestCase):
     """Test determining the next threshold for an expiry notification."""
 
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up test data."""
 
         self.user = get_user_model().objects.create_user(username="testuser", password="foobar123")
@@ -77,32 +77,32 @@ class GetNextExpirationThreshold(TestCase):
             request_expiry_thresholds=[7, 14, 30]
         )
 
-    def test_get_next_expiration_threshold_with_valid_threshold(self):
+    def test_get_next_expiration_threshold_with_valid_threshold(self) -> None:
         """Test with a valid threshold available."""
 
         next_threshold = self.preference.get_next_expiration_threshold(10)
         self.assertEqual(next_threshold, 14)
 
-    def test_get_next_expiration_threshold_with_exact_match(self):
+    def test_get_next_expiration_threshold_with_exact_match(self) -> None:
         """Test with an exact match to the threshold."""
 
         next_threshold = self.preference.get_next_expiration_threshold(14)
         self.assertEqual(next_threshold, 14)
 
-    def test_get_next_expiration_threshold_with_no_valid_threshold(self):
+    def test_get_next_expiration_threshold_with_no_valid_threshold(self) -> None:
         """Test when no valid threshold is available."""
 
         next_threshold = self.preference.get_next_expiration_threshold(31)
         self.assertIsNone(next_threshold)
 
-    def test_get_next_expiration_threshold_with_empty_threshold_list(self):
+    def test_get_next_expiration_threshold_with_empty_threshold_list(self) -> None:
         """Test with an empty list of thresholds."""
 
         self.preference.request_expiry_thresholds = []
         next_threshold = self.preference.get_next_expiration_threshold(10)
         self.assertIsNone(next_threshold)
 
-    def test_get_next_expiration_threshold_with_all_lower_thresholds(self):
+    def test_get_next_expiration_threshold_with_all_lower_thresholds(self) -> None:
         """Test when all thresholds are lower than the given days."""
 
         next_threshold = self.preference.get_next_expiration_threshold(1)
