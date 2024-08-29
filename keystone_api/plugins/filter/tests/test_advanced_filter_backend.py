@@ -5,7 +5,6 @@ from unittest.mock import Mock
 from django.db import models
 from django.test import TestCase
 from django_filters import FilterSet
-
 from plugins.filter import AdvancedFilterBackend, FactoryBuiltFilterSet
 
 

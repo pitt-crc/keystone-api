@@ -8,7 +8,7 @@ from apps.notifications.models import default_alloc_thresholds, default_expiry_t
 User = get_user_model()
 
 
-class PreferenceModelTest(TestCase):
+class GetUserPreference(TestCase):
     """Tests for getting user preferences."""
 
     def setUp(self) -> None:
@@ -26,8 +26,8 @@ class PreferenceModelTest(TestCase):
 
         # Ensure preference is created with appropriate defaults
         self.assertEqual(self.user, preference.user)
-        self.assertListEqual(default_alloc_thresholds(), preference.alloc_thresholds)
-        self.assertListEqual(default_expiry_thresholds(), preference.expiry_thresholds)
+        self.assertListEqual(default_alloc_thresholds(), preference.allocation_usage_thresholds)
+        self.assertListEqual(default_expiry_thresholds(), preference.request_expiry_thresholds)
 
     def test_get_user_preference_returns_existing_preference(self) -> None:
         """Test an existing Preference object is returned if it already exists."""
@@ -37,7 +37,7 @@ class PreferenceModelTest(TestCase):
         self.assertEqual(existing_preference, preference)
 
 
-class PreferenceSetTest(TestCase):
+class SetUserPreference(TestCase):
     """Tests for setting user preferences."""
 
     def setUp(self) -> None:
@@ -63,3 +63,47 @@ class PreferenceSetTest(TestCase):
         Preference.set_user_preference(user=self.user, notify_status_update=False)
         preference.refresh_from_db()
         self.assertFalse(preference.notify_status_update)
+
+
+class GetNextExpirationThreshold(TestCase):
+    """Test determining the next threshold for an expiry notification."""
+
+    def setUp(self) -> None:
+        """Set up test data."""
+
+        self.user = get_user_model().objects.create_user(username="testuser", password="foobar123")
+        self.preference = Preference.objects.create(
+            user=self.user,
+            request_expiry_thresholds=[7, 14, 30]
+        )
+
+    def test_get_next_expiration_threshold_with_valid_threshold(self) -> None:
+        """Test with a valid threshold available."""
+
+        next_threshold = self.preference.get_next_expiration_threshold(10)
+        self.assertEqual(next_threshold, 14)
+
+    def test_get_next_expiration_threshold_with_exact_match(self) -> None:
+        """Test with an exact match to the threshold."""
+
+        next_threshold = self.preference.get_next_expiration_threshold(14)
+        self.assertEqual(next_threshold, 14)
+
+    def test_get_next_expiration_threshold_with_no_valid_threshold(self) -> None:
+        """Test when no valid threshold is available."""
+
+        next_threshold = self.preference.get_next_expiration_threshold(31)
+        self.assertIsNone(next_threshold)
+
+    def test_get_next_expiration_threshold_with_empty_threshold_list(self) -> None:
+        """Test with an empty list of thresholds."""
+
+        self.preference.request_expiry_thresholds = []
+        next_threshold = self.preference.get_next_expiration_threshold(10)
+        self.assertIsNone(next_threshold)
+
+    def test_get_next_expiration_threshold_with_all_lower_thresholds(self) -> None:
+        """Test when all thresholds are lower than the given days."""
+
+        next_threshold = self.preference.get_next_expiration_threshold(1)
+        self.assertEqual(next_threshold, 7)

@@ -1,21 +1,16 @@
-"""Scheduled tasks executed in parallel by Celery.
+"""Background tasks for updating/enforcing slurm usage limits."""
 
-Tasks are scheduled and executed in the background by Celery. They operate
-asynchronously from the rest of the application and log their results in the
-application database.
-"""
-
-from datetime import date, timedelta
+import logging
+from datetime import date
 
 from celery import shared_task
 from django.db.models import Sum
-from django.utils import timezone
 
-from apps.allocations.models import Allocation, AllocationRequest, Cluster
-from apps.notifications.models import Notification, Preference
-from apps.notifications.shortcuts import send_notification_template
-from apps.users.models import ResearchGroup, User
-from keystone_api.plugins.slurm import *
+from apps.allocations.models import *
+from apps.users.models import *
+from plugins import slurm
+
+__all__ = ['update_limits', 'update_limit_for_account', 'update_limits_for_cluster']
 
 log = logging.getLogger(__name__)
 
@@ -38,7 +33,7 @@ def update_limits_for_cluster(cluster: Cluster) -> None:
         cluster: The name of the Slurm cluster.
     """
 
-    for account_name in get_slurm_account_names(cluster.name):
+    for account_name in slurm.get_slurm_account_names(cluster.name):
         if account_name in ['root']:
             continue
 
@@ -73,7 +68,7 @@ def update_limit_for_account(account: ResearchGroup, cluster: Cluster) -> None:
     active_sus = active_query.aggregate(Sum("awarded"))['awarded__sum'] or 0
 
     # Determine the historical contribution to the current limit
-    current_limit = get_cluster_limit(account.name, cluster.name)
+    current_limit = slurm.get_cluster_limit(account.name, cluster.name)
 
     historical_usage = current_limit - active_sus - closing_sus
     if historical_usage < 0:
@@ -83,7 +78,7 @@ def update_limit_for_account(account: ResearchGroup, cluster: Cluster) -> None:
         historical_usage = 0
 
     # Close expired allocations and determine the current usage
-    total_usage = get_cluster_usage(account.name, cluster.name)
+    total_usage = slurm.get_cluster_usage(account.name, cluster.name)
     current_usage = total_usage - historical_usage
     if current_usage < 0:
         log.warning(f"Negative Current usage found for {account.name} on {cluster.name}:\n"
@@ -109,7 +104,7 @@ def update_limit_for_account(account: ResearchGroup, cluster: Cluster) -> None:
     updated_historical_usage = expired_requests.aggregate(Sum("final"))['final__sum'] or 0
 
     updated_limit = updated_historical_usage + active_sus
-    set_cluster_limit(account.name, cluster.name, updated_limit)
+    slurm.set_cluster_limit(account.name, cluster.name, updated_limit)
 
     # Log summary of changes during limits update for this Slurm account on this cluster
     log.debug(f"Summary of limits update for {account.name} on {cluster.name}:\n"
@@ -119,86 +114,3 @@ def update_limit_for_account(account: ResearchGroup, cluster: Cluster) -> None:
               f"> {closing_summary}"
               f"> historical usage change: {historical_usage} -> {updated_historical_usage}\n"
               f"> limit change: {current_limit} -> {updated_limit}")
-
-
-def send_expiry_notification_for_request(user: User, request: AllocationRequest) -> None:
-    """Send any pending expiration notices to the given user.
-
-    A notification is only generated if warranted by the user's notification preferences.
-
-    Args:
-        user: The user to notify.
-        request: The allocation request to check for pending notifications.
-    """
-
-    # There are no notifications if the allocation does not expire
-    log.debug(f'Checking notifications for user {user.username} on request #{request.id}.')
-    if not request.expire:
-        log.debug('Request does not expire')
-        return
-
-    # The next notification occurs at the smallest threshold that is greater than or equal the days until expiration
-    days_until_expire = (request.expire - date.today()).days
-    notification_thresholds = Preference.get_user_preference(user).expiry_thresholds
-    next_threshold = min(
-        filter(lambda x: x >= days_until_expire, notification_thresholds),
-        default=None
-    )
-
-    # Exit early if we have not hit a threshold yet
-    log.debug(f'Request #{request.id} expires in {days_until_expire} days. Next threshold at {next_threshold} days.')
-    if next_threshold is None:
-        return
-
-    # Check if a notification has already been sent
-    notification_sent = Notification.objects.filter(
-        user=user,
-        notification_type=Notification.NotificationType.request_status,
-        metadata__request_id=request.id,
-        metadata__days_to_expire__lte=next_threshold
-    ).exists()
-
-    if notification_sent:
-        log.debug(f'Existing notification found.')
-        return
-
-    log.debug(f'Sending new notification for request #{request.id} to user {user.username}.')
-    send_notification_template(
-        user=user,
-        subject=f'Allocation Expires on {request.expire}',
-        template='expiration_email.html',
-        context={
-            'user': user,
-            'request': request,
-            'days_to_expire': days_until_expire
-        },
-        notification_type=Notification.NotificationType.request_status,
-        notification_metadata={
-            'request_id': request.id,
-            'days_to_expire': days_until_expire
-        }
-    )
-
-
-@shared_task()
-def send_expiry_notifications() -> None:
-    """Send any pending expiration notices to all users."""
-
-    expiring_requests = AllocationRequest.objects.filter(
-        status=AllocationRequest.StatusChoices.APPROVED,
-        expire__gte=timezone.now() - timedelta(days=7)
-    ).all()
-
-    failed = False
-    for request in expiring_requests:
-        for user in request.group.get_all_members():
-
-            try:
-                send_expiry_notification_for_request(user, request)
-
-            except Exception as error:
-                log.exception(f'Error notifying user {user.username} for request #{request.id}: {error}')
-                failed = True
-
-    if failed:
-        raise RuntimeError('Task failed with one or more errors. See logs for details.')
