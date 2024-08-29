@@ -42,6 +42,8 @@ class AllocationManager(Manager):
     def active_allocations(self, account: ResearchGroup, cluster: 'Cluster') -> QuerySet:
         """Retrieve all active allocations for a specific account and cluster.
 
+        Active allocations have been approved and are currently within their start/end date.
+
         Args:
             account: object representing the account.
             cluster: object representing the cluster.
@@ -54,8 +56,11 @@ class AllocationManager(Manager):
             request__active__lte=date.today(), request__expire__gt=date.today()
         )
 
-    def expired_allocations(self, account: ResearchGroup, cluster: 'Cluster') -> QuerySet:
-        """Retrieve all approved but expired allocations for a specific account and cluster.
+    def expiring_allocations(self, account: ResearchGroup, cluster: 'Cluster') -> QuerySet:
+        """Retrieve all expiring allocations for a specific account and cluster.
+
+         Expiring allocations have been approved and have passed their expiration date
+         but do not yet have a final usage value set.
 
         Args:
             account: object representing the account.
@@ -66,11 +71,13 @@ class AllocationManager(Manager):
         """
 
         return self.approved_allocations(account, cluster).filter(
-            request__expire__lte=date.today()
+            final=None, request__expire__lte=date.today()
         ).order_by("request__expire")
 
     def active_service_units(self, account: ResearchGroup, cluster: 'Cluster') -> int:
         """Calculate the total service units across all active allocations for an account and cluster.
+
+        Active allocations have been approved and are currently within their start/end date.
 
         Args:
             account: object representing the account.
@@ -84,8 +91,11 @@ class AllocationManager(Manager):
             Sum("awarded")
         )['awarded__sum'] or 0
 
-    def expired_service_units(self, account: ResearchGroup, cluster: 'Cluster') -> int:
-        """Calculate the total service units across all approved but expired allocations for an account and cluster.
+    def expiring_service_units(self, account: ResearchGroup, cluster: 'Cluster') -> int:
+        """Calculate the total service units across all expiring allocations for an account and cluster.
+
+         Expiring allocations have been approved and have passed their expiration date
+         but do not yet have a final usage value set.
 
         Args:
             account: object representing the account.
@@ -95,7 +105,7 @@ class AllocationManager(Manager):
             Total service units from expired allocations.
         """
 
-        return self.expired_allocations(account, cluster).aggregate(
+        return self.expiring_allocations(account, cluster).aggregate(
             Sum("awarded")
         )['awarded__sum'] or 0
 
@@ -110,4 +120,6 @@ class AllocationManager(Manager):
             Total historical usage calculated from expired allocations.
         """
 
-        return self.expired_allocations(account, cluster).aggregate(Sum("final"))['final__sum'] or 0
+        return self.approved_allocations(account, cluster).filter(
+            request__expire__lte=date.today()
+        ).order_by("request__expire").aggregate(Sum("final"))['final__sum'] or 0

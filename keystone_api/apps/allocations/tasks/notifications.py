@@ -70,10 +70,6 @@ def send_expiry_notification(user: User, request: AllocationRequest) -> None:
     )
 
 
-def send_usage_notification(user: User, request: AllocationRequest) -> None:
-    pass
-
-
 @shared_task()
 def send_notifications() -> None:
     """Send any pending expiration notices to all users."""
@@ -89,7 +85,6 @@ def send_notifications() -> None:
 
             try:
                 send_expiry_notification(user, request)
-                send_usage_notification(user, request)
 
             except Exception as error:
                 log.exception(f'Error notifying user {user.username} for request {request.id}: {error}')

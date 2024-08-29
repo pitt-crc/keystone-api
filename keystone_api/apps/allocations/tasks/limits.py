@@ -1,10 +1,8 @@
 """Background tasks for updating/enforcing slurm usage limits."""
 
 import logging
-from datetime import date
 
 from celery import shared_task
-from django.db.models import Sum
 
 from apps.allocations.models import *
 from apps.users.models import *
@@ -49,28 +47,16 @@ def update_limits_for_cluster(cluster: Cluster) -> None:
 
 @shared_task()
 def update_limit_for_account(account: ResearchGroup, cluster: Cluster) -> None:
-    """Update the TRES billing usage limits for an individual Slurm account, closing out any expired allocations.
+    """Update the TRES billing usage limits for an individual Slurm account, closing out any expired allocations."""
 
-    Args:
-        account: ResearchGroup object for the account.
-        cluster: Cluster object corresponding to the Slurm cluster.
-    """
-
-    # Base query for approved Allocations under the given account on the given cluster
-    approved_query = Allocation.objects.filter(request__group=account, cluster=cluster, request__status='AP')
-
-    # Query for allocations that have expired but do not have a final usage value, determine their SU contribution
-    closing_query = approved_query.filter(final=None, request__expire__lte=date.today()).order_by("request__expire")
-    closing_sus = closing_query.aggregate(Sum("awarded"))['awarded__sum'] or 0
-
-    # Query for allocations that are active, and determine their total service unit contribution
-    active_query = approved_query.filter(request__active__lte=date.today(), request__expire__gt=date.today())
-    active_sus = active_query.aggregate(Sum("awarded"))['awarded__sum'] or 0
+    # Calculate service units for expired and active allocations
+    closing_sus = Allocation.objects.expired_service_units(account, cluster)
+    active_sus = Allocation.objects.active_service_units(account, cluster)
 
     # Determine the historical contribution to the current limit
     current_limit = slurm.get_cluster_limit(account.name, cluster.name)
-
     historical_usage = current_limit - active_sus - closing_sus
+
     if historical_usage < 0:
         log.warning(f"Negative Historical usage found for {account.name} on {cluster.name}:\n"
                     f"historical: {historical_usage}, current: {current_limit}, active: {active_sus}, closing: {closing_sus}\n"
@@ -88,7 +74,7 @@ def update_limit_for_account(account: ResearchGroup, cluster: Cluster) -> None:
 
     closing_summary = (f"Summary of closing allocations:\n"
                        f"> Current Usage before closing: {current_usage}\n")
-    for allocation in closing_query.all():
+    for allocation in Allocation.objects.expiring_allocations(account, cluster):
         allocation.final = min(current_usage, allocation.awarded)
         closing_summary += f"> Allocation {allocation.id}: {current_usage} - {allocation.final} -> {current_usage - allocation.final}\n"
         current_usage -= allocation.final
@@ -100,17 +86,15 @@ def update_limit_for_account(account: ResearchGroup, cluster: Cluster) -> None:
         log.warning(f"The current usage is somehow higher than the limit for {account.name}!")
 
     # Set the new account usage limit using the updated historical usage after closing any expired allocations
-    expired_requests = approved_query.filter(request__expire__lte=date.today())
-    updated_historical_usage = expired_requests.aggregate(Sum("final"))['final__sum'] or 0
-
+    updated_historical_usage = Allocation.objects.updated_historical_usage(account, cluster)
     updated_limit = updated_historical_usage + active_sus
     slurm.set_cluster_limit(account.name, cluster.name, updated_limit)
 
     # Log summary of changes during limits update for this Slurm account on this cluster
     log.debug(f"Summary of limits update for {account.name} on {cluster.name}:\n"
-              f"> Approved allocations found: {len(approved_query)}\n"
-              f"> Service units from {len(active_query)} active allocations: {active_sus}\n"
-              f"> Service units from {len(closing_query)} closing allocations: {closing_sus}\n"
+              f"> Approved allocations found: {Allocation.objects.approved_allocations(account, cluster).count()}\n"
+              f"> Service units from active allocations: {active_sus}\n"
+              f"> Service units from closing allocations: {closing_sus}\n"
               f"> {closing_summary}"
               f"> historical usage change: {historical_usage} -> {updated_historical_usage}\n"
               f"> limit change: {current_limit} -> {updated_limit}")
