@@ -1,7 +1,6 @@
 """Background tasks for issuing user notifications."""
 
 import logging
-from datetime import timedelta
 
 from celery import shared_task
 from django.utils import timezone
@@ -13,10 +12,10 @@ from apps.users.models import User
 
 log = logging.getLogger(__name__)
 
-__all__ = ['send_expiry_notifications', 'send_expiry_notification_for_request']
+__all__ = ['send_notifications', 'send_expiry_notification']
 
 
-def send_expiry_notification_for_request(user: User, request: AllocationRequest) -> None:
+def send_expiry_notification(user: User, request: AllocationRequest) -> None:
     """Send any pending expiration notices to the given user.
 
     A notification is only generated if warranted by the user's notification preferences.
@@ -71,21 +70,26 @@ def send_expiry_notification_for_request(user: User, request: AllocationRequest)
     )
 
 
+def send_usage_notification(user: User, request: AllocationRequest) -> None:
+    pass
+
+
 @shared_task()
-def send_expiry_notifications() -> None:
+def send_notifications() -> None:
     """Send any pending expiration notices to all users."""
 
-    expiring_requests = AllocationRequest.objects.filter(
+    active_requests = AllocationRequest.objects.filter(
         status=AllocationRequest.StatusChoices.APPROVED,
-        expire__gte=timezone.now() - timedelta(days=7)
+        expire__gte=timezone.now()
     ).all()
 
     failed = False
-    for request in expiring_requests:
+    for request in active_requests:
         for user in request.group.get_all_members():
 
             try:
-                send_expiry_notification_for_request(user, request)
+                send_expiry_notification(user, request)
+                send_usage_notification(user, request)
 
             except Exception as error:
                 log.exception(f'Error notifying user {user.username} for request {request.id}: {error}')
