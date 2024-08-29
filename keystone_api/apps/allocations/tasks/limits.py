@@ -47,7 +47,12 @@ def update_limits_for_cluster(cluster: Cluster) -> None:
 
 @shared_task()
 def update_limit_for_account(account: ResearchGroup, cluster: Cluster) -> None:
-    """Update the TRES billing usage limits for an individual Slurm account, closing out any expired allocations."""
+    """Update the allocation limits for an individual Slurm account and close out any expired allocations.
+
+    Args:
+        account: ResearchGroup object for the account.
+        cluster: Cluster object corresponding to the Slurm cluster.
+    """
 
     # Calculate service units for expired and active allocations
     closing_sus = Allocation.objects.expired_service_units(account, cluster)
