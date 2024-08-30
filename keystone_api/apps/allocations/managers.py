@@ -122,4 +122,4 @@ class AllocationManager(Manager):
 
         return self.approved_allocations(account, cluster).filter(
             request__expire__lte=date.today()
-        ).order_by("request__expire").aggregate(Sum("final"))['final__sum'] or 0
+        ).aggregate(Sum("final"))['final__sum'] or 0

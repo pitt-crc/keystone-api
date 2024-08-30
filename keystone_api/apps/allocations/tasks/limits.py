@@ -55,7 +55,7 @@ def update_limit_for_account(account: ResearchGroup, cluster: Cluster) -> None:
     """
 
     # Calculate service units for expired and active allocations
-    closing_sus = Allocation.objects.expired_service_units(account, cluster)
+    closing_sus = Allocation.objects.expiring_service_units(account, cluster)
     active_sus = Allocation.objects.active_service_units(account, cluster)
 
     # Determine the historical contribution to the current limit
@@ -91,13 +91,12 @@ def update_limit_for_account(account: ResearchGroup, cluster: Cluster) -> None:
         log.warning(f"The current usage is somehow higher than the limit for {account.name}!")
 
     # Set the new account usage limit using the updated historical usage after closing any expired allocations
-    updated_historical_usage = Allocation.objects.updated_historical_usage(account, cluster)
+    updated_historical_usage = Allocation.objects.historical_usage(account, cluster)
     updated_limit = updated_historical_usage + active_sus
     slurm.set_cluster_limit(account.name, cluster.name, updated_limit)
 
     # Log summary of changes during limits update for this Slurm account on this cluster
     log.debug(f"Summary of limits update for {account.name} on {cluster.name}:\n"
-              f"> Approved allocations found: {Allocation.objects.approved_allocations(account, cluster).count()}\n"
               f"> Service units from active allocations: {active_sus}\n"
               f"> Service units from closing allocations: {closing_sus}\n"
               f"> {closing_summary}"
