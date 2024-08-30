@@ -15,6 +15,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.template.defaultfilters import truncatechars
 
+from apps.allocations.managers import AllocationManager
 from apps.users.models import ResearchGroup, User
 
 __all__ = [
@@ -44,6 +45,8 @@ class Allocation(RGModelInterface, models.Model):
 
     cluster: Cluster = models.ForeignKey('Cluster', on_delete=models.CASCADE)
     request: AllocationRequest = models.ForeignKey('AllocationRequest', on_delete=models.CASCADE)
+
+    objects = AllocationManager()
 
     def get_research_group(self) -> ResearchGroup:
         """Return the research group tied to the current record."""
