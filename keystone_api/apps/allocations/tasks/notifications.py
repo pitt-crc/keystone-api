@@ -1,9 +1,9 @@
 """Background tasks for issuing user notifications."""
 
 import logging
+from datetime import date, timedelta
 
 from celery import shared_task
-from django.utils import timezone
 
 from apps.allocations.models import AllocationRequest
 from apps.notifications.models import Notification, Preference
@@ -30,17 +30,23 @@ def send_expiry_notification(user: User, request: AllocationRequest) -> None:
     # There are no notifications if the allocation does not expire
     days_until_expire = request.get_days_until_expire()
     if days_until_expire is None:
-        log.debug(f'Request {request.id} does not expire')
+        log.debug(f'Skipping expiry notification for user {user.username}: Request {request.id} does not expire')
         return
 
-    elif days_until_expire <= 0:
-        log.debug(f'Request {request.id} has already expired')
+    # Skip proposals that are already expired
+    if days_until_expire <= 0:
+        log.debug(f'Skipping expiry notification for user {user.username}: Request {request.id} has already expired')
         return
 
     # Exit early if we have not hit a notification threshold yet
     next_threshold = Preference.get_user_preference(user).get_next_expiration_threshold(days_until_expire)
-    log.debug(f'Request {request.id} expires in {days_until_expire} days. Next threshold at {next_threshold} days.')
     if next_threshold is None:
+        log.debug(f'Skipping expiry notification for user {user.username}: No notification threshold has been hit yet.')
+        return
+
+    # Don't bombard new user's with outdated notifications
+    if user.date_joined >= date.today() - timedelta(days=next_threshold):
+        log.debug(f'Skipping expiry notification for user {user.username}: User account created after notification threshold.')
         return
 
     # Check if a notification has already been sent for the next threshold or any smaller threshold
@@ -50,9 +56,10 @@ def send_expiry_notification(user: User, request: AllocationRequest) -> None:
         metadata__request_id=request.id,
         metadata__days_to_expire__lte=next_threshold
     ).exists():
+        log.debug(f'Skipping expiry notification for user {user.username}: Notification already sent for threshold.')
         return
 
-    log.debug(f'Sending new notification for request {request.id} to user {user.username}.')
+    log.debug(f'Sending expiry notification for request {request.id} to user {user.username}.')
     send_notification_template(
         user=user,
         subject=f'Allocation Expires on {request.expire}',
@@ -76,13 +83,12 @@ def send_notifications() -> None:
 
     active_requests = AllocationRequest.objects.filter(
         status=AllocationRequest.StatusChoices.APPROVED,
-        expire__gte=timezone.now()
+        expire__gt=date.today()
     ).all()
 
     failed = False
     for request in active_requests:
-        for user in request.group.get_all_members():
-
+        for user in request.group.get_all_members().filter(is_active=True):
             try:
                 send_expiry_notification(user, request)
 
