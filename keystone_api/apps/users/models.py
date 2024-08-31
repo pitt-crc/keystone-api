@@ -54,15 +54,22 @@ class ResearchGroup(models.Model):
 
     objects = ResearchGroupManager()
 
-    def get_all_members(self) -> tuple[User, ...]:
-        """Return all research group members."""
+    def get_all_members(self) -> models.QuerySet:
+        """Return a queryset of all research group members."""
 
-        return (self.pi,) + tuple(self.admins.all()) + tuple(self.members.all())
+        return User.objects.filter(
+            models.Q(pk=self.pi.pk) |
+            models.Q(pk__in=self.admins.values_list('pk', flat=True)) |
+            models.Q(pk__in=self.members.values_list('pk', flat=True))
+        )
 
-    def get_privileged_members(self) -> tuple[User, ...]:
-        """Return all research group members with admin privileges."""
+    def get_privileged_members(self) -> models.QuerySet:
+        """Return a queryset of all research group members with admin privileges."""
 
-        return (self.pi,) + tuple(self.admins.all())
+        return User.objects.filter(
+            models.Q(pk=self.pi.pk) |
+            models.Q(pk__in=self.admins.values_list('pk', flat=True))
+        )
 
     def __str__(self) -> str:  # pragma: nocover  # pragma: nocover
         """Return the research group's account name."""

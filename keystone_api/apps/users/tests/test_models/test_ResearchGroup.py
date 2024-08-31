@@ -19,7 +19,7 @@ class GetAllMembers(TestCase):
         self.member2 = create_test_user(username='unprivileged2')
 
     def test_all_accounts_returned(self) -> None:
-        """Test all group members are included in the returned list."""
+        """Test all group members are included in the returned queryset."""
 
         group = ResearchGroup.objects.create(pi=self.pi)
         group.admins.add(self.admin1)
@@ -27,8 +27,13 @@ class GetAllMembers(TestCase):
         group.members.add(self.member1)
         group.members.add(self.member2)
 
-        expected_members = (self.pi, self.admin1, self.admin2, self.member1, self.member2)
-        self.assertEqual(expected_members, group.get_all_members())
+        expected_members = [self.pi, self.admin1, self.admin2, self.member1, self.member2]
+
+        self.assertQuerySetEqual(
+            expected_members,
+            group.get_all_members(),
+            ordered=False
+        )
 
 
 class GetPrivilegedMembers(TestCase):
@@ -48,7 +53,7 @@ class GetPrivilegedMembers(TestCase):
 
         group = ResearchGroup.objects.create(pi=self.pi)
         expected_members = (self.pi,)
-        self.assertEqual(expected_members, group.get_privileged_members())
+        self.assertQuerySetEqual(expected_members, group.get_privileged_members(), ordered=False)
 
     def test_pi_with_admins(self) -> None:
         """Test returned group members for a group with a PI and admins."""
@@ -58,7 +63,7 @@ class GetPrivilegedMembers(TestCase):
         group.admins.add(self.admin2)
 
         expected_members = (self.pi, self.admin1, self.admin2)
-        self.assertEqual(expected_members, group.get_privileged_members())
+        self.assertQuerySetEqual(expected_members, group.get_privileged_members(), ordered=False)
 
     def test_pi_with_members(self) -> None:
         """Test returned group members for a group with a PI and unprivileged members."""
@@ -68,7 +73,7 @@ class GetPrivilegedMembers(TestCase):
         group.members.add(self.member2)
 
         expected_members = (self.pi,)
-        self.assertEqual(expected_members, group.get_privileged_members())
+        self.assertQuerySetEqual(expected_members, group.get_privileged_members(), ordered=False)
 
     def test_pi_with_admin_and_members(self) -> None:
         """Test returned group members for a group with a PI, admins, and unprivileged members."""
@@ -80,4 +85,4 @@ class GetPrivilegedMembers(TestCase):
         group.members.add(self.member2)
 
         expected_members = (self.pi, self.admin1, self.admin2)
-        self.assertEqual(expected_members, group.get_privileged_members())
+        self.assertQuerySetEqual(expected_members, group.get_privileged_members(), ordered=False)
