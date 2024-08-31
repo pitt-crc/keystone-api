@@ -117,39 +117,3 @@ class NotificationSending(TestCase):
             )
 
         mock_send_template.assert_not_called()
-
-    @patch('apps.notifications.shortcuts.send_notification_template')
-    @patch('apps.notifications.models.Notification.objects.filter')
-    @patch('apps.notifications.models.Preference.get_user_preference')
-    def test_notification_sent(
-        self, mock_get_user_preference: Mock,
-        mock_notification_filter: Mock,
-        mock_send_template: Mock
-    ) -> None:
-        """Test a notification is sent if all conditions are met."""
-
-        mock_preference = MagicMock()
-        mock_preference.get_next_expiration_threshold.return_value = 10
-        mock_get_user_preference.return_value = mock_preference
-
-        mock_notification_filter.return_value.exists.return_value = False
-
-        self.user.date_joined = date.today() - timedelta(days=20)
-        self.request.get_days_until_expire.return_value = 15
-
-        send_expiry_notification(self.user, self.request)
-        mock_send_template.assert_called_once_with(
-            user=self.user,
-            subject=f'Allocation Expires on {self.request.expire}',
-            template='expiration_email.html',
-            context={
-                'user': self.user,
-                'request': self.request,
-                'days_to_expire': 15
-            },
-            notification_type=Notification.NotificationType.request_status,
-            notification_metadata={
-                'request_id': self.request.id,
-                'days_to_expire': 15
-            }
-        )

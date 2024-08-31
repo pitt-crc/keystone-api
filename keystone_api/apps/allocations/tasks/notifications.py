@@ -58,6 +58,7 @@ def send_expiry_notification(user: User, request: AllocationRequest) -> None:
     ).exists():
         log.debug(f'Skipping expiry notification for user {user.username}: Notification already sent for threshold.')
         return
+
     log.debug(f'Sending expiry notification for request {request.id} to user {user.username}.')
     send_notification_template(
         user=user,
