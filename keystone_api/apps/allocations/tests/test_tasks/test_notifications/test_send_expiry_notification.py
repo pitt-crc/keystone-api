@@ -7,7 +7,6 @@ from django.test import TestCase
 
 from apps.allocations.models import AllocationRequest
 from apps.allocations.tasks import send_expiry_notification
-from apps.notifications.models import Notification
 from apps.users.models import User
 
 
