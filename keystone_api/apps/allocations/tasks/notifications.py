@@ -20,8 +20,8 @@ def should_notify_upcoming_expiration(user: User, request: AllocationRequest) ->
      an existing email has not already been sent.
 
     Args:
-        user: The user to notify
-        request: The allocation request to notify the user about
+        user: The user to notify.
+        request: The allocation request to notify the user about.
 
     Returns:
         A boolean reflecting whether to send a notification.
@@ -29,21 +29,26 @@ def should_notify_upcoming_expiration(user: User, request: AllocationRequest) ->
 
     days_until_expire = request.get_days_until_expire()
     next_threshold = Preference.get_user_preference(user).get_next_expiration_threshold(days_until_expire)
+    msg_prefix = f'Skipping notification on upcoming expiration for user "{user.username}" on request {request.id}: '
+
+    # Check user notification preferences
     if next_threshold is None:
-        log.debug(f'Skipping expiry notification for user {user.username}: No notification threshold has been hit yet.')
+        log.debug(msg_prefix + 'No notification threshold has been hit yet.')
         return False
 
+    # Avoid spamming new users
     if user.date_joined >= date.today() - timedelta(days=next_threshold):
-        log.debug(f'Skipping expiry notification for user {user.username}: User account created after notification threshold.')
+        log.debug(msg_prefix + 'User account created after notification threshold.')
         return False
 
+    # Check if a notification has already been sent
     if Notification.objects.filter(
         user=user,
         notification_type=Notification.NotificationType.request_expiring,
         metadata__request_id=request.id,
         metadata__days_to_expire__lte=next_threshold
     ).exists():
-        log.debug(f'Skipping expiry notification for user {user.username}: Notification already sent for threshold.')
+        log.debug(msg_prefix + 'Notification already sent for threshold.')
         return False
 
     return True
@@ -53,11 +58,11 @@ def notify_upcoming_expiration(user: User, request: AllocationRequest) -> None:
     """Send a notification to alert a user their allocation request will expire soon.
 
     Args:
-        user: The user to notify
-        request: The allocation request to notify the user about
+        user: The user to notify.
+        request: The allocation request to notify the user about.
     """
 
-    log.debug(f'Sending expiry notification for request {request.id} to user {user.username}.')
+    log.debug(f'Sending notification to user "{user.username}" on upcoming expiration for request {request.id}.')
 
     days_until_expire = request.get_days_until_expire()
     send_notification_template(
@@ -89,14 +94,15 @@ def notify_all_upcoming_expirations() -> None:
     failed = False
     for request in active_requests:
         for user in request.group.get_all_members().filter(is_active=True):
-
             try:
                 if should_notify_upcoming_expiration(user, request):
                     notify_upcoming_expiration(user, request)
 
             except Exception as error:
-                log.exception(f'Error notifying user {user.username} for request {request.id}: {error}')
                 failed = True
+                log.exception(
+                    f'Error notifying user "{user.username}" on upcoming expiration of request {request.id}: {error}'
+                )
 
     if failed:
         raise RuntimeError('Task failed with one or more errors. See logs for details.')
@@ -113,14 +119,16 @@ def should_notify_past_expiration(user: User, request: AllocationRequest) -> boo
         A boolean reflecting whether to send a notification.
     """
 
+    # Check if a notification has already been sent
     if Notification.objects.filter(
         user=user,
-        notification_type=Notification.NotificationType.request_expiring,
+        notification_type=Notification.NotificationType.request_expired,
         metadata__request_id=request.id,
     ).exists():
-        log.debug(f'Skipping expiry notification for user {user.username}: Notification already sent.')
+        log.debug(f'Skipping expiry notification for request {request.id} to user {user.username}: Notification already sent.')
         return False
 
+    # Check user notification preferences
     return Preference.get_user_preference(user).notify_on_expiration
 
 
@@ -128,11 +136,11 @@ def notify_past_expiration(user: User, request: AllocationRequest) -> None:
     """Send a notification to alert a user their allocation request has expired.
 
     Args:
-        user: The user to notify
-        request: The allocation request to notify the user about
+        user: The user to notify.
+        request: The allocation request to notify the user about.
     """
 
-    log.debug(f'Sending expiry notification for request {request.id} to user {user.username}.')
+    log.debug(f'Sending notification to user "{user.username}" on expiration of request {request.id}.')
     send_notification_template(
         user=user,
         subject=f'Your Allocation has Expired',
@@ -167,8 +175,10 @@ def notify_all_past_expirations() -> None:
                     notify_past_expiration(user, request)
 
             except Exception as error:
-                log.exception(f'Error notifying user {user.username} for request {request.id}: {error}')
                 failed = True
+                log.exception(
+                    f'Error notifying user "{user.username}" on the expiration of request {request.id}: {error}'
+                )
 
     if failed:
         raise RuntimeError('Task failed with one or more errors. See logs for details.')
