@@ -3,7 +3,7 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from apps.notifications.models import default_alloc_thresholds, default_expiry_thresholds, Preference
+from apps.notifications.models import default_expiry_thresholds, Preference
 
 User = get_user_model()
 
@@ -26,7 +26,6 @@ class GetUserPreference(TestCase):
 
         # Ensure preference is created with appropriate defaults
         self.assertEqual(self.user, preference.user)
-        self.assertListEqual(default_alloc_thresholds(), preference.allocation_usage_thresholds)
         self.assertListEqual(default_expiry_thresholds(), preference.request_expiry_thresholds)
 
     def test_get_user_preference_returns_existing_preference(self) -> None:
