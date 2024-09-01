@@ -54,7 +54,7 @@ def should_notify_upcoming_expiration(user: User, request: AllocationRequest) ->
     return True
 
 
-def notify_upcoming_expiration(user: User, request: AllocationRequest) -> None:
+def send_notification_upcoming_expiration(user: User, request: AllocationRequest) -> None:
     """Send a notification to alert a user their allocation request will expire soon.
 
     Args:
@@ -83,7 +83,7 @@ def notify_upcoming_expiration(user: User, request: AllocationRequest) -> None:
 
 
 @shared_task()
-def notify_all_upcoming_expirations() -> None:
+def notify_upcoming_expirations() -> None:
     """Send a notification to all users with soon-to-expire allocations."""
 
     active_requests = AllocationRequest.objects.filter(
@@ -96,7 +96,7 @@ def notify_all_upcoming_expirations() -> None:
         for user in request.group.get_all_members().filter(is_active=True):
             try:
                 if should_notify_upcoming_expiration(user, request):
-                    notify_upcoming_expiration(user, request)
+                    send_notification_upcoming_expiration(user, request)
 
             except Exception as error:
                 failed = True
@@ -132,7 +132,7 @@ def should_notify_past_expiration(user: User, request: AllocationRequest) -> boo
     return Preference.get_user_preference(user).notify_on_expiration
 
 
-def notify_past_expiration(user: User, request: AllocationRequest) -> None:
+def send_notification_past_expiration(user: User, request: AllocationRequest) -> None:
     """Send a notification to alert a user their allocation request has expired.
 
     Args:
@@ -157,7 +157,7 @@ def notify_past_expiration(user: User, request: AllocationRequest) -> None:
 
 
 @shared_task()
-def notify_all_past_expirations() -> None:
+def notify_past_expirations() -> None:
     """Send a notification to all users with expired allocations"""
 
     active_requests = AllocationRequest.objects.filter(
@@ -172,7 +172,7 @@ def notify_all_past_expirations() -> None:
 
             try:
                 if should_notify_past_expiration(request, user):
-                    notify_past_expiration(user, request)
+                    send_notification_past_expiration(user, request)
 
             except Exception as error:
                 failed = True
