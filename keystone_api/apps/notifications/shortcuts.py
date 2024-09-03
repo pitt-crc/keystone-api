@@ -1,7 +1,7 @@
 """Helper functions for streamlining common tasks.
 
 Shortcuts are designed to simplify common tasks such as rendering templates,
-redirecting URLs, and handling HTTP responses.
+redirecting URLs, issuing notifications, and handling HTTP responses.
 """
 
 from django.conf import settings

@@ -6,8 +6,8 @@ from datetime import date, timedelta
 from celery import shared_task
 
 from apps.allocations.models import AllocationRequest
+from apps.allocations.shortcuts import send_notification_past_expiration, send_notification_upcoming_expiration
 from apps.notifications.models import Notification, Preference
-from apps.notifications.shortcuts import send_notification_template
 from apps.users.models import User
 
 log = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ def should_notify_upcoming_expiration(user: User, request: AllocationRequest) ->
     """Determine if a notification should be sent concerning an upcoming allocation expiration.
 
      Returns `True` if a notification is warranted by user preferences and
-     an existing email has not already been sent.
+     an existing notification has not already been issued.
 
     Args:
         user: The user to notify.
@@ -59,34 +59,6 @@ def should_notify_upcoming_expiration(user: User, request: AllocationRequest) ->
         return False
 
     return True
-
-
-def send_notification_upcoming_expiration(user: User, request: AllocationRequest) -> None:
-    """Send a notification to alert a user their allocation request will expire soon.
-
-    Args:
-        user: The user to notify.
-        request: The allocation request to notify the user about.
-    """
-
-    log.debug(f'Sending notification to user "{user.username}" on upcoming expiration for request {request.id}.')
-
-    days_until_expire = request.get_days_until_expire()
-    send_notification_template(
-        user=user,
-        subject=f'Allocation Expires on {request.expire}',
-        template='upcoming_expiration_email.html',
-        context={
-            'user': user,
-            'request': request,
-            'days_to_expire': days_until_expire
-        },
-        notification_type=Notification.NotificationType.request_expiring,
-        notification_metadata={
-            'request_id': request.id,
-            'days_to_expire': days_until_expire
-        }
-    )
 
 
 @shared_task()
@@ -137,30 +109,6 @@ def should_notify_past_expiration(user: User, request: AllocationRequest) -> boo
 
     # Check user notification preferences
     return Preference.get_user_preference(user).notify_on_expiration
-
-
-def send_notification_past_expiration(user: User, request: AllocationRequest) -> None:
-    """Send a notification to alert a user their allocation request has expired.
-
-    Args:
-        user: The user to notify.
-        request: The allocation request to notify the user about.
-    """
-
-    log.debug(f'Sending notification to user "{user.username}" on expiration of request {request.id}.')
-    send_notification_template(
-        user=user,
-        subject=f'Your Allocation has Expired',
-        template='past_expiration_email.html',
-        context={
-            'user': user,
-            'request': request
-        },
-        notification_type=Notification.NotificationType.request_expired,
-        notification_metadata={
-            'request_id': request.id
-        }
-    )
 
 
 @shared_task()
