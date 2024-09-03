@@ -49,19 +49,19 @@ class SetUserPreference(TestCase):
 
         self.assertFalse(Preference.objects.filter(user=self.user).exists())
 
-        Preference.set_user_preference(user=self.user, notify_status_update=False)
+        Preference.set_user_preference(user=self.user, notify_on_expiration=False)
         preference = Preference.objects.get(user=self.user)
-        self.assertFalse(preference.notify_status_update)
+        self.assertFalse(preference.notify_on_expiration)
 
     def test_set_user_preference_updates_existing_preference(self) -> None:
         """Test that an existing Preference object is updated with specified values."""
 
-        preference = Preference.objects.create(user=self.user, notify_status_update=True)
+        preference = Preference.objects.create(user=self.user, notify_on_expiration=True)
         self.assertTrue(Preference.objects.filter(user=self.user).exists())
 
-        Preference.set_user_preference(user=self.user, notify_status_update=False)
+        Preference.set_user_preference(user=self.user, notify_on_expiration=False)
         preference.refresh_from_db()
-        self.assertFalse(preference.notify_status_update)
+        self.assertFalse(preference.notify_on_expiration)
 
 
 class GetNextExpirationThreshold(TestCase):
