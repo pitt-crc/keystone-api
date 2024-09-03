@@ -1,6 +1,6 @@
 """Unit tests for the `notify_upcoming_expirations` function."""
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 from django.test import TestCase
 
@@ -12,7 +12,7 @@ class FailureReporting(TestCase):
 
     @patch('apps.allocations.tasks.should_notify_past_expiration')
     @patch('apps.allocations.models.AllocationRequest.objects.filter')
-    def test_raises_error_on_failure(self, mock_filter, mock_should_notify):
+    def test_raises_error_on_failure(self, mock_filter: Mock, mock_should_notify: Mock) -> None:
         """Test a RuntimeError is raised when one or more notifications fail.
 
         Raising an error on failure is required to ensure Celery tasks

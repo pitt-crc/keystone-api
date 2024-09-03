@@ -10,6 +10,8 @@ from apps.allocations.shortcuts import send_notification_past_expiration, send_n
 from apps.notifications.models import Notification, Preference
 from apps.users.models import User
 
+__all__ = ['notify_past_expirations', 'notify_upcoming_expirations']
+
 log = logging.getLogger(__name__)
 
 
