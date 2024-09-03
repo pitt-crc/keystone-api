@@ -12,22 +12,13 @@ from django.db import models
 __all__ = ['Notification', 'Preference']
 
 
-def default_alloc_thresholds() -> list[int]:  # pragma: nocover
-    """The default allocating usage thresholds at which to issue a user notification.
-
-    Returned values are defined in units of percent usage.
-    """
-
-    return [90]
-
-
 def default_expiry_thresholds() -> list[int]:  # pragma: nocover
     """The default expiration thresholds at which to issue a user notification.
 
     Returned values are defined in units of days until expiration.
     """
 
-    return [30, 14, 0]
+    return [30, 14]
 
 
 class Notification(models.Model):
@@ -36,20 +27,16 @@ class Notification(models.Model):
     class NotificationType(models.TextChoices):
         """Enumerated choices for the `notification_type` field."""
 
-        resource_usage = 'RU', 'Resource Usage'
         general_message = 'GM', 'General Message'
-        request_status = 'RS', 'Request Status Update'
-        request_expiring = 'RE', 'Request Expiry Notice'
+        request_expiring = 'RE', 'Request Past Expiration'
+        request_expired = 'RD', 'Upcoming Request Expiration'
 
     time = models.DateTimeField(auto_now_add=True)
     read = models.BooleanField(default=False)
     subject = models.TextField()
     message = models.TextField()
     metadata = models.JSONField(null=True)
-    notification_type = models.CharField(
-        max_length=2,
-        choices=NotificationType.choices,
-        default=NotificationType.general_message)
+    notification_type = models.CharField(max_length=2, choices=NotificationType.choices)
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
@@ -57,9 +44,8 @@ class Notification(models.Model):
 class Preference(models.Model):
     """User notification preferences."""
 
-    notify_status_update = models.BooleanField(default=True)
-    allocation_usage_thresholds = models.JSONField(default=default_alloc_thresholds)
     request_expiry_thresholds = models.JSONField(default=default_expiry_thresholds)
+    notify_on_expiration = models.BooleanField(default=True)
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 

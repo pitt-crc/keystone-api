@@ -3,7 +3,7 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from apps.notifications.models import default_alloc_thresholds, default_expiry_thresholds, Preference
+from apps.notifications.models import default_expiry_thresholds, Preference
 
 User = get_user_model()
 
@@ -26,7 +26,6 @@ class GetUserPreference(TestCase):
 
         # Ensure preference is created with appropriate defaults
         self.assertEqual(self.user, preference.user)
-        self.assertListEqual(default_alloc_thresholds(), preference.allocation_usage_thresholds)
         self.assertListEqual(default_expiry_thresholds(), preference.request_expiry_thresholds)
 
     def test_get_user_preference_returns_existing_preference(self) -> None:
@@ -50,19 +49,19 @@ class SetUserPreference(TestCase):
 
         self.assertFalse(Preference.objects.filter(user=self.user).exists())
 
-        Preference.set_user_preference(user=self.user, notify_status_update=False)
+        Preference.set_user_preference(user=self.user, notify_on_expiration=False)
         preference = Preference.objects.get(user=self.user)
-        self.assertFalse(preference.notify_status_update)
+        self.assertFalse(preference.notify_on_expiration)
 
     def test_set_user_preference_updates_existing_preference(self) -> None:
         """Test that an existing Preference object is updated with specified values."""
 
-        preference = Preference.objects.create(user=self.user, notify_status_update=True)
+        preference = Preference.objects.create(user=self.user, notify_on_expiration=True)
         self.assertTrue(Preference.objects.filter(user=self.user).exists())
 
-        Preference.set_user_preference(user=self.user, notify_status_update=False)
+        Preference.set_user_preference(user=self.user, notify_on_expiration=False)
         preference.refresh_from_db()
-        self.assertFalse(preference.notify_status_update)
+        self.assertFalse(preference.notify_on_expiration)
 
 
 class GetNextExpirationThreshold(TestCase):
