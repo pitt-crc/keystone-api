@@ -22,7 +22,7 @@ def send_notification_upcoming_expiration(user: User, request: AllocationRequest
         request: The allocation request to notify the user about.
     """
 
-    log.debug(f'Sending notification to user "{user.username}" on upcoming expiration for request {request.id}.')
+    log.info(f'Sending notification to user "{user.username}" on upcoming expiration for request {request.id}.')
 
     days_until_expire = request.get_days_until_expire()
     send_notification_template(
@@ -50,7 +50,7 @@ def send_notification_past_expiration(user: User, request: AllocationRequest) ->
         request: The allocation request to notify the user about.
     """
 
-    log.debug(f'Sending notification to user "{user.username}" on expiration of request {request.id}.')
+    log.info(f'Sending notification to user "{user.username}" on expiration of request {request.id}.')
     send_notification_template(
         user=user,
         subject=f'Your Allocation has Expired',
