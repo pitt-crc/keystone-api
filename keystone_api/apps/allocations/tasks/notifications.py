@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 
 
 def should_notify_upcoming_expiration(user: User, request: AllocationRequest) -> bool:
-    """Determine if a notification should be sent concerning an upcoming allocation expiration.
+    """Determine if a notification should be sent concerning the upcoming expiration of an allocation.
 
      Returns `True` if a notification is warranted by user preferences and
      an existing notification has not already been issued.
@@ -88,7 +88,10 @@ def notify_upcoming_expirations() -> None:
 
 
 def should_notify_past_expiration(user: User, request: AllocationRequest) -> bool:
-    """Determine if a notification should be sent concerning an upcoming expiration based on user preferences.
+    """Determine if a notification should be sent concerning the recent expiration of an allocation.
+
+    Returns `True` if a notification is warranted by user preferences and
+    an existing notification has not already been issued.
 
     Args:
         user: The user to notify
@@ -104,7 +107,7 @@ def should_notify_past_expiration(user: User, request: AllocationRequest) -> boo
         notification_type=Notification.NotificationType.request_expired,
         metadata__request_id=request.id,
     ).exists():
-        log.debug(f'Skipping expiry notification for request {request.id} to user {user.username}: Notification already sent.')
+        log.debug(f'Skipping expiration notification for request {request.id} to user {user.username}: Notification already sent.')
         return False
 
     # Check user notification preferences
