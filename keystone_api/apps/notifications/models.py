@@ -18,7 +18,7 @@ def default_expiry_thresholds() -> list[int]:  # pragma: nocover
     Returned values are defined in units of days until expiration.
     """
 
-    return [30, 14, 0]
+    return [30, 14]
 
 
 class Notification(models.Model):

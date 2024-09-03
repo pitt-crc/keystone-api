@@ -27,11 +27,18 @@ def should_notify_upcoming_expiration(user: User, request: AllocationRequest) ->
         A boolean reflecting whether to send a notification.
     """
 
-    days_until_expire = request.get_days_until_expire()
-    next_threshold = Preference.get_user_preference(user).get_next_expiration_threshold(days_until_expire)
     msg_prefix = f'Skipping notification on upcoming expiration for user "{user.username}" on request {request.id}: '
+    if not request.expire:
+        log.debug(msg_prefix + 'Request does not expire.')
+        return False
+
+    if request.expire <= date.today():
+        log.debug(msg_prefix + 'Request has already expired.')
+        return False
 
     # Check user notification preferences
+    days_until_expire = request.get_days_until_expire()
+    next_threshold = Preference.get_user_preference(user).get_next_expiration_threshold(days_until_expire)
     if next_threshold is None:
         log.debug(msg_prefix + 'No notification threshold has been hit yet.')
         return False
