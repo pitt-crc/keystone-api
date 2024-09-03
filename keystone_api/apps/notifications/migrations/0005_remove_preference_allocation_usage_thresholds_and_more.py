@@ -26,6 +26,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='notification',
             name='notification_type',
-            field=models.CharField(choices=[('GM', 'General Message'), ('RE', 'Request Expiring Notice'), ('RD', 'Request Expired Notice')], default='GM', max_length=2),
+            field=models.CharField(choices=[('GM', 'General Message'), ('RE', 'Upcoming Request Expiration'), ('RD', 'Request Past Expiration')], default='GM', max_length=2),
         ),
     ]
