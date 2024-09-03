@@ -221,7 +221,7 @@ else:
     DATABASES['default'] = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / f'{_db_name}.db',
-        'timeout': 30,
+        'timeout': 120,
     }
 
 # Authentication
