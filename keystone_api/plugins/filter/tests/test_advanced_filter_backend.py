@@ -5,11 +5,15 @@ from unittest.mock import Mock
 from django.db import models
 from django.test import TestCase
 from django_filters import FilterSet
+
 from plugins.filter import AdvancedFilterBackend, FactoryBuiltFilterSet
 
 
 class SampleModel(models.Model):
     """Sample database model for testing"""
+
+    class Meta:
+        app_label = 'plugins'
 
     bool_field = models.BooleanField()
     char_field = models.CharField(max_length=100)
