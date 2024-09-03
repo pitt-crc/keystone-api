@@ -4,7 +4,7 @@
   <p>Dear {{ user.username }},</p>
 {% endif %}
 <p>
-  This notification is to notify you your HPC compute allocation <strong>"{{ request.title }}"</strong>
+  This notification is to alert you your HPC compute allocation <strong>"{{ request.title }}"</strong>
   expired on {{ request.expire.isoformat() }}. You will no longer be able to use the resources awarded
   to you under this allocation when submitting new jobs.
 </p>
