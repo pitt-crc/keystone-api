@@ -22,7 +22,7 @@ class GetQueryset(TestCase):
         viewset.request = request
 
         expected_queryset = AllocationRequest.objects.all()
-        self.assertQuerysetEqual(expected_queryset, viewset.get_queryset(), ordered=False)
+        self.assertQuerySetEqual(expected_queryset, viewset.get_queryset(), ordered=False)
 
     def test_get_queryset_for_non_staff_user(self) -> None:
         """Test non-staff users can only query requests from their own research groups."""
@@ -37,4 +37,4 @@ class GetQueryset(TestCase):
         viewset.request = request
 
         expected_queryset = AllocationRequest.objects.filter(group__in=[group.id])
-        self.assertQuerysetEqual(expected_queryset, viewset.get_queryset(), ordered=False)
+        self.assertQuerySetEqual(expected_queryset, viewset.get_queryset(), ordered=False)
