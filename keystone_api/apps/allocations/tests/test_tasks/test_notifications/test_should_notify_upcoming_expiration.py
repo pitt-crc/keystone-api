@@ -6,7 +6,7 @@ from unittest.mock import Mock, patch
 from django.test import TestCase
 
 from apps.allocations.models import AllocationRequest
-from apps.allocations.tasks.notifications import should_notify_upcoming_expiration
+from apps.allocations.tasks import should_notify_upcoming_expiration
 from apps.notifications.models import Preference
 from apps.users.models import ResearchGroup, User
 
