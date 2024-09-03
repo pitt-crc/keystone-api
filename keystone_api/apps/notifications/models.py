@@ -36,10 +36,7 @@ class Notification(models.Model):
     subject = models.TextField()
     message = models.TextField()
     metadata = models.JSONField(null=True)
-    notification_type = models.CharField(
-        max_length=2,
-        choices=NotificationType.choices,
-        default=NotificationType.general_message)
+    notification_type = models.CharField(max_length=2, choices=NotificationType.choices)
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
