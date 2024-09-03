@@ -28,8 +28,8 @@ class Notification(models.Model):
         """Enumerated choices for the `notification_type` field."""
 
         general_message = 'GM', 'General Message'
-        request_expiring = 'RE', 'Request Expiring Notice'
-        request_expired = 'RD', 'Request Expired Notice'
+        request_expiring = 'RE', 'Request Past Expiration'
+        request_expired = 'RD', 'Upcoming Request Expiration'
 
     time = models.DateTimeField(auto_now_add=True)
     read = models.BooleanField(default=False)
