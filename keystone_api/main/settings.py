@@ -32,8 +32,14 @@ ALLOWED_HOSTS = env.list("SECURE_ALLOWED_HOSTS", default=["localhost", "127.0.0.
 
 _SECURE_SESSION_TOKENS = env.bool("SECURE_SESSION_TOKENS", False)
 SESSION_COOKIE_SECURE = _SECURE_SESSION_TOKENS
-CSRF_COOKIE_SECURE = _SECURE_SESSION_TOKENS
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_AGE = env.int("SESSION_COOKIE_AGE", 1209600)  # 2 weeks
+
 CSRF_TRUSTED_ORIGINS = env.list("SECURE_CSRF_ORIGINS", default=[])
+CSRF_COOKIE_SECURE = _SECURE_SESSION_TOKENS
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SAMESITE = "Lax"
 
 SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", False)
 SECURE_HSTS_PRELOAD = env.bool("SECURE_HSTS_PRELOAD", False)
@@ -65,7 +71,8 @@ INSTALLED_APPS = [
     'health_check.contrib.celery_ping',
     'health_check.contrib.redis',
     'rest_framework',
-    'rest_framework_simplejwt.token_blacklist',
+    'rest_framework.authtoken',
+    'dj_rest_auth',
     'django_celery_beat',
     'django_celery_results',
     'django_filters',
@@ -97,7 +104,7 @@ MIDDLEWARE = [
 ]
 
 TEMPLATES = [
-    {  # The default backend rquired by Django builtins (e.g., the admin)
+    {  # The default backend required by Django builtins (e.g., the admin)
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'APP_DIRS': True,
         'OPTIONS': {
@@ -139,9 +146,6 @@ JAZZMIN_SETTINGS = {
 # REST API settings
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated'
     ],
@@ -256,12 +260,6 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(seconds=env.int('SECURE_ACCESS_TOKEN_LIFETIME', 5 * 60)),
-    'REFRESH_TOKEN_LIFETIME': timedelta(seconds=env.int('SECURE_REFRESH_TOKEN_LIFETIME', 24 * 60 * 60)),
-    'UPDATE_LAST_LOGIN': True
-}
 
 # Static file handling (CSS, JavaScript, Images)
 

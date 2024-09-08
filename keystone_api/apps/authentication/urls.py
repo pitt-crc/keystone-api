@@ -1,12 +1,11 @@
 """URL routing for the parent application."""
 
+from dj_rest_auth import views as djra_views
 from django.urls import path
-from rest_framework_simplejwt.views import TokenBlacklistView, TokenObtainPairView, TokenRefreshView
 
 app_name = 'authentication'
 
 urlpatterns = [
-    path('new/', TokenObtainPairView.as_view(), name='token_obtain'),
-    path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('blacklist/', TokenBlacklistView.as_view(), name='token_blacklist'),
+    path(r'login/', djra_views.LoginView.as_view(), name='login'),
+    path(r'logout/', djra_views.LogoutView.as_view(), name='logout'),
 ]
