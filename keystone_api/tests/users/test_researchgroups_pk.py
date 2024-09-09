@@ -16,7 +16,7 @@ class EndpointPermissions(APITestCase, CustomAsserts):
 
     | Authentication               | GET | HEAD | OPTIONS | POST | PUT | PATCH | DELETE | TRACE |
     |------------------------------|-----|------|---------|------|-----|-------|--------|-------|
-    | Anonymous user               | 401 | 401  | 401     | 401  | 401 | 401   | 401    | 401   |
+    | Anonymous user               | 403 | 403  | 403     | 403  | 403 | 403   | 403    | 403   |
     | Nonmember accessing group    | 200 | 200  | 200     | 405  | 403 | 403   | 403    | 403   |
     | Group member accessing group | 200 | 200  | 200     | 405  | 403 | 403   | 403    | 403   |
     | Group admin accessing group  | 200 | 200  | 200     | 405  | 200 | 200   | 204    | 403   |
@@ -33,14 +33,14 @@ class EndpointPermissions(APITestCase, CustomAsserts):
         endpoint = self.endpoint_pattern.format(pk=1)
         self.assert_http_responses(
             endpoint,
-            get=status.HTTP_401_UNAUTHORIZED,
-            head=status.HTTP_401_UNAUTHORIZED,
-            options=status.HTTP_401_UNAUTHORIZED,
-            post=status.HTTP_401_UNAUTHORIZED,
-            put=status.HTTP_401_UNAUTHORIZED,
-            patch=status.HTTP_401_UNAUTHORIZED,
-            delete=status.HTTP_401_UNAUTHORIZED,
-            trace=status.HTTP_401_UNAUTHORIZED,
+            get=status.HTTP_403_FORBIDDEN,
+            head=status.HTTP_403_FORBIDDEN,
+            options=status.HTTP_403_FORBIDDEN,
+            post=status.HTTP_403_FORBIDDEN,
+            put=status.HTTP_403_FORBIDDEN,
+            patch=status.HTTP_403_FORBIDDEN,
+            delete=status.HTTP_403_FORBIDDEN,
+            trace=status.HTTP_403_FORBIDDEN
         )
 
     def test_authenticated_user_different_group(self) -> None:
