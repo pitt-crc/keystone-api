@@ -26,11 +26,13 @@ response and include cookies for the session ID and CSRF token.
 
     ```bash
     credentials='{"username": "user", "password": "userpassword"}'
-    
-    auth_response=$(curl -s -X POST \
+    headers='Content-Type: application/json'
+
+    curl -s -X POST \
       -c cookies.txt \
+      -H "$headers" \
       -d "$credentials" \
-      https://keystone.domain.com/authentication/new/)
+      https://keystone.domain.com/authentication/login/
 
     cat cookies.txt
     ```
@@ -48,7 +50,7 @@ Write operations (`POST`, `PUT`, `PATCH`, `DELETE`) will also require the CSRF t
 
     # Write operations require CSRF headers and session cookies
     patch_response = session.patch(
-        url="https://keystone.domain.com/users/users/", 
+        url="https://keystone.domain.com/users/users/1", 
         headers={'X-CSRFToken': session.cookies['csrftoken']})
 
     patch_response.raise_for_status()
@@ -65,9 +67,9 @@ Write operations (`POST`, `PUT`, `PATCH`, `DELETE`) will also require the CSRF t
     # Write operations require CSRF headers and session cookies
     csrf_token=$(grep 'csrftoken' cookies.txt | awk '{print $7}')
     patch_response=$(curl -s -X PATCH \
-      -b cookies.txt 
+      -b cookies.txt \
       -H "X-CSRFToken: $csrf_token" \
-      "https://keystone.domain.com/users/users/")
+      "https://keystone.domain.com/users/users/1")
 
     echo "$patch_response"
     ```
@@ -82,6 +84,7 @@ Users can manually invalidate their session using the `authentication/logout/` e
         headers={'X-CSRFToken': session.cookies['csrftoken']})
 
     logout_request.raise_for_status()
+    print(logout_request.json())
     ```
 
 === "bash"
