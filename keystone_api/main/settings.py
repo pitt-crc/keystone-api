@@ -101,7 +101,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-    'apps.logging.middleware.LogRequestMiddleware',  # Log requests at the end
+    'apps.logging.middleware.LogRequestMiddleware',
 ]
 
 TEMPLATES = [

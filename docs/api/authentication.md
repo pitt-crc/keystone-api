@@ -1,109 +1,96 @@
 # Authentication
 
-Keystone uses JSON Web Tokens (JWT) to manage user authentication and permissions.
-New JWT tokens are generate using the `authentication/new/` endpoint.
+Keystone uses session tokens to manage user authentication and permissions.
+New sessions are generate using the `authentication/login/` endpoint.
+Once successfully authenticated, the endpoint will automatically issue a `200`
+response and include cookies for the session ID and CSRF token.
 
 === "python"
 
     ```python
     import requests
     
-    credentials = {"username": "admin", "password": "adminpassword"}
-    headers = {"Content-Type": "application/json"}
-    
-    auth_request = requests.post(
-        url="https://keystone.domain.com/authentication/new/",
-        json=credentials,
-        headers=headers)
-    
-    jwt = auth_request.json()
-    access_token = jwt["access"]
-    refresh_token = jwt["refresh"]
+    credentials = {"username": "user", "password": "userpassword"} 
+
+    # Session objects will automatically store and manage authentication cookies
+    session = requests.Session()
+    auth_response = session.post(
+        url="https://keystone.domain.com/authentication/login/",
+        data=credentials)
+
+    auth_response.raise_for_status()
+    print(auth_response.cookies)
     ```
 
 === "bash"
 
     ```bash
-    credentials='{"username": "admin", "password": "adminpassword"}'
-    headers='Content-Type: application/json'
+    credentials='{"username": "user", "password": "userpassword"}'
     
-    response=$(curl -s -X POST \
-      -H "$headers" \
+    auth_response=$(curl -s -X POST \
+      -c cookies.txt \
       -d "$credentials" \
       https://keystone.domain.com/authentication/new/)
+
+    cat cookies.txt
+    ```
+
+Future requests to API endpoints are authenticated by including the session cookie.
+Write operations (`POST`, `PUT`, `PATCH`, `DELETE`) will also require the CSRF token in the request header.
+
+=== "python"
+
+    ```python
+    # Read operations only require session cookies
+    get_response = session.get(url="https://keystone.domain.com/users/users/")
+    get_response.raise_for_status()
+    print(get_response.json())
+
+    # Write operations require CSRF headers and session cookies
+    patch_response = session.patch(
+        url="https://keystone.domain.com/users/users/", 
+        headers={'X-CSRFToken': session.cookies['csrftoken']})
+
+    patch_response.raise_for_status()
+    print(patch_response.json())
+    ```
+
+=== "bash"
+
+    ```bash
+    # Read operations only require session cookies
+    get_response=$(curl -s -b cookies.txt "https://keystone.domain.com/users/users/")
+    echo "$get_response"
+
+    # Write operations require CSRF headers and session cookies
+    csrf_token=$(grep 'csrftoken' cookies.txt | awk '{print $7}')
+    patch_response=$(curl -s -X PATCH \
+      -b cookies.txt 
+      -H "X-CSRFToken: $csrf_token" \
+      "https://keystone.domain.com/users/users/")
+
+    echo "$patch_response"
+    ```
+
+Users can manually invalidate their session using the `authentication/logout/` endpoint.
+
+=== "python"
+
+    ```python
+    logout_request = session.post(
+        url="https://keystone.domain.com/authentication/logout/", 
+        headers={'X-CSRFToken': session.cookies['csrftoken']})
+
+    logout_request.raise_for_status()
+    ```
+
+=== "bash"
+
+    ```bash
+    logout_response=$(curl -s -X POST \
+      -b cookies.txt 
+      -H "X-CSRFToken: $csrf_token" \
+      "https://keystone.domain.com/authentication/logout/")
     
-    access_token=$(echo "$response" | jq -r '.access')
-    refresh_token=$(echo "$response" | jq -r '.refresh')
-    ```
-
-Future requests to API endpoints are authenticated by including the JWT access token in the request header. 
-See the [OpenAPI specification](api.md) for documentation on available endpoints.
-
-=== "python"
-
-    ```python
-    data_request = requests.get(
-        url="https://keystone.domain.com/allocations/allocations/",
-        headers={"Authorization": f"Bearer {access_token}"})
-
-    print(data_request.json())
-    ```
-
-=== "bash"
-
-    ```bash
-    data_request=$(curl -s -X GET \
-      -H "Authorization: Bearer $access_token" \
-      "https://keystone.domain.com/allocations/allocations/")
-
-    echo "$data_request"
-    ```
-
-The access token will expire after a short period.
-To generate a new access token, use the refresh token with the `authentication/refresh/` endpoint. 
-
-!!! note
-
-    See the `SECURE_ACCESS_TOKEN_LIFETIME` and `SECURE_REFRESH_TOKEN_LIFETIME` values in the [application settings](../install/settings.md)
-    for more information on token expiration.
-
-=== "python"
-
-    ```python
-    refresh_request = requests.post(
-        url="https://keystone.domain.com/authentication/refresh/",
-        json={"refresh": refresh_token})
-
-    access_token = refresh_request["access"]
-    ```
-
-=== "bash"
-
-    ```bash
-    refresh_request=$(curl -s -X POST \
-      -H "Content-Type: application/json" \
-      -d '{"refresh": "'"$refresh_token"'"}' \
-      "https://keystone.domain.com/authentication/refresh/")
-    
-    access_token=$(echo "$refresh_request" | jq -r '.access')
-    ```
-
-After a long enough period of time, the refresh token will also expire.
-Users can invalidate their credentials early using the `authentication/blacklist/` endpoint.
-
-=== "python"
-
-    ```python
-    blacklist_request = requests.post(
-        url="https://keystone.domain.com/authentication/blacklist/",
-        json={"refresh": refresh_token})
-    ```
-
-=== "bash"
-
-    ```bash
-    blacklist_request=$(curl -s -X POST \
-      -H "Content-Type: application/json" \
-      -d '{"refresh": "'"$refresh_token"'"}' \
-      "https://keystone.domain.com/authentication/blacklist/")
+    echo "$logout_response"
     ```
