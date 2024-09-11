@@ -1508,6 +1508,26 @@ paths:
               schema:
                 $ref: '#/components/schemas/RestAuthDetail'
           description: ''
+  /authentication/whoami/:
+    get:
+      operationId: authentication_whoami_retrieve
+      description: |-
+        Return user metadata for the currently authenticated user.
+
+        Returns:
+            A 200 response with user data if authenticated, and a 404 response otherwise
+      tags:
+      - authentication
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestrictedUser'
+          description: ''
   /health/:
     get:
       operationId: health_retrieve
