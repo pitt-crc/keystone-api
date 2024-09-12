@@ -7,7 +7,7 @@ from django.test import override_settings, TestCase
 from django.utils.timezone import now
 
 from apps.logging.models import AppLog, RequestLog
-from apps.logging.tasks import rotate_log_files
+from apps.logging.tasks import clear_log_files
 
 
 class LogFileDeletion(TestCase):
@@ -61,7 +61,7 @@ class LogFileDeletion(TestCase):
         self.assertEqual(2, RequestLog.objects.count())
 
         # Run rotation
-        rotate_log_files()
+        clear_log_files()
 
         # Assert only the newer records remain
         self.assertEqual(1, AppLog.objects.count())
@@ -73,6 +73,6 @@ class LogFileDeletion(TestCase):
 
         self.create_dummy_records(now())
 
-        rotate_log_files()
+        clear_log_files()
         self.assertEqual(1, AppLog.objects.count())
         self.assertEqual(1, RequestLog.objects.count())
