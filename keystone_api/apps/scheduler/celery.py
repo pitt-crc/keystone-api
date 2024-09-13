@@ -29,18 +29,18 @@ celery_app.conf.beat_schedule = {
         'schedule': crontab(hour='0', minute='0'),
         'description': 'This task clears the JWT token blacklist.'
     },
-    'apps.allocations.tasks.update_limits': {
+    'apps.allocations.tasks.limits.update_limits': {
         'task': 'apps.allocations.tasks.update_limits',
         'schedule': crontab(minute='0'),
         'description': 'This task updates all Slurm clusters with the latest user allocation limits.'
     },
-    'apps.allocations.tasks.notify_upcoming_expirations': {
+    'apps.allocations.tasks.notifications.notify_upcoming_expirations': {
         'task': 'apps.allocations.tasks.notify_upcoming_expirations',
         'schedule': crontab(hour='0', minute='0'),
         'description': 'This task issues notifications informing users of upcoming expirations.'
     },
     'apps.allocations.tasks.notify_past_expirations': {
-        'task': 'apps.allocations.tasks.notify_past_expirations',
+        'task': 'apps.allocations.tasks.notifications.notify_past_expirations',
         'schedule': crontab(hour='0', minute='0'),
         'description': 'This task issues notifications informing users when their allocations have expired.'
     },
