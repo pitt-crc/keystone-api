@@ -37,9 +37,10 @@ class LogFileDeletion(TestCase):
             time=timestamp
         )
 
-    @override_settings(LOG_RECORD_ROTATION=4)
+    @override_settings(CONFIG_LOG_RETENTION=4)
+    @override_settings(CONFIG_REQUEST_RETENTION=4)
     @patch('django.utils.timezone.now')
-    def test_log_files_rotated(self, mock_now: Mock) -> None:
+    def test_log_files_deleted(self, mock_now: Mock) -> None:
         """Test expired log files are deleted."""
 
         # Mock the current time
@@ -67,9 +68,10 @@ class LogFileDeletion(TestCase):
         self.assertEqual(1, AppLog.objects.count())
         self.assertEqual(1, RequestLog.objects.count())
 
-    @override_settings(LOG_RECORD_ROTATION=0)
-    def test_rotation_disabled(self) -> None:
-        """Test log files are not deleted when rotation is disabled."""
+    @override_settings(CONFIG_LOG_RETENTION=0)
+    @override_settings(CONFIG_REQUEST_RETENTION=0)
+    def test_deletion_disabled(self) -> None:
+        """Test log files are not deleted when log clearing is disabled."""
 
         self.create_dummy_records(now())
 
