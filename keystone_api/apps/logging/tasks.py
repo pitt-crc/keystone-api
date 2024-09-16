@@ -11,8 +11,6 @@ from celery import shared_task
 from django.conf import settings
 from django.utils import timezone
 
-from .models import *
-
 
 @shared_task()
 def rotate_log_files() -> None:
@@ -21,6 +19,7 @@ def rotate_log_files() -> None:
     if settings.LOG_RECORD_ROTATION == 0:
         return
 
+    from .models import AppLog, RequestLog
     max_record_age = timezone.now() - timedelta(seconds=settings.LOG_RECORD_ROTATION)
     AppLog.objects.filter(time__lt=max_record_age).delete()
     RequestLog.objects.filter(time__lt=max_record_age).delete()
