@@ -27,13 +27,14 @@ Improperly configured settings can introduce dangerous vulnerabilities and may d
 Keystone uses various static files and user content to facilitate operation.
 By default, these files are stored in subdirectories of the installed application directory (`<app>`).
 
-| Setting Name              | Default Value            | Description                                                                                       |
-|---------------------------|--------------------------|---------------------------------------------------------------------------------------------------|
-| `CONFIG_TIMEZONE`         | `UTC`                    | The application timezone.                                                                         |
-| `CONFIG_STATIC_DIR`       | `<app>/static_files`     | Where to store internal static files required by the application.                                 |
-| `CONFIG_UPLOAD_DIR`       | `<app>/upload_files`     | Where to store file data uploaded by users.                                                       |
-| `CONFIG_LOG_RETENTION`    | 30 days                  | How long to store log records in seconds. Set to 0 to keep all records.                           |
-| `CONFIG_LOG_LEVEL`        | `WARNING`                | Only record logs above this level (`CRITICAL`, `ERROR`, `WARNING`, `INFO`, `DEBUG`, or `NOTSET`). |
+| Setting Name               | Default Value        | Description                                                                                                 |
+|----------------------------|----------------------|-------------------------------------------------------------------------------------------------------------|
+| `CONFIG_TIMEZONE`          | `UTC`                | The timezone to use when rendering date/time values.                                                        |
+| `CONFIG_STATIC_DIR`        | `<app>/static_files` | Where to store internal static files required by the application.                                           |
+| `CONFIG_UPLOAD_DIR`        | `<app>/upload_files` | Where to store file data uploaded by users.                                                                 |
+| `CONFIG_LOG_LEVEL`         | `WARNING`            | Only record application logs above this level (accepts `CRITICAL`, `ERROR`, `WARNING`, `INFO`, or `DEBUG`). |
+| `CONFIG_LOG_RETENTION`     | `2592000` (30 days)  | How long to store application logs in seconds. Set to 0 to keep all records.                                |
+| `CONFIG_REQUEST_RETENTION` | `2592000` (30 days)  | How long to store request logs in seconds. Set to 0 to keep all records.                                    |
 
 ## API Throttling
 

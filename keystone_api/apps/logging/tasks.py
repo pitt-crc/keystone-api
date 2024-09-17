@@ -13,13 +13,16 @@ from django.utils import timezone
 
 
 @shared_task()
-def rotate_log_files() -> None:
-    """Delete old log files."""
-
-    if settings.LOG_RECORD_ROTATION == 0:
-        return
+def clear_log_files() -> None:
+    """Delete request and application logs according to retention policies set in application settings."""
 
     from .models import AppLog, RequestLog
-    max_record_age = timezone.now() - timedelta(seconds=settings.LOG_RECORD_ROTATION)
-    AppLog.objects.filter(time__lt=max_record_age).delete()
-    RequestLog.objects.filter(time__lt=max_record_age).delete()
+    
+    if settings.CONFIG_LOG_RETENTION > 0:
+        max_app_log_age = timezone.now() - timedelta(seconds=settings.CONFIG_LOG_RETENTION)
+        AppLog.objects.filter(time__lt=max_app_log_age).delete()
+
+    from .models import AppLog, RequestLog
+    if settings.CONFIG_REQUEST_RETENTION > 0:
+        max_request_log_age = timezone.now() - timedelta(seconds=settings.CONFIG_REQUEST_RETENTION)
+        RequestLog.objects.filter(time__lt=max_request_log_age).delete()

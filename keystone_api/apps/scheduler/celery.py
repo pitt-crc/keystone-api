@@ -19,8 +19,8 @@ celery_app.conf.beat_schedule = {
         'schedule': crontab(minute='0'),
         'description': 'This task synchronizes user data against LDAP. This task does nothing if LDAP is disabled.'
     },
-    'apps.logging.tasks.rotate_log_files': {
-        'task': 'apps.logging.tasks.rotate_log_files',
+    'apps.logging.tasks.clear_log_files': {
+        'task': 'apps.logging.tasks.clear_log_files',
         'schedule': crontab(hour='0', minute='0'),
         'description': 'This task deletes old log entries according to application settings.'
     },

@@ -97,7 +97,7 @@ MIDDLEWARE = [
 ]
 
 TEMPLATES = [
-    {  # The default backend rquired by Django builtins (e.g., the admin)
+    {  # The default backend required by Django builtins (e.g., the admin)
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'APP_DIRS': True,
         'OPTIONS': {
@@ -282,7 +282,9 @@ TIME_ZONE = env.str('CONFIG_TIMEZONE', 'UTC')
 
 # Logging
 
-LOG_RECORD_ROTATION = env.int('CONFIG_LOG_RETENTION', timedelta(days=30).total_seconds())
+CONFIG_LOG_RETENTION = env.int('CONFIG_LOG_RETENTION', timedelta(days=30).total_seconds())
+CONFIG_REQUEST_RETENTION = env.int('CONFIG_REQUEST_RETENTION', timedelta(days=30).total_seconds())
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
