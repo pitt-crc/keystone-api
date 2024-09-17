@@ -32,7 +32,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository_owner }}/keystone-api
+          images: ghcr.io/better-hpc/keystone-api
           tags: |
             type=semver,pattern={{version}}
             type=raw,value=latest
@@ -93,7 +93,7 @@ jobs:
 
     steps:
       - name: Update docs
-        uses: ${{ github.repository_owner }}/keystone-docs/.github/actions/update-action/@main
+        uses: better-hpc/keystone-docs/.github/actions/update-action/@main
         with:
           keystone-gitops-id: ${{ secrets.KEYSTONE_GITOPS_ID }}
           keystone-gitops-pk: ${{ secrets.KEYSTONE_GITOPS_PK }}
