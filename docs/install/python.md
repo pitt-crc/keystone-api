@@ -20,7 +20,7 @@ The `keystone_api` package can be installed using the `pip` or `pipx` package ma
     pipx install --include-deps keystone-api
     ```
 
-If you intend to authenticate users via LDAP credentials, you will need to manually specify LDAP support in the install command.
+If you intend to authenticate users via LDAP credentials, you will need to manually specify LDAP support in the `install` command.
 This will require the LDAP development binaries to be available on the host machine.
 
 === "pip"
@@ -68,7 +68,7 @@ Start by launching a new SQL session with admin permissions.
 sudo -u postgres psql
 ```
 
-Next, create a database and a Keystone service account.
+Next, create a database and a `keystone` service account.
 Make sure to replace the password field with a secure value.
 
 ```postgresql
@@ -191,6 +191,45 @@ The following unit files are provided as a starting point to daemonize the proce
     [Install]
     WantedBy=sockets.target
     ```
+
+## Configuring the Proxy
+
+Using a web proxy in front of the API server is recommended to improve load balancing, security, and static file handling. 
+Nginx is recommended, but administrators are welcome to use a proxy of their choice.
+A starter Nginx configuration file is provided below for convenience.
+
+```nginx
+upstream keystone_api {
+    server localhost:8000;
+}
+
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+
+    ssl_certificate     /etc/pki/tls/certs/keystone.crt; 
+    ssl_certificate_key /etc/pki/tls/private/keystone.key;
+
+    location / {
+        proxy_pass http://unix:/run/gunicorn.sock;
+    }
+
+    location /uploads { # (1)!
+        alias /var/keystone-api/upload_files;
+    }
+}
+```
+
+1. The `/uploads` alias must match the `CONFIG_UPLOAD_DIR` in application settings.
 
 ## Upgrading Application Versions
 
