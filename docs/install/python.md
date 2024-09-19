@@ -68,7 +68,7 @@ Start by launching a new SQL session with admin permissions.
 sudo -u postgres psql
 ```
 
-Next, create a database and a Keystone service account.
+Next, create a database and a `keystone` service account.
 Make sure to replace the password field with a secure value.
 
 ```postgresql
@@ -134,6 +134,8 @@ The following unit files are provided as a starting point to daemonize the proce
     ```
 
 ## Deploying the Application
+
+### Gunicorn
 
 Before launching the API, migrate the database to the latest schema version and collect any static files.
 See the [Settings](settings.md) page for details on configuring database credentials and the static files location.
@@ -227,3 +229,46 @@ When upgrading the application, ensure the database and static files are up-to-d
     systemctl start keystone-beat
     systemctl start keystone-server
     ```
+
+### Nginx
+
+Using a web proxy in front of the API server is recommended to improve load balancing, security, and 
+static file handling. Using Nginx is recommended, but administrators are welcome to use a proxy of their choice.
+An Nginx configuration file is provided below for convenience.
+
+```nginx
+upstream keystone_api { # (1)
+    server localhost:8000;
+}
+
+server { # (2)
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+
+    # (3)
+    ssl_certificate     /etc/pki/tls/certs/keystone.crt;
+    ssl_certificate_key /etc/pki/tls/private/keystone.key;
+
+    location / {
+        proxy_pass http://unix:/run/gunicorn.sock;
+    }
+
+    location /uploads {
+        alias /var/keystone-api/upload_files;
+    }
+}
+```
+
+1. This block should match the servername and port used when configuring Gunicorn.
+2. This block redirects non-encrypted users to an HTTPS connection.
+3. Customize the TLS certificates to match your production certificate locations.
+4. The `uploads` alias must match the `CONFIG_UPLOAD_DIR` in application settings.
