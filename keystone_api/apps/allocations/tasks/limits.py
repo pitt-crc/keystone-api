@@ -99,6 +99,6 @@ def update_limit_for_account(account: ResearchGroup, cluster: Cluster) -> None:
     log.debug(f"Summary of limits update for {account.name} on {cluster.name}:\n"
               f"> Service units from active allocations: {active_sus}\n"
               f"> Service units from closing allocations: {closing_sus}\n"
-              f"> {closing_summary}"
+              f"> {closing_summary}\n"
               f"> historical usage change: {historical_usage} -> {updated_historical_usage}\n"
               f"> limit change: {current_limit} -> {updated_limit}")
