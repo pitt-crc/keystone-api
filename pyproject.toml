@@ -7,8 +7,8 @@ name = "keystone-api"
 version = "0.0.0"
 readme = "README.md"
 description = "A REST API for managing user resource allocations on HPC systems."
-authors = ["Daniel Perrefort", "Pitt Center for Research Computing"]
-keywords = ["Pitt", "CRC", "HPC", "django"]
+authors = ["Better HPC LLC"]
+keywords = ["Better", "HPC", "keystone", "api"]
 
 [tool.poetry.scripts]
 keystone-api = "keystone_api.manage:main"
