@@ -26,6 +26,7 @@ django-health-check = "3.18.3"
 django-jazzmin = "3.0.0"
 djangorestframework = "3.15.2"
 djangorestframework-simplejwt = "5.3.1"
+django-prometheus = "^2.3.1"
 drf_spectacular = { version = "0.27.2", extras = ["sidecar"] }
 gunicorn = "23.0.0"
 psycopg2-binary = "2.9.9"
