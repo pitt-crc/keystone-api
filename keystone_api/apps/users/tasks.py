@@ -7,12 +7,12 @@ application database.
 
 from celery import shared_task
 from django.conf import settings
-from django_auth_ldap.backend import LDAPBackend
 from tqdm import tqdm
 
 # Optional dependencies
 try:
     import ldap
+    from django_auth_ldap.backend import LDAPBackend
 
 except ImportError:  # pragma: nocover
     pass
