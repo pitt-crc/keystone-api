@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import include, path
+from django_prometheus import exports
 
 urlpatterns = [
     path('', lambda *args: HttpResponse(f"Keystone API Version {settings.VERSION}"), name='home'),
@@ -13,6 +14,7 @@ urlpatterns = [
     path('authentication/', include('apps.authentication.urls', namespace='authentication')),
     path('health/', include('apps.health.urls', namespace='health')),
     path('logs/', include('apps.logging.urls', namespace='logs')),
+    path("metrics/", exports.ExportToDjangoView, name="prometheus-django-metrics"),
     path('openapi/', include('apps.openapi.urls', namespace='openapi')),
     path('research/', include('apps.research_products.urls', namespace='research')),
     path('users/', include('apps.users.urls', namespace='users')),
