@@ -51,7 +51,7 @@ def should_notify_upcoming_expiration(user: User, request: AllocationRequest) ->
         return False
 
     # Avoid spamming new users
-    if user.date_joined >= date.today() - timedelta(days=next_threshold):
+    if user.date_joined.date() >= date.today() - timedelta(days=next_threshold):
         log.debug(msg_prefix + 'User account created after notification threshold.')
         return False
 
