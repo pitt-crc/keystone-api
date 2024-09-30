@@ -11,17 +11,18 @@ from celery import shared_task
 from django.conf import settings
 from django.utils import timezone
 
-from .models import *
-
 
 @shared_task()
 def clear_log_files() -> None:
     """Delete request and application logs according to retention policies set in application settings."""
 
+    from .models import AppLog, RequestLog
+    
     if settings.CONFIG_LOG_RETENTION > 0:
         max_app_log_age = timezone.now() - timedelta(seconds=settings.CONFIG_LOG_RETENTION)
         AppLog.objects.filter(time__lt=max_app_log_age).delete()
 
+    from .models import AppLog, RequestLog
     if settings.CONFIG_REQUEST_RETENTION > 0:
         max_request_log_age = timezone.now() - timedelta(seconds=settings.CONFIG_REQUEST_RETENTION)
         RequestLog.objects.filter(time__lt=max_request_log_age).delete()

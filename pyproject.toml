@@ -7,8 +7,8 @@ name = "keystone-api"
 version = "0.0.0"
 readme = "README.md"
 description = "A REST API for managing user resource allocations on HPC systems."
-authors = ["Daniel Perrefort", "Pitt Center for Research Computing"]
-keywords = ["Pitt", "CRC", "HPC", "django"]
+authors = ["Better HPC LLC"]
+keywords = ["Better", "HPC", "keystone", "api"]
 
 [tool.poetry.scripts]
 keystone-api = "keystone_api.manage:main"
@@ -26,7 +26,9 @@ django-filter = "24.3"
 django-health-check = "3.18.3"
 django-jazzmin = "3.0.0"
 djangorestframework = "3.15.2"
+django-prometheus = "^2.3.1"
 drf_spectacular = { version = "0.27.2", extras = ["sidecar"] }
+flower = "^2.0.1"
 gunicorn = "23.0.0"
 jinja2 = "^3.1.4"
 psycopg2-binary = "2.9.9"

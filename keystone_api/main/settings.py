@@ -78,6 +78,7 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'django_celery_results',
     'django_filters',
+    'django_prometheus',
     'drf_spectacular',
     'plugins',
     'apps.admin_utils',
@@ -93,6 +94,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -103,6 +105,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'apps.logging.middleware.LogRequestMiddleware',
+    'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
 
 TEMPLATES = [
@@ -215,7 +218,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 _db_name = env.str('DB_NAME', 'keystone')
 if env.bool('DB_POSTGRES_ENABLE', False):
     DATABASES['default'] = {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django_prometheus.db.backends.postgresql',
         'NAME': _db_name,
         'USER': env.str('DB_USER', ''),
         'PASSWORD': env.str('DB_PASSWORD', ''),

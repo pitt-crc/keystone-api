@@ -7,14 +7,12 @@ application database.
 
 from celery import shared_task
 from django.conf import settings
-from django_auth_ldap.backend import LDAPBackend
 from tqdm import tqdm
-
-from .models import User
 
 # Optional dependencies
 try:
     import ldap
+    from django_auth_ldap.backend import LDAPBackend
 
 except ImportError:  # pragma: nocover
     pass
@@ -65,6 +63,7 @@ def ldap_update_users(prune: bool = settings.PURGE_REMOVED_LDAP_USERS) -> None:
             user.save()
 
     # Handle usernames that have been removed from LDAP
+    from .models import User
     keystone_names = set(User.objects.filter(is_ldap_user=True).values_list('username', flat=True))
     removed_usernames = keystone_names - ldap_names
     if prune:
