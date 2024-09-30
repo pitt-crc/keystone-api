@@ -1,6 +1,6 @@
 """Unit tests for the `should_notify_upcoming_expiration` function."""
 
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from unittest.mock import Mock, patch
 
 from django.test import TestCase
@@ -17,7 +17,7 @@ class CheckIfShouldSend(TestCase):
     def setUp(self) -> None:
         """Set up test data."""
 
-        self.user = User.objects.create_user(username='testuser', password='foobar123!', date_joined=date(2020, 1, 1))
+        self.user = User.objects.create_user(username='testuser', password='foobar123!', date_joined=datetime(2020, 1, 1))
         self.group = ResearchGroup.objects.create(pi=self.user)
         self.request = AllocationRequest.objects.create(group=self.group, expire=date.today() + timedelta(days=15))
 
@@ -51,7 +51,7 @@ class CheckIfShouldSend(TestCase):
         """Test the return value is `False` if the user recently joined."""
 
         # Set account creation date after notification threshold
-        self.user.date_joined = date.today()
+        self.user.date_joined = datetime.now()
         Preference.objects.create(user=self.user, request_expiry_thresholds=[15])
 
         with self.assertLogs('apps.allocations.tasks', level='DEBUG') as log:
