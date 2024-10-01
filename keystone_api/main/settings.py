@@ -230,7 +230,10 @@ else:
     DATABASES['default'] = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / f'{_db_name}.db',
-        'timeout': 120,
+        'timeout': 20,
+        'PRAGMA': {
+            'journal_mode': 'wal',
+        }
     }
 
 # Authentication
