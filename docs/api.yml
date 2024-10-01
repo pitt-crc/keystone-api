@@ -178,7 +178,8 @@ paths:
       tags:
       - allocations
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -206,7 +207,8 @@ paths:
               $ref: '#/components/schemas/Allocation'
         required: true
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '201':
           content:
@@ -228,7 +230,8 @@ paths:
       tags:
       - allocations
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -261,7 +264,8 @@ paths:
               $ref: '#/components/schemas/Allocation'
         required: true
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -293,7 +297,8 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedAllocation'
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -314,7 +319,8 @@ paths:
       tags:
       - allocations
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '204':
           description: No response body
@@ -434,7 +440,8 @@ paths:
       tags:
       - allocations
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -462,7 +469,8 @@ paths:
               $ref: '#/components/schemas/Cluster'
         required: true
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '201':
           content:
@@ -484,7 +492,8 @@ paths:
       tags:
       - allocations
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -517,7 +526,8 @@ paths:
               $ref: '#/components/schemas/Cluster'
         required: true
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -549,7 +559,8 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedCluster'
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -570,7 +581,8 @@ paths:
       tags:
       - allocations
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '204':
           description: No response body
@@ -906,7 +918,8 @@ paths:
       tags:
       - allocations
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -934,7 +947,8 @@ paths:
               $ref: '#/components/schemas/AllocationRequest'
         required: true
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '201':
           content:
@@ -956,7 +970,8 @@ paths:
       tags:
       - allocations
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -989,7 +1004,8 @@ paths:
               $ref: '#/components/schemas/AllocationRequest'
         required: true
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -1021,7 +1037,8 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedAllocationRequest'
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -1042,7 +1059,8 @@ paths:
       tags:
       - allocations
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '204':
           description: No response body
@@ -1287,7 +1305,8 @@ paths:
       tags:
       - allocations
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -1315,7 +1334,8 @@ paths:
               $ref: '#/components/schemas/AllocationRequestReview'
         required: true
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '201':
           content:
@@ -1337,7 +1357,8 @@ paths:
       tags:
       - allocations
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -1370,7 +1391,8 @@ paths:
               $ref: '#/components/schemas/AllocationRequestReview'
         required: true
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -1402,7 +1424,8 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedAllocationRequestReview'
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -1423,90 +1446,87 @@ paths:
       tags:
       - allocations
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '204':
           description: No response body
-  /authentication/blacklist/:
+  /authentication/login/:
     post:
-      operationId: authentication_blacklist_create
+      operationId: authentication_login_create
       description: |-
-        Takes a token and blacklists it. Must be used with the
-        `rest_framework_simplejwt.token_blacklist` app installed.
+        Check the credentials and return the REST Token
+        if the credentials are valid and authenticated.
+        Calls Django Auth login method to register User ID
+        in Django session framework
+
+        Accept the following POST parameters: username, password
+        Return the REST Framework Token Object's key.
       tags:
       - authentication
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TokenBlacklist'
+              $ref: '#/components/schemas/Login'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/TokenBlacklist'
+              $ref: '#/components/schemas/Login'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/TokenBlacklist'
+              $ref: '#/components/schemas/Login'
         required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TokenBlacklist'
+                $ref: '#/components/schemas/Token'
           description: ''
-  /authentication/new/:
+  /authentication/logout/:
     post:
-      operationId: authentication_new_create
+      operationId: authentication_logout_create
       description: |-
-        Takes a set of user credentials and returns an access and refresh JSON web
-        token pair to prove the authentication of those credentials.
+        Calls Django logout method and delete the Token object
+        assigned to the current User object.
+
+        Accepts/Returns nothing.
       tags:
       - authentication
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TokenObtainPair'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/TokenObtainPair'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/TokenObtainPair'
-        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TokenObtainPair'
+                $ref: '#/components/schemas/RestAuthDetail'
           description: ''
-  /authentication/refresh/:
-    post:
-      operationId: authentication_refresh_create
+  /authentication/whoami/:
+    get:
+      operationId: authentication_whoami_retrieve
       description: |-
-        Takes a refresh type JSON web token and returns an access type JSON web
-        token if the refresh token is valid.
+        Return user metadata for the currently authenticated user.
+
+        Returns:
+            A 200 response with user data if authenticated, and a 404 response otherwise
       tags:
       - authentication
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TokenRefresh'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/TokenRefresh'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/TokenRefresh'
-        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TokenRefresh'
+                $ref: '#/components/schemas/RestrictedUser'
           description: ''
   /health/:
     get:
@@ -1515,7 +1535,8 @@ paths:
       tags:
       - health
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           description: No response body
@@ -1528,7 +1549,8 @@ paths:
       tags:
       - health
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -1543,7 +1565,8 @@ paths:
       tags:
       - health
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           description: No response body
@@ -1866,7 +1889,8 @@ paths:
       tags:
       - logs
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -1890,7 +1914,8 @@ paths:
       tags:
       - logs
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -2205,7 +2230,8 @@ paths:
       tags:
       - logs
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -2229,7 +2255,8 @@ paths:
       tags:
       - logs
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -2787,7 +2814,8 @@ paths:
       tags:
       - logs
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -2811,7 +2839,8 @@ paths:
       tags:
       - logs
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -3148,7 +3177,8 @@ paths:
       tags:
       - research
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -3176,7 +3206,8 @@ paths:
               $ref: '#/components/schemas/Grant'
         required: true
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '201':
           content:
@@ -3198,7 +3229,8 @@ paths:
       tags:
       - research
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -3231,7 +3263,8 @@ paths:
               $ref: '#/components/schemas/Grant'
         required: true
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -3263,7 +3296,8 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedGrant'
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -3284,7 +3318,8 @@ paths:
       tags:
       - research
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '204':
           description: No response body
@@ -3521,7 +3556,8 @@ paths:
       tags:
       - research
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -3549,7 +3585,8 @@ paths:
               $ref: '#/components/schemas/Publication'
         required: true
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '201':
           content:
@@ -3571,7 +3608,8 @@ paths:
       tags:
       - research
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -3604,7 +3642,8 @@ paths:
               $ref: '#/components/schemas/Publication'
         required: true
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -3636,7 +3675,8 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedPublication'
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -3657,7 +3697,8 @@ paths:
       tags:
       - research
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '204':
           description: No response body
@@ -3765,7 +3806,8 @@ paths:
       tags:
       - users
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -3793,7 +3835,8 @@ paths:
               $ref: '#/components/schemas/ResearchGroup'
         required: true
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '201':
           content:
@@ -3815,7 +3858,8 @@ paths:
       tags:
       - users
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -3848,7 +3892,8 @@ paths:
               $ref: '#/components/schemas/ResearchGroup'
         required: true
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -3880,7 +3925,8 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedResearchGroup'
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -3901,7 +3947,8 @@ paths:
       tags:
       - users
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '204':
           description: No response body
@@ -4359,7 +4406,8 @@ paths:
       tags:
       - users
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -4387,7 +4435,8 @@ paths:
               $ref: '#/components/schemas/RestrictedUser'
         required: true
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '201':
           content:
@@ -4409,7 +4458,8 @@ paths:
       tags:
       - users
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -4442,7 +4492,8 @@ paths:
               $ref: '#/components/schemas/RestrictedUser'
         required: true
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -4474,7 +4525,8 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedRestrictedUser'
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '200':
           content:
@@ -4495,7 +4547,8 @@ paths:
       tags:
       - users
       security:
-      - jwtAuth: []
+      - cookieAuth: []
+      - basicAuth: []
       responses:
         '204':
           description: No response body
@@ -4730,6 +4783,18 @@ components:
       - id
       - start_date
       - title
+    Login:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+      - password
     NestedInlineOneOff:
       type: object
       properties:
@@ -5097,6 +5162,14 @@ components:
       - id
       - name
       - pi
+    RestAuthDetail:
+      type: object
+      properties:
+        detail:
+          type: string
+          readOnly: true
+      required:
+      - detail
     RestrictedUser:
       type: object
       description: Object serializer for the `User` class with administrative fields
@@ -5297,46 +5370,15 @@ components:
         * `REVOKED` - REVOKED
         * `STARTED` - STARTED
         * `SUCCESS` - SUCCESS
-    TokenBlacklist:
+    Token:
       type: object
+      description: Serializer for Token model.
       properties:
-        refresh:
+        key:
           type: string
-          writeOnly: true
+          maxLength: 40
       required:
-      - refresh
-    TokenObtainPair:
-      type: object
-      properties:
-        username:
-          type: string
-          writeOnly: true
-        password:
-          type: string
-          writeOnly: true
-        access:
-          type: string
-          readOnly: true
-        refresh:
-          type: string
-          readOnly: true
-      required:
-      - access
-      - password
-      - refresh
-      - username
-    TokenRefresh:
-      type: object
-      properties:
-        access:
-          type: string
-          readOnly: true
-        refresh:
-          type: string
-          writeOnly: true
-      required:
-      - access
-      - refresh
+      - key
     health_json_ok:
       type: object
       properties:
@@ -5345,7 +5387,10 @@ components:
       required:
       - healthCheckName
   securitySchemes:
-    jwtAuth:
+    basicAuth:
       type: http
-      scheme: bearer
-      bearerFormat: JWT
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
