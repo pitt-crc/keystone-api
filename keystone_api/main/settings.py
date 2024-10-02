@@ -174,7 +174,7 @@ REST_FRAMEWORK = {
 # Customize the generation of OpenAPI specifications
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': f'Keystone API',
+    'TITLE': 'Keystone API',
     'DESCRIPTION': SUMMARY,
     'VERSION': VERSION,
     'SERVE_INCLUDE_SCHEMA': False,
