@@ -36,7 +36,12 @@ SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_AGE = env.int("SECURE_SESSION_AGE", 1209600)  # 2 weeks
 
-CSRF_TRUSTED_ORIGINS = env.list("SECURE_CSRF_ORIGINS", default=[])
+CSRF_TRUSTED_ORIGINS = env.list("SECURE_CSRF_ORIGINS", default=[
+    'http://localhost:4200',
+    'https://localhost:4200',
+    "http://127.0.0.1:4200",
+    "https://127.0.0.1:4200",
+])
 CSRF_COOKIE_SECURE = _SECURE_SSL_TOKENS
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SAMESITE = "Lax"
@@ -47,7 +52,12 @@ SECURE_HSTS_SECONDS = env.int("SECURE_HSTS_SECONDS", 0)
 SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool("SECURE_HSTS_SUBDOMAINS", False)
 
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = env.list("SECURE_ALLOWED_ORIGINS", default=['http://localhost:4200', "http://127.0.0.1:4200"])
+CORS_ALLOWED_ORIGINS = env.list("SECURE_ALLOWED_ORIGINS", default=[
+    'http://localhost:4200',
+    'https://localhost:4200',
+    "http://127.0.0.1:4200",
+    "https://127.0.0.1:4200",
+])
 
 # App Configuration
 
