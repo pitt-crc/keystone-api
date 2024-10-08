@@ -63,7 +63,7 @@ class User(auth_models.AbstractBaseUser, auth_models.PermissionsMixin):
             An RGB image
         """
 
-        seed = int(hashlib.md5(self.username.encode()).hexdigest(), 16)
+        seed = int(hashlib.sha256(self.username.encode()).hexdigest(), 16)
         random.seed(seed)
 
         rgb_white = (255, 255, 255)
