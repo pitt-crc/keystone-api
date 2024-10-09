@@ -1,8 +1,8 @@
 # Deploying with Python
 
-These instructions install Keystone-API directly onto a machine and manage resulting services using the systemd service manager.
-It is assumed you have administrative privileges and are managing system services via systemd.
-It is also assumed you are installing applications under a dedicated, unprivileged user account called `keystone`. 
+Keystone-API can be installed using system packages and managed using the systemd service manager.
+Doing so requires administrative privileges and assumes you are managing system services via systemd.
+These instructions also assume you are installing applications under a dedicated, unprivileged user account called `keystone`. 
 
 ## Installing the API
 
