@@ -1,6 +1,6 @@
 FROM python:3.11.4-slim
 
-EXPOSE 8000
+EXPOSE 80
 
 # Disable Python byte code caching and output buffering
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -16,6 +16,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     redis \
     # Required for Docker health checks
     curl \
+    # Required for static files
+    nginx \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
@@ -27,7 +29,18 @@ WORKDIR /app
 COPY . src
 RUN pip install ./src[all] && rm -rf src
 
-# Setup and launch the application
-ENTRYPOINT ["keystone-api"]
-HEALTHCHECK CMD curl --fail --location localhost:8000/health/ || exit 1
+# Configure media file storage
+ENV CONFIG_UPLOAD_DIR=/app/media
+RUN mkdir $CONFIG_UPLOAD_DIR
+
+# Configure the NGINX proxy
+RUN groupadd nginx && useradd -m -g nginx nginx
+COPY conf/nginx.conf /etc/nginx/nginx.conf
+
+# Use the API health checks to report container health
+HEALTHCHECK CMD curl --fail --location localhost/health/ || exit 1
+
+# Setup the container to launch the application
+COPY --chmod=755 conf/entrypoint.sh /app/entrypoint.sh
+ENTRYPOINT ["/app/entrypoint.sh"]
 CMD ["quickstart", "--all"]
